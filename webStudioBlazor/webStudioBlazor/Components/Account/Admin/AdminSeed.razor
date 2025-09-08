@@ -1,0 +1,222 @@
+﻿@page "/admin-seed"
+@using webStudioBlazor.EntityModels
+@using webStudioBlazor.Services
+@inject SeedService _seedService
+
+
+<div class="container my-4">
+    <h3 class="mb-3 fw-bold text-primary"> Наповнення послуг</h3>
+
+    <nav aria-label="breadcrumb" class="bg-white shadow-sm rounded px-3 py-2 mb-4">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item active" aria-current="page">
+            </li>
+        </ol>
+    </nav>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="fw-bold text-primary mb-0">
+            Категорії
+        </h4>
+        <NavLink class="btn btn-success shadow-sm d-flex align-items-center justify-content-center"
+                 style="min-height: 44px; min-width: 44px;"
+                 href="/edit-seed">
+
+            <i class="bi bi-plus-lg"></i>
+            <span class="d-none d-sm-inline ms-1">Додати seed</span>
+        </NavLink>
+    </div>
+    <!-- Таблиця в картці -->
+    <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light text-uppercase small text-secondary">
+                        <tr>
+                            <th scope="col" class="px-4 py-3">Назва категорії</th>
+                            <th scope="col" class="px-4 py-3 text-end">Дії</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (masters == null || masters.Count == 0)
+                        {
+                            <tr>
+                                <td colspan="2" class="text-center text-muted py-4">
+                                    Немає жодної категорії. Натисніть
+                                    <span class="fw-semibold text-success">«Додати категорію»</span>.
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            @foreach (var item in masters)
+                            {
+                                <tr>
+                                    <td class="px-4 py-3">
+                                        <div class="d-flex flex-column">
+                                            <span class="fw-bold">@item.FullName</span>
+                                            <small class="text-muted">@item.Phone</small>
+                                        </div>
+                                    </td>
+
+                                    <td class="px-4 py-3 text-end">
+                                        <div class="d-flex flex-wrap justify-content-end gap-2">
+
+                                            <NavLink class="btn btn-sm btn-outline-primary"
+                                                     href="@($"/edit-category/{item.Id}")">
+                                                <i class="bi bi-pencil-square"></i>
+                                                <span class="d-none d-sm-inline ms-1">Редагувати</span>
+                                            </NavLink>
+
+                                            <button type="button"
+                                                    class="btn btn-sm btn-outline-danger"
+                                                    @onclick="() => Delete(item.Id)">
+                                                <i class="bi bi-trash"></i>
+                                                <span class="d-none d-sm-inline ms-1">Видалити</span>
+                                            </button>
+
+                                        </div>
+                                    </td>
+
+                                </tr>
+
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- Таблиця в картці -->
+    <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light text-uppercase small text-secondary">
+                        <tr>
+                            <th scope="col" class="px-4 py-3">Назва категорії</th>
+                            <th scope="col" class="px-4 py-3 text-end">Дії</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (categories == null || categories.Count == 0)
+                        {
+                            <tr>
+                                <td colspan="2" class="text-center text-muted py-4">
+                                    Немає жодної категорії. Натисніть
+                                    <span class="fw-semibold text-success">«Додати категорію»</span>.
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            @foreach (var item in categories)
+                            {
+                                <tr>
+                                    <td class="px-4 py-3 fw-medium">@item.NameCategory</td>
+                                    <td class="px-4 py-3 text-end">
+                                        <div class="d-flex flex-wrap justify-content-end gap-2">
+
+                                            <NavLink class="btn btn-sm btn-outline-primary"
+                                                     href="@($"/edit-category/{item.Id}")">
+                                                <i class="bi bi-pencil-square"></i>
+                                                <span class="d-none d-sm-inline ms-1">Редагувати</span>
+                                            </NavLink>
+
+                                            <button type="button"
+                                                    class="btn btn-sm btn-outline-danger"
+                                                    @onclick="() => Delete(item.Id)">
+                                                <i class="bi bi-trash"></i>
+                                                <span class="d-none d-sm-inline ms-1">Видалити</span>
+                                            </button>
+
+                                        </div>
+                                    </td>
+                                </tr>
+
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- Таблиця в картці -->
+    <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light text-uppercase small text-secondary">
+                        <tr>
+                            <th scope="col" class="px-4 py-3">Назва категорії</th>
+                            <th scope="col" class="px-4 py-3 text-end">Дії</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (pageTherapies == null || pageTherapies.Count == 0)
+                        {
+                            <tr>
+                                <td colspan="2" class="text-center text-muted py-4">
+                                    Немає жодної категорії. Натисніть
+                                    <span class="fw-semibold text-success">«Додати категорію»</span>.
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            @foreach (var item in pageTherapies)
+                            {
+                                <tr>
+                                    <td class="px-4 py-3">
+                                        <div class="d-flex flex-column">
+                                            <span class="fw-bold">@item.TitlePage</span>
+                                            <small class="text-muted">@item.DescriptionPage</small>
+                                        </div>
+                                    </td>
+
+                                    <td class="px-4 py-3 text-end">
+                                        <div class="d-flex justify-content-end gap-2">
+                                            <NavLink class="btn btn-sm btn-outline-primary"
+                                                     href="@($"/edit-category/{item.Id}")">
+                                                <i class="bi bi-pencil-square"></i>
+                                                <span class="d-none d-sm-inline ms-1">Редагувати</span>
+                                            </NavLink>
+
+                                            <button type="button"
+                                                    class="btn btn-sm btn-outline-danger"
+                                                    @onclick="() => Delete(item.Id)">
+                                                <i class="bi bi-trash"></i>
+                                                <span class="d-none d-sm-inline ms-1">Видалити</span>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                               
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<Master> masters = new();
+    private List<Category> categories = new();
+    private List<PageTherapy> pageTherapies = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        
+        masters = await _seedService.GetAllMasterListAsync();
+        categories = await _seedService.GetAllCategoryListAsync();
+        pageTherapies = await _seedService.GetAllPageTherapyListAsync();
+    }
+
+    public async Task Delete(int id)
+    {
+      
+        StateHasChanged();
+    }
+}

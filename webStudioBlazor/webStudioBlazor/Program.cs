@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+
 using webStudioBlazor.Components;
 using webStudioBlazor.Components.Account;
 using webStudioBlazor.Data;
+using webStudioBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +17,7 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
+builder.Services.AddTransient<SeedService>();
 
 builder.Services.AddAuthentication(options =>
     {

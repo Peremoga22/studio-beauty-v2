@@ -1,0 +1,147 @@
+﻿@page "/edit-seed"
+@page "/edit-seed/{Id:int}"
+
+@inject SeedService _seedService
+@inject NavigationManager _navigationManager
+@using System.ComponentModel.DataAnnotations
+@using webStudioBlazor.EntityModels
+@using webStudioBlazor.Services
+
+<div class="container my-4">
+    @if (Id == 0)
+    {
+
+        <nav aria-label="breadcrumb" class="bg-light rounded px-3 py-4 mb-4">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="/admin-seed" style="color: #f8b7d8;">Повернутися до наповнення</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Додати категорію</li>
+            </ol>
+        </nav>
+    }
+    else
+    {
+        <nav aria-label="breadcrumb" class="bg-light rounded px-3 py-4 mb-4">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="/admin-seed" style="color: #f8b7d8;">Повернутися до наповнення</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Редагувати категорію</li>
+            </ol>
+        </nav>
+    }
+
+    <div class="d-flex justify-content-center">
+        <EditForm Model="@master" method="post" OnSubmit="HandleValidSubmit"
+                  FormName="InputMaster" class="card shadow-sm border rounded-3 p-4 bg-white" style="width: 100%; max-width: 600px;">
+            <DataAnnotationsValidator />
+            <ValidationSummary class="alert alert-danger small" />
+            <div class="card-body">
+                <h5 class="card-title text-center mb-3 text-dark fw-bold">
+                    @(Id == 0 ? "Внести дані" : "Редагувати дані")
+                </h5>
+
+                <div class="mb-3">
+                    <label for="InputModel_Name" class="form-label fw-semibold small">
+                        Додати майстра <span class="text-danger">*</span>
+                    </label>
+                    <InputText @bind-Value="InputMaster.MasterFullName" id="InputModel_FullName"
+                               class="form-control form-control-sm"
+                               placeholder="Введіть назву..." />
+                    <ValidationMessage For="@(() => InputMaster.MasterFullName)" class="text-danger small" />
+                </div>
+                <div class="mb-3">
+                    <label for="InputModel_Name" class="form-label fw-semibold small">
+                        Додати мобільний майстра <span class="text-danger">*</span>
+                    </label>
+                    <InputText @bind-Value="InputMaster.MasterPhone" id="InputModel_Phone"
+                               class="form-control form-control-sm"
+                               placeholder="+380..." />
+                    <ValidationMessage For="@(() => InputMaster.MasterPhone)" class="text-danger small" />
+                </div>
+
+                <div class="mb-3">
+                    <label for="InputModel_NameCategory" class="form-label fw-semibold small">
+                        Додати категорію <span class="text-danger">*</span>
+                    </label>
+                    <InputText @bind-Value="InputMaster.NameCategory" id="InputModel_NameCategory"
+                               class="form-control form-control-sm"
+                               placeholder="Введіть назву..." />
+                    <ValidationMessage For="@(() => InputMaster.NameCategory)" class="text-danger small" />
+                </div>
+
+                <div class="mb-3">
+                    <label for="InputModel_NameCategory" class="form-label fw-semibold small">
+                        Додати титолку сторінку терапії <span class="text-danger">*</span>
+                    </label>
+                    <InputText @bind-Value="InputMaster.TitlePage" id="InputModel_TitlePage"
+                               class="form-control form-control-sm"
+                               placeholder="Введіть назву..." />
+                    <ValidationMessage For="@(() => InputMaster.TitlePage)" class="text-danger small" />
+                </div>
+                <div class="mb-3">
+                    <label for="InputModel_NameCategory" class="form-label fw-semibold small">
+                        Додати опис сторінки терапії <span class="text-danger">*</span>
+                    </label>
+                    <InputText @bind-Value="InputMaster.DescriptionPage" id="InputModel_DescriptionPage"
+                               class="form-control form-control-sm"
+                               placeholder="Введіть назву..." />
+                    <ValidationMessage For="@(() => InputMaster.DescriptionPage)" class="text-danger small" />
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 mt-3">
+                    <button type="submit" class="btn btn-sm btn-primary px-3">
+                        <i class="bi bi-save"></i> Зберегти
+                    </button>
+                    <NavLink class="btn btn-sm btn-outline-secondary px-3" href="/admin-category">
+                        <i class="bi bi-x-circle"></i> Скасувати
+                    </NavLink>
+                </div>
+            </div>
+        </EditForm>
+    </div>
+
+</div>
+
+
+
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    private Master master = new();
+    private Category category = new();
+    private PageTherapy pageTherapy = new();
+
+    [SupplyParameterFromForm]
+    private InputModel InputMaster { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        master.FullName = InputMaster.MasterFullName;
+        master.Phone = InputMaster.MasterPhone;
+        category.NameCategory = InputMaster.NameCategory;
+        pageTherapy.TitlePage = InputMaster.TitlePage;
+        pageTherapy.DescriptionPage = InputMaster.DescriptionPage;
+
+        await _seedService.AddSeedAsync(master, category, pageTherapy);
+        _navigationManager.NavigateTo("/admin-seed");
+    }
+
+    private sealed class InputModel
+    {
+        [Required]
+        public string MasterFullName { get; set; } = "";
+        [Required]
+        public string MasterPhone { get; set; } = "";
+        [Required]
+        public string NameCategory { get; set; } = "";
+        [Required]
+        public string TitlePage { get; set; } = "";
+        [Required]
+        public string DescriptionPage { get; set; } = "";
+    }
+
+}
