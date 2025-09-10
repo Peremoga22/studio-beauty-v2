@@ -1,0 +1,130 @@
+﻿@implements IDisposable
+@inject NavigationManager NavigationManager
+
+<!-- Topbar Start -->
+<div class="container-fluid bg-dark px-5 d-none d-lg-block">
+    <div class="row gx-0 align-items-center text-white small" style="height: 45px;">
+        <div class="col-lg-8 text-start">
+            <div class="d-flex flex-wrap">
+                <a href="https://maps.app.goo.gl/S5UGHhxQ6fssKRFM7" class="text-light me-4 text-decoration-none">
+                    <i class="fas fa-map-marker-alt text-primary me-2"></i>Івано-Франківськ, вул. Кармелюка, 30
+                </a>
+                <a href="tel:+380669052664" class="text-light me-4 text-decoration-none">
+                    <i class="fas fa-phone-alt text-primary me-2"></i>+380669052664
+                </a>
+                <a href="mailto:shine.cosmetologybyzelinska@gmail.com" class="text-light text-decoration-none">
+                    <i class="fas fa-envelope text-primary me-2"></i>shine.cosmetologybyzelinska@gmail.com
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-4 text-end">
+            <div class="d-flex justify-content-end">
+                <a href="https://facebook.com" target="_blank" class="btn btn-light btn-sm rounded-circle me-2">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+                <a href="https://instagram.com/shinee.cosmetology" target="_blank" class="btn btn-light btn-sm rounded-circle">
+                    <i class="fab fa-instagram"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Topbar End -->
+
+<div class="container-fluid position-relative p-0">
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm px-4 px-lg-5 py-3">
+        <!-- Logo -->
+        <a href="/" class="navbar-brand d-flex align-items-center gap-2">
+            <img src="img/logo-new.png" alt="Логотип" class="rounded-circle shadow-sm" style="height: 48px; width: 48px; object-fit: cover;">
+            <span style="color: #f8b7d8;" class="fs-4 fw-bold">Студія краси</span>
+
+        </a>
+
+        <!-- Mobile Toggle -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
+                aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Navigation -->
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav ms-auto gap-2">
+                <li class="nav-item">
+                    <NavLink href="/" class="nav-link" Match="NavLinkMatch.All" activeClass="active">
+                        Домашня
+                    </NavLink>
+                </li>
+                <li class="nav-item">
+                    <NavLink href="/about-us" class="nav-link" activeClass="active">
+                        Про нас
+                    </NavLink>
+                </li>
+                <li class="nav-item">
+                    <NavLink href="/cosmetology" class="nav-link" activeClass="active">
+                        Косметологія
+                    </NavLink>
+                </li>
+                <li class="nav-item">
+                    <NavLink href="/massage-therapy" class="nav-link" activeClass="active">
+                        Масажна терапія
+                    </NavLink>
+                </li>
+                <li class="nav-item">
+                    <NavLink href="/event-list" class="nav-link" activeClass="active">
+                        Події
+                    </NavLink>
+                </li>
+                <li class="nav-item">
+                    <AuthorizeView>
+                        <Authorized>
+                            <NavLink class="nav-link" href="Account/Manage">
+                                <li class="nav-item">
+                                    @* <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span> @context.User.Identity?.Name *@
+                                    <a href="/admin-clients" class="nav-link" aria-haspopup="true" aria-expanded="false">Адмінка</a>
+                                </li>
+                            </NavLink>
+                            <li class="nav-item">
+                                <form action="Account/Logout" method="post">
+                                    <AntiforgeryToken />
+                                    <input type="hidden" name="ReturnUrl" value="@currentUrl" />
+                                    <button type="submit" class="nav-link">
+                                        <span class="bi bi-arrow-bar-left-nav-menu" aria-hidden="true"></span> Вийти
+                                    </button>
+                                </form>
+                            </li>
+
+                        </Authorized>
+                        <NotAuthorized>
+                            <NavLink class="nav-link" href="Account/Login">
+                                <span class="bi bi-person-badge-nav-menu" aria-hidden="true"></span> Логін
+                            </NavLink>
+                        </NotAuthorized>
+                    </AuthorizeView>
+                </li>
+            </ul>
+
+        </div>
+    </nav>
+</div>
+
+@code {
+
+    private string? currentUrl;
+
+    protected override async Task OnInitializedAsync()
+    {
+        currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        NavigationManager.LocationChanged += OnLocationChanged;
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
+}
