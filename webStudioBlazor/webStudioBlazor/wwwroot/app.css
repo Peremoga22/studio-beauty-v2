@@ -58,3 +58,34 @@ h1:focus {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
     text-align: start;
 }
+
+/* Брендові акценти (за потреби підлаштуй під свої кольори) */
+.bg-brand {
+    background-color: #233565;
+}
+/* темно-синій */
+.link-brand {
+    color: #f8b7d8;
+    text-decoration: none;
+}
+
+    .link-brand:hover {
+        text-decoration: underline;
+    }
+
+/* Кнопки-дії: зручні для мобільних (мін. розмір), іконка центрована */
+.btn-action {
+    min-width: 40px;
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: .25rem .6rem;
+}
+
+/* Обрізання довгих описів у таблиці */
+.text-truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

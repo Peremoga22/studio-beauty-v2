@@ -6,325 +6,338 @@
 @using System.ComponentModel.DataAnnotations
 @using webStudioBlazor.EntityModels
 @using webStudioBlazor.Services
+@rendermode InteractiveServer
 
 <div class="container my-4">
-    @if (Id == 0)
-    {
 
-        <nav aria-label="breadcrumb" class="bg-light rounded px-3 py-4 mb-4">
-            <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a href="/admin-seed" style="color: #f8b7d8;">Повернутися до наповнення</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Додати категорію</li>
-            </ol>
-        </nav>
-    }
-    else
-    {
-        <nav aria-label="breadcrumb" class="bg-light rounded px-3 py-4 mb-4">
-            <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a href="/admin-seed" style="color: #f8b7d8;">Повернутися до наповнення</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Редагувати категорію</li>
-            </ol>
-        </nav>
-    }
-    <div class="d-flex justify-content-center">
-        <EditForm Model="@master" method="post" OnSubmit="HandleValidSubmit"
-                  FormName="InputMaster" class="card shadow-sm border rounded-3 p-4 bg-white" style="width: 100%; max-width: 600px;">
-            <DataAnnotationsValidator />
-            <ValidationSummary class="alert alert-danger small" />
-            <div class="card-body">
-                <h5 class="card-title text-center mb-3 text-dark fw-bold">
-                    @(Id == 0 ? "Додати майстра" : "Редагувати дані майстра")
-                </h5>
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="bg-white shadow-sm rounded px-3 py-3 mb-4">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item">
+                <a class="link-brand" href="/admin-seed">Повернутися до наповнення</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+                @(Id == 0 ? "Додавання даних" : "Редагування даних")
+            </li>
+        </ol>
+    </nav>
 
-                <div class="mb-3">
-                    <label for="InputModel_Name" class="form-label fw-semibold small">
-                        Додати майстра <span class="text-danger">*</span>
-                    </label>
-                    <InputText @bind-Value="InputMaster.MasterFullName" id="InputModel_FullName"
-                               class="form-control form-control-sm"
-                               placeholder="Введіть назву..." />
-                    <ValidationMessage For="@(() => InputMaster.MasterFullName)" class="text-danger small" />
-                </div>
-                <div class="mb-3">
-                    <label for="InputModel_Name" class="form-label fw-semibold small">
-                        Додати мобільний майстра <span class="text-danger">*</span>
-                    </label>
-                    <InputText @bind-Value="InputMaster.MasterPhone" id="InputModel_Phone"
-                               class="form-control form-control-sm"
-                               placeholder="+380..." />
-                    <ValidationMessage For="@(() => InputMaster.MasterPhone)" class="text-danger small" />
-                </div>
-               
-                <div class="d-flex justify-content-end gap-2 mt-3">
-                    <button type="submit" class="btn btn-sm btn-primary px-3">
-                        <i class="bi bi-save"></i> Зберегти
-                    </button>
-                    <NavLink class="btn btn-sm btn-outline-secondary px-3" href="/admin-category">
-                        <i class="bi bi-x-circle"></i> Скасувати
-                    </NavLink>
-                </div>
+    <!-- ====== Секція: Майстер ====== -->
+    <section class="mb-5">
+        <div class="card shadow-sm border-0 rounded-3">
+            <div class="card-header bg-brand text-white d-flex align-items-center">
+                <i class="bi bi-person-badge me-2"></i>
+                <strong>@(Id == 0 ? "Додати майстра" : "Редагувати дані майстра")</strong>
             </div>
-        </EditForm>
-    </div>
-    <!-- Таблиця в картці -->
-    <div class="card shadow-sm border-0 rounded-3">
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light text-uppercase small text-secondary">
-                        <tr>
-                            <th scope="col" class="px-4 py-3">Назва категорії</th>
-                            <th scope="col" class="px-4 py-3 text-end">Дії</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (masters == null || masters.Count == 0)
-                        {
+            <EditForm Model="@master" OnValidSubmit="SaveMaster"
+                     >
+                <DataAnnotationsValidator />
+                <div class="card-body">
+                    <ValidationSummary class="alert alert-danger small" />
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label for="MasterFullName" class="form-label fw-semibold small">
+                                ПІБ майстра <span class="text-danger">*</span>
+                            </label>
+                            <InputText id="MasterFullName"
+                                       class="form-control form-control-sm"
+                                       @bind-Value="master.FullName"
+                                       placeholder="Напр., Оксана Ткачук" />
+                            <ValidationMessage For="@(() => master.FullName)" class="text-danger small" />
+                        </div>
+                        <div class="col-12">
+                            <label for="MasterPhone" class="form-label fw-semibold small">
+                                Мобільний <span class="text-danger">*</span>
+                            </label>
+                            <InputText id="MasterPhone"
+                                       class="form-control form-control-sm"
+                                       @bind-Value="master.Phone"
+                                       placeholder="+380..." />
+                            <ValidationMessage For="@(() => master.Phone)" class="text-danger small" />
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 mt-3">
+                        <button type="submit" class="btn btn-primary btn-action">
+                            <i class="bi bi-save"></i>
+                            <span class="d-none d-sm-inline ms-1">Зберегти</span>
+                        </button>
+                        <NavLink class="btn btn-outline-secondary btn-action" @onclick="() => CancelMaster()">
+                            <i class="bi bi-x-circle"></i>
+                            <span class="d-none d-sm-inline ms-1">Скасувати</span>
+                        </NavLink>
+                    </div>
+                </div>
+            </EditForm>
+        </div>
+
+        <div class="card shadow-sm border-0 rounded-3 mt-3">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover align-middle mb-0">
+                        <thead class="table-light text-uppercase small text-secondary">
                             <tr>
-                                <td colspan="2" class="text-center text-muted py-4">
-                                    Немає жодної категорії. Натисніть
-                                    <span class="fw-semibold text-success">«Додати категорію»</span>.
-                                </td>
+                                <th class="px-4 py-3">Майстер</th>
+                                <th class="px-4 py-3">Телефон</th>
+                                <th class="px-4 py-3 text-end">Дії</th>
                             </tr>
-                        }
-                        else
-                        {
-                            @foreach (var item in masters)
+                        </thead>
+                        <tbody>
+                            @if (masters is null || masters.Count == 0)
                             {
                                 <tr>
-                                    <td class="px-4 py-3">
-                                        <div class="d-flex flex-column">
-                                            <span class="fw-bold">@item.FullName</span>
-                                            <small class="text-muted">@item.Phone</small>
-                                        </div>
+                                    <td colspan="3" class="text-center text-muted py-4">
+                                        Немає жодного майстра. Додайте першого.
                                     </td>
-
-                                    <td class="px-4 py-3 text-end">
-                                        <div class="d-flex flex-wrap justify-content-end gap-2">
-
-                                            <NavLink class="btn btn-sm btn-outline-primary"
-                                                     href="@($"/edit-category/{item.Id}")">
-                                                <i class="bi bi-pencil-square"></i>
-                                                <span class="d-none d-sm-inline ms-1">Редагувати</span>
-                                            </NavLink>
-
-                                            <button type="button"
-                                                    class="btn btn-sm btn-outline-danger"
-                                                    @onclick="() => Delete(item.Id)">
-                                                <i class="bi bi-trash"></i>
-                                                <span class="d-none d-sm-inline ms-1">Видалити</span>
-                                            </button>
-
-                                        </div>
-                                    </td>
-
                                 </tr>
-
                             }
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <div class="d-flex justify-content-center">
-        <EditForm Model="@master" method="post" OnSubmit="HandleValidSubmit"
-                  FormName="InputMaster" class="card shadow-sm border rounded-3 p-4 bg-white" style="width: 100%; max-width: 600px;">
-            <DataAnnotationsValidator />
-            <ValidationSummary class="alert alert-danger small" />
-            <div class="card-body">
-                <h5 class="card-title text-center mb-3 text-dark fw-bold">
-                    @(Id == 0 ? " Додати категорію" : "Редагувати категорію")
-                </h5>
-
-                <div class="mb-3">
-                    <label for="InputModel_NameCategory" class="form-label fw-semibold small">
-                        Додати категорію <span class="text-danger">*</span>
-                    </label>
-                    <InputText @bind-Value="InputMaster.NameCategory" id="InputModel_NameCategory"
-                               class="form-control form-control-sm"
-                               placeholder="Введіть назву..." />
-                    <ValidationMessage For="@(() => InputMaster.NameCategory)" class="text-danger small" />
-                </div>               
-
-                <div class="d-flex justify-content-end gap-2 mt-3">
-                    <button type="submit" class="btn btn-sm btn-primary px-3">
-                        <i class="bi bi-save"></i> Зберегти
-                    </button>
-                    <NavLink class="btn btn-sm btn-outline-secondary px-3" href="/admin-category">
-                        <i class="bi bi-x-circle"></i> Скасувати
-                    </NavLink>
+                            else
+                            {
+                                @foreach (var item in masters)
+                                {
+                                    <tr>
+                                        <td class="px-4 py-3 fw-medium">@item.FullName</td>
+                                        <td class="px-4 py-3">@item.Phone</td>
+                                        <td class="px-4 py-3 text-end">
+                                            <div class="d-flex justify-content-end gap-2 flex-wrap">
+                                                <NavLink class="btn btn-outline-primary btn-action"
+                                                         @onclick="() => EditMaster(item.Id)">
+                                                    <i class="bi bi-pencil-square"></i>
+                                                    <span class="d-none d-sm-inline ms-1">Редагувати</span>
+                                                </NavLink>
+                                                <button type="button"
+                                                        class="btn btn-outline-danger btn-action"
+                                                        @onclick="() => DeleteMaster(item.Id)">
+                                                    <i class="bi bi-trash"></i>
+                                                    <span class="d-none d-sm-inline ms-1">Видалити</span>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
                 </div>
             </div>
-        </EditForm>
-    </div>
-    <!-- Таблиця в картці -->
-    <div class="card shadow-sm border-0 rounded-3">
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light text-uppercase small text-secondary">
-                        <tr>
-                            <th scope="col" class="px-4 py-3">Назва категорії</th>
-                            <th scope="col" class="px-4 py-3 text-end">Дії</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (categories == null || categories.Count == 0)
-                        {
+        </div>
+    </section>
+
+    <!-- ====== Секція: Категорія ====== -->
+    <section class="mb-5">
+        <div class="card shadow-sm border-0 rounded-3">
+            <div class="card-header bg-brand text-white d-flex align-items-center">
+                <i class="bi bi-tags me-2"></i>
+                <strong>@(Id == 0 ? "Додати категорію" : "Редагувати категорію")</strong>
+            </div>
+            <EditForm Model="@category" OnValidSubmit="SaveCategory"
+                      FormName="Category">
+                <DataAnnotationsValidator />
+                <div class="card-body">
+                    <ValidationSummary class="alert alert-danger small" />
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label for="NameCategory" class="form-label fw-semibold small">
+                                Назва категорії <span class="text-danger">*</span>
+                            </label>
+                            <InputText id="NameCategory"
+                                       class="form-control form-control-sm"
+                                       @bind-Value="category.NameCategory"
+                                       placeholder="Напр., Косметологія" />
+                            <ValidationMessage For="@(() => category.NameCategory)" class="text-danger small" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Вибрати майстра</label><span class="text-danger">*</span><strong style="color:red">@ErrorMessageCategory</strong>
+                            <InputSelect class="form-select" TValue="int" @bind-Value="category.MasterId">
+                                <option value="0">Оберіть майстра</option> 
+                                @foreach (var item in masters)
+                                {
+                                    <option value="@item.Id">@item.FullName</option>
+                                }
+                            </InputSelect>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 mt-3">
+                        <button type="submit" class="btn btn-primary btn-action">
+                            <i class="bi bi-save"></i>
+                            <span class="d-none d-sm-inline ms-1">Зберегти</span>
+                        </button>
+                        <NavLink class="btn btn-outline-secondary btn-action" @onclick="() => CancelCategory()">
+                            <i class="bi bi-x-circle"></i>
+                            <span class="d-none d-sm-inline ms-1">Скасувати</span>
+                        </NavLink>
+                    </div>
+                </div>
+            </EditForm>
+        </div>
+
+        <div class="card shadow-sm border-0 rounded-3 mt-3">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover align-middle mb-0">
+                        <thead class="table-light text-uppercase small text-secondary">
                             <tr>
-                                <td colspan="2" class="text-center text-muted py-4">
-                                    Немає жодної категорії. Натисніть
-                                    <span class="fw-semibold text-success">«Додати категорію»</span>.
-                                </td>
+                                <th class="px-4 py-3">Назва категорії</th>
+                                <th class="px-4 py-3">Назва майстра</th>
+                                <th class="px-4 py-3 text-end">Дії</th>
                             </tr>
-                        }
-                        else
-                        {
-                            @foreach (var item in categories)
+                        </thead>
+                        <tbody>
+                            @if (categories is null || categories.Count == 0)
                             {
                                 <tr>
-                                    <td class="px-4 py-3">
-                                        <div class="d-flex flex-column">
-                                            <span class="fw-bold">@item.NameCategory</span>                                           
-                                        </div>
+                                    <td colspan="2" class="text-center text-muted py-4">
+                                        Немає жодної категорії. Додайте першу.
                                     </td>
-
-                                    <td class="px-4 py-3 text-end">
-                                        <div class="d-flex flex-wrap justify-content-end gap-2">
-
-                                            <NavLink class="btn btn-sm btn-outline-primary"
-                                                     href="@($"/edit-category/{item.Id}")">
-                                                <i class="bi bi-pencil-square"></i>
-                                                <span class="d-none d-sm-inline ms-1">Редагувати</span>
-                                            </NavLink>
-
-                                            <button type="button"
-                                                    class="btn btn-sm btn-outline-danger"
-                                                    @onclick="() => Delete(item.Id)">
-                                                <i class="bi bi-trash"></i>
-                                                <span class="d-none d-sm-inline ms-1">Видалити</span>
-                                            </button>
-
-                                        </div>
-                                    </td>
-
                                 </tr>
-
                             }
-                        }
-                    </tbody>
-                </table>
+                            else
+                            {
+                                @foreach (var item in categories)
+                                {
+                                    <tr>
+                                        <td class="px-4 py-3 fw-medium">@item.NameCategory</td>
+                                        <td class="px-4 py-3">@item.Masters.FullName</td>
+                                        <td class="px-4 py-3 text-end">
+                                            <div class="d-flex justify-content-end gap-2 flex-wrap">
+                                                <NavLink class="btn btn-outline-primary btn-action"
+                                                         @onclick="() => EditCategory(item.Id)">
+                                                    <i class="bi bi-pencil-square"></i>
+                                                    <span class="d-none d-sm-inline ms-1">Редагувати</span>
+                                                </NavLink>
+                                                <button type="button"
+                                                        class="btn btn-outline-danger btn-action"
+                                                        @onclick="() => DeleteCategory(item.Id)">
+                                                    <i class="bi bi-trash"></i>
+                                                    <span class="d-none d-sm-inline ms-1">Видалити</span>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="d-flex justify-content-center">
-        <EditForm Model="@master" method="post" OnSubmit="HandleValidSubmit"
-                  FormName="InputMaster" class="card shadow-sm border rounded-3 p-4 bg-white" style="width: 100%; max-width: 600px;">
-            <DataAnnotationsValidator />
-            <ValidationSummary class="alert alert-danger small" />
-            <div class="card-body">
-                <h5 class="card-title text-center mb-3 text-dark fw-bold">
-                    @(Id == 0 ? "Додати титолку сторінку терапії" : "Редагувати  титолку сторінку терапії")
-                </h5>
-                              
-                <div class="mb-3">
-                    <label for="InputModel_NameCategory" class="form-label fw-semibold small">
-                        Додати титолку сторінку терапії <span class="text-danger">*</span>
-                    </label>
-                    <InputText @bind-Value="InputMaster.TitlePage" id="InputModel_TitlePage"
-                               class="form-control form-control-sm"
-                               placeholder="Введіть назву..." />
-                    <ValidationMessage For="@(() => InputMaster.TitlePage)" class="text-danger small" />
-                </div>
-                <div class="mb-3">
-                    <label for="InputModel_NameCategory" class="form-label fw-semibold small">
-                        Додати опис сторінки терапії <span class="text-danger">*</span>
-                    </label>
-                    <InputText @bind-Value="InputMaster.DescriptionPage" id="InputModel_DescriptionPage"
-                               class="form-control form-control-sm"
-                               placeholder="Введіть назву..." />
-                    <ValidationMessage For="@(() => InputMaster.DescriptionPage)" class="text-danger small" />
-                </div>
+    </section>
 
-                <div class="d-flex justify-content-end gap-2 mt-3">
-                    <button type="submit" class="btn btn-sm btn-primary px-3">
-                        <i class="bi bi-save"></i> Зберегти
-                    </button>
-                    <NavLink class="btn btn-sm btn-outline-secondary px-3" href="/admin-category">
-                        <i class="bi bi-x-circle"></i> Скасувати
-                    </NavLink>
-                </div>
+    <!-- ====== Секція: Сторінка терапії ====== -->
+    <section class="mb-5">
+        <div class="card shadow-sm border-0 rounded-3">
+            <div class="card-header bg-brand text-white d-flex align-items-center">
+                <i class="bi bi-journal-text me-2"></i>
+                <strong>@(Id == 0 ? "Додати титульну сторінку терапії" : "Редагувати титульну сторінку терапії")</strong>
             </div>
-        </EditForm>
-    </div>
-    <!-- Таблиця в картці -->
-    <div class="card shadow-sm border-0 rounded-3">
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light text-uppercase small text-secondary">
-                        <tr>
-                            <th scope="col" class="px-4 py-3">Назва категорії</th>
-                            <th scope="col" class="px-4 py-3 text-end">Дії</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (pageTherapies == null || pageTherapies.Count == 0)
-                        {
+            <EditForm Model="@pageTherapy" OnValidSubmit="SavePageTherapy">
+                <DataAnnotationsValidator />
+                <div class="card-body">
+                    <ValidationSummary class="alert alert-danger small" />
+
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label for="TitlePage" class="form-label fw-semibold small">
+                                Назва сторінки <span class="text-danger">*</span>
+                            </label>
+                            <InputText id="TitlePage"
+                                       class="form-control form-control-sm"
+                                       @bind-Value="pageTherapy.TitlePage"
+                                       placeholder="Напр., Класичний масаж" />
+                            <ValidationMessage For="@(() => pageTherapy.TitlePage)" class="text-danger small" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Вибрати категорію для сторінки</label><span class="text-danger">*</span><strong style="color:red">@ErrorMessageCategory</strong>
+                            <InputSelect class="form-select" TValue="int" @bind-Value="pageTherapy.CategoryId">
+                                <option value="0">Оберіть категорію</option>
+                                @foreach (var item in categories)
+                                {
+                                    <option value="@item.Id">@item.NameCategory</option>
+                                }
+                            </InputSelect>
+                        </div>
+
+                        <div class="col-12">
+                            <label for="DescriptionPage" class="form-label fw-semibold small">
+                                Опис сторінки <span class="text-danger">*</span>
+                            </label>
+                            <InputTextArea id="DescriptionPage"
+                                           class="form-control form-control-sm"
+                                           @bind-Value="pageTherapy.DescriptionPage"
+                                           rows="3"
+                                           placeholder="Короткий опис..." />
+                            <ValidationMessage For="@(() => pageTherapy.DescriptionPage)" class="text-danger small" />
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 mt-3">
+                        <button type="submit" class="btn btn-primary btn-action">
+                            <i class="bi bi-save"></i>
+                            <span class="d-none d-sm-inline ms-1">Зберегти</span>
+                        </button>
+                        <NavLink class="btn btn-outline-secondary btn-action" @onclick="() => CancelPageTherapy()">
+                            <i class="bi bi-x-circle"></i>
+                            <span class="d-none d-sm-inline ms-1">Скасувати</span>
+                        </NavLink>
+                    </div>
+                </div>
+            </EditForm>
+        </div>
+
+        <div class="card shadow-sm border-0 rounded-3 mt-3">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover align-middle mb-0">
+                        <thead class="table-light text-uppercase small text-secondary">
                             <tr>
-                                <td colspan="2" class="text-center text-muted py-4">
-                                    Немає жодної категорії. Натисніть
-                                    <span class="fw-semibold text-success">«Додати категорію»</span>.
-                                </td>
+                                <th class="px-4 py-3">Назва сторінки</th>
+                                <th class="px-4 py-3">Опис сторінки</th>
+                                <th class="px-4 py-3 text-end">Дії</th>
                             </tr>
-                        }
-                        else
-                        {
-                            @foreach (var item in pageTherapies)
+                        </thead>
+                        <tbody>
+                            @if (pageTherapies is null || pageTherapies.Count == 0)
                             {
                                 <tr>
-                                    <td class="px-4 py-3">
-                                        <div class="d-flex flex-column">
-                                            <span class="fw-bold">@item.TitlePage</span>
-                                        </div>
+                                    <td colspan="3" class="text-center text-muted py-4">
+                                        Немає сторінок терапій. Додайте першу.
                                     </td>
-                                    <td class="px-4 py-3">
-                                        <div class="d-flex flex-column">
-                                            <span class="fw-bold">@item.DescriptionPage</span>
-                                        </div>
-                                    </td>
-
-                                    <td class="px-4 py-3 text-end">
-                                        <div class="d-flex flex-wrap justify-content-end gap-2">
-
-                                            <NavLink class="btn btn-sm btn-outline-primary"
-                                                     href="@($"/edit-category/{item.Id}")">
-                                                <i class="bi bi-pencil-square"></i>
-                                                <span class="d-none d-sm-inline ms-1">Редагувати</span>
-                                            </NavLink>
-
-                                            <button type="button"
-                                                    class="btn btn-sm btn-outline-danger"
-                                                    @onclick="() => Delete(item.Id)">
-                                                <i class="bi bi-trash"></i>
-                                                <span class="d-none d-sm-inline ms-1">Видалити</span>
-                                            </button>
-
-                                        </div>
-                                    </td>
-
                                 </tr>
-
                             }
-                        }
-                    </tbody>
-                </table>
+                            else
+                            {
+                                @foreach (var item in pageTherapies)
+                                {
+                                    <tr>
+                                        <td class="px-4 py-3 fw-medium">@item.TitlePage</td>
+                                        <td class="px-4 py-3 text-muted text-truncate" style="max-width: 520px">@item.DescriptionPage</td>
+                                        <td class="px-4 py-3 text-end">
+                                            <div class="d-flex justify-content-end gap-2 flex-wrap">
+                                                <NavLink class="btn btn-outline-primary btn-action"
+                                                         @onclick="() => EditPageTherapy(item.Id)">
+                                                    <i class="bi bi-pencil-square"></i>
+                                                    <span class="d-none d-sm-inline ms-1">Редагувати</span>
+                                                </NavLink>
+                                                <button type="button"
+                                                        class="btn btn-outline-danger btn-action"
+                                                        @onclick="() => DeletePageTherapy(item.Id)">
+                                                    <i class="bi bi-trash"></i>
+                                                    <span class="d-none d-sm-inline ms-1">Видалити</span>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
-    </div>
+    </section>
+
 </div>
 
 
@@ -340,9 +353,9 @@
     private List<Category> categories = new();
     private List<PageTherapy> pageTherapies = new();
 
-    [SupplyParameterFromForm]
-    private InputModel InputMaster { get; set; } = new();
+    private string ErrorMessageCategory = string.Empty;
 
+    
     protected override async Task OnInitializedAsync()
     {
         masters = await _seedService.GetAllMasterListAsync();
@@ -352,34 +365,89 @@
 
     private async Task HandleValidSubmit()
     {
-        master.FullName = InputMaster.MasterFullName;
-        master.Phone = InputMaster.MasterPhone;
-        category.NameCategory = InputMaster.NameCategory;
-        pageTherapy.TitlePage = InputMaster.TitlePage;
-        pageTherapy.DescriptionPage = InputMaster.DescriptionPage;
+       
 
-        await _seedService.AddSeedAsync(master, category, pageTherapy);
         _navigationManager.NavigateTo("/admin-seed");
     }
 
-    public async Task Delete(int id)
-    {
-
+    private async Task SaveMaster()
+    {       
+        await _seedService.SaveSeedMasterAsync(master);
+        master = new();        
+        masters = await _seedService.GetAllMasterListAsync();
+        categories = await _seedService.GetAllCategoryListAsync();
         StateHasChanged();
     }
 
-    private sealed class InputModel
-    {
-        [Required]
-        public string MasterFullName { get; set; } = "";
-        [Required]
-        public string MasterPhone { get; set; } = "";
-        [Required]
-        public string NameCategory { get; set; } = "";
-        [Required]
-        public string TitlePage { get; set; } = "";
-        [Required]
-        public string DescriptionPage { get; set; } = "";
+    private async Task SaveCategory()
+    {       
+        await _seedService.SaveSeedCategoryAsync(category);
+        category = new();
+        categories = await _seedService.GetAllCategoryListAsync();
+        StateHasChanged();
     }
 
+    private async Task SavePageTherapy()
+    {
+
+        await _seedService.SaveSeedPageTherapyAsync(pageTherapy);
+        pageTherapy = new();
+        pageTherapies = await _seedService.GetAllPageTherapyListAsync();
+        StateHasChanged();
+    }
+
+    private async Task EditMaster(int id)
+    {
+        master = await _seedService.EditMaster(id);
+
+    }
+
+    private async Task EditCategory(int id)
+    {
+        category = await _seedService.EditCategory(id);
+    }
+
+    private async Task EditPageTherapy(int id)
+    {
+        pageTherapy = await _seedService.EditPageTherapy(id);
+    }
+
+    private async Task DeleteMaster(int id)
+    {
+        await _seedService.DeleteMasterAsync(id);
+        masters = await _seedService.GetAllMasterListAsync();
+        StateHasChanged();
+    }
+
+    public async Task DeleteCategory(int id)
+    {
+        await _seedService.DeleteCategoryAsync(id);
+        categories = await _seedService.GetAllCategoryListAsync();
+        StateHasChanged();
+    }
+
+    private async Task DeletePageTherapy(int id)
+    {
+        await _seedService.DeletePageTherapyAsync(id);
+        pageTherapies = await _seedService.GetAllPageTherapyListAsync();
+        StateHasChanged();
+    }
+
+    private void CancelMaster()
+    {
+        master = new();
+        StateHasChanged();
+    }
+
+    private void CancelCategory()
+    {
+        category = new();
+        StateHasChanged();
+    }
+
+    private void CancelPageTherapy()
+    {
+        pageTherapy = new();
+        StateHasChanged();
+    }        
 }
