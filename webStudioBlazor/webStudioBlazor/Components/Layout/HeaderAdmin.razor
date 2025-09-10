@@ -1,0 +1,101 @@
+﻿@implements IDisposable
+@using Microsoft.AspNetCore.Components.Routing
+@inject NavigationManager NavigationManager
+
+<div class="container-fluid position-relative p-0">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm px-4 px-lg-5 py-3">
+        <!-- Logo -->
+        <a href="/" class="navbar-brand d-flex align-items-center gap-2">
+            <img src="img/logo-new.png" alt="Логотип" class="rounded-circle shadow-sm" style="height: 48px; width: 48px; object-fit: cover;">
+            <span class="fs-4 fw-bold text-light">Адмінка</span>
+        </a>
+
+        <!-- Mobile Toggle -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
+                aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Navigation -->
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav ms-auto gap-2">
+                <li class="nav-item">
+                    <NavLink href="/admin-clients" class="nav-link text-light" Match="NavLinkMatch.All" activeClass="active">
+                        Запис клієнтів
+                    </NavLink>
+                </li>
+                <li class="nav-item">
+                    <NavLink href="/admin-home" class="nav-link text-light" Match="NavLinkMatch.All" activeClass="active">
+                        Домашня
+                    </NavLink>
+                </li>
+                <li class="nav-item">
+                    <NavLink href="/admin-about-us" class="nav-link text-light" activeClass="active">
+                        Про нас
+                    </NavLink>
+                </li>
+                <li class="nav-item">
+                    <NavLink href="/admin-cosmetology" class="nav-link text-light" activeClass="active">
+                        Косметологія
+                    </NavLink>
+                </li>
+                <li class="nav-item">
+                    <NavLink href="/admin-massage-therapy" class="nav-link text-light" activeClass="active">
+                        Масажна терапія
+                    </NavLink>
+                </li>
+                <li class="nav-item">
+                    <NavLink href="/admin-event" class="nav-link text-light" activeClass="active">
+                        Події
+                    </NavLink>
+                </li>
+                <li class="nav-item">
+                    <NavLink href="/admin-category" class="nav-link text-light" activeClass="active">
+                        Наповнення категорії
+                    </NavLink>
+                </li>
+
+                <AuthorizeView>
+                    <Authorized>
+                        <li class="nav-item">
+                            <NavLink class="nav-link text-warning fw-bold" href="/">
+                                На сайт
+                            </NavLink>
+                        </li>
+                        <li class="nav-item">
+                            <form action="Account/Logout" method="post">
+                                <AntiforgeryToken />
+                                <input type="hidden" name="ReturnUrl" value="@currentUrl" />
+                                <button type="submit" class="nav-link text-danger">
+                                    <span class="bi bi-box-arrow-left" aria-hidden="true"></span> Вийти
+                                </button>
+                            </form>
+                        </li>
+                    </Authorized>
+                </AuthorizeView>
+            </ul>
+        </div>
+    </nav>
+</div>
+
+@code {
+    private string? currentUrl;
+
+    protected override Task OnInitializedAsync()
+    {
+        currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        NavigationManager.LocationChanged += OnLocationChanged;
+        return Task.CompletedTask;
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
+}
