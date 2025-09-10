@@ -1,0 +1,10 @@
+﻿@page "/admin-about-us"
+@using Microsoft.AspNetCore.Authorization
+@using webStudioBlazor.Components.Layout
+@layout AdminLayout
+@attribute [Authorize(Roles = "Admin")]
+<h3>AdminAboutUs</h3>
+
+@code {
+
+}
