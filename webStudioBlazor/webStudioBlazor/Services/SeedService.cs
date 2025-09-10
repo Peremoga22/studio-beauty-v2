@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
+using System.Diagnostics.Metrics;
+
 using webStudioBlazor.Data;
 using webStudioBlazor.EntityModels;
 
@@ -14,31 +16,31 @@ namespace webStudioBlazor.Services
             _db = db;
         }
 
-        public async Task AddSeedAsync(Master master, Category category, PageTherapy pageTherapy)
+        public async Task SaveSeedMasterAsync(Master master)
         {
             if (master.Id == 0)
             {
                 var result = _db.Masters.Add(master);
                 if (result.State == EntityState.Added)
                 {
-                  await  _db.SaveChangesAsync();
+                    await _db.SaveChangesAsync();
                 }
             }
-            else 
+            else
             {
-                var masterInDbEntuty = _db.Masters.Find(category.Id);
+                var masterInDbEntuty = _db.Masters.Find(master.Id);
                 if (masterInDbEntuty != null)
                 {
                     _db.Masters.Update(master);
                     await _db.SaveChangesAsync();
-                }
-
-                await _db.SaveChangesAsync();
+                }                               
             }
+        }
 
+        public async Task SaveSeedCategoryAsync(Category category)
+        {
             if (category.Id == 0)
-            {
-                category.MasterId = master.Id;
+            {               
                 var result = _db.Categories.Add(category);
                 if (result.State == EntityState.Added)
                 {
@@ -52,14 +54,15 @@ namespace webStudioBlazor.Services
                 {
                     _db.Categories.Update(category);
                     await _db.SaveChangesAsync();
-                }
-
-                await _db.SaveChangesAsync();
+                }                               
             }
+        }
 
+
+        public async Task SaveSeedPageTherapyAsync(PageTherapy pageTherapy)
+        { 
             if (pageTherapy.Id == 0)
-            {
-                pageTherapy.CategoryId = category.Id;
+            {               
                 var result = _db.PageTherapyies.Add(pageTherapy);
                 if (result.State == EntityState.Added)
                 {
@@ -73,10 +76,101 @@ namespace webStudioBlazor.Services
                 {
                     _db.PageTherapyies.Update(pageTherapy);
                     await _db.SaveChangesAsync();
-                }
-
-                await _db.SaveChangesAsync();
+                }                               
             }
+        }
+
+        public async Task SaveCosmetologyTherapyCard(TherapyCard therapyCard)
+        {
+            if (therapyCard.Id == 0)
+            {
+                var result = _db.TherapyCards.Add(therapyCard);
+                if (result.State == EntityState.Added)
+                {
+                    await _db.SaveChangesAsync();
+                }
+                else
+                {
+                    var therapyCardInDbEntuty = _db.TherapyCards.Find(therapyCard.Id);
+                    if (therapyCardInDbEntuty != null)
+                    {
+                        _db.TherapyCards.Update(therapyCard);
+                        await _db.SaveChangesAsync();
+                    }
+                }
+            }
+        }
+
+        public async Task<Master> EditMaster(int masterId)
+        {
+            var result = await _db.Masters.FirstOrDefaultAsync(c => c.Id == masterId);
+            return result;
+        }
+
+        public async Task<Category> EditCategory(int categoryId)
+        {
+            var result = await _db.Categories.FirstOrDefaultAsync(c => c.Id == categoryId);
+            return result;
+        }
+
+        public async Task<PageTherapy> EditPageTherapy(int pageTherapyId)
+        {
+            var result = await _db.PageTherapyies.FirstOrDefaultAsync(c => c.Id == pageTherapyId);
+            return result;
+        }
+
+        public async Task<TherapyCard> EditTherapyCard(int therapyCardId)
+        {
+            var result = _db.TherapyCards.FirstOrDefault(e => e.Id == therapyCardId);
+            return await Task.FromResult(result);
+        }
+
+        public async Task DeleteMasterAsync(int masterId)
+        {
+            var result = await _db.Masters.SingleOrDefaultAsync(c => c.Id == masterId);
+            if (result == null)
+            {
+                return;
+            }
+
+            _db.Masters.Remove(result);
+            await _db.SaveChangesAsync();
+        }
+
+        public async Task DeleteCategoryAsync(int categoryId)
+        {
+            var result = await _db.Categories.SingleOrDefaultAsync(c => c.Id == categoryId);
+            if (result == null)
+            {
+                return;
+            }
+
+            _db.Categories.Remove(result);
+            await _db.SaveChangesAsync();
+        }
+
+        public async Task DeletePageTherapyAsync(int pageTherapyId)
+        {
+            var result = await _db.PageTherapyies.SingleOrDefaultAsync(c => c.Id == pageTherapyId);
+            if (result == null)
+            {
+                return;
+            }
+
+            _db.PageTherapyies.Remove(result);
+            await _db.SaveChangesAsync();
+        }
+
+        public async Task DeleteTCardAsync(int cardId)
+        {
+            var result = await _db.TherapyCards.SingleOrDefaultAsync(e => e.Id == cardId);
+            if (result == null)
+            {
+                return;
+            }
+
+            _db.TherapyCards.Remove(result);
+            await _db.SaveChangesAsync();
         }
 
         public async Task<List<Master>> GetAllMasterListAsync()
@@ -94,6 +188,12 @@ namespace webStudioBlazor.Services
         public async Task<List<PageTherapy>> GetAllPageTherapyListAsync()
         {
             var result = await _db.PageTherapyies.ToListAsync();
+            return result;
+        }
+
+        public async Task<List<TherapyCard>> GetAllTherapyCardListAsync()
+        {
+            var result = await _db.TherapyCards.ToListAsync();
             return result;
         }
     }

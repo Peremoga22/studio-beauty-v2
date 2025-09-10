@@ -1,6 +1,8 @@
 ﻿@page "/edit-seed"
 @page "/edit-seed/{Id:int}"
 
+@using System.Globalization
+@inject IWebHostEnvironment Env
 @inject SeedService _seedService
 @inject NavigationManager _navigationManager
 @using System.ComponentModel.DataAnnotations
@@ -338,6 +340,277 @@
         </div>
     </section>
 
+    <!-- ====== Секція: Сторінка терапії ====== -->
+    <section class="mb-5">
+        <div class="card shadow-sm border-0 rounded-3">
+            <div class="card-header bg-brand text-white d-flex align-items-center">
+                <i class="bi bi-journal-text me-2"></i>
+                <strong>@(Id == 0 ? "Додати титульну сторінку терапії" : "Редагувати титульну сторінку терапії")</strong>
+            </div>
+            <EditForm Model="@pageTherapy" OnValidSubmit="SavePageTherapy">
+                <DataAnnotationsValidator />
+                <div class="card-body">
+                    <ValidationSummary class="alert alert-danger small" />
+
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label for="TitlePage" class="form-label fw-semibold small">
+                                Назва сторінки <span class="text-danger">*</span>
+                            </label>
+                            <InputText id="TitlePage"
+                                       class="form-control form-control-sm"
+                                       @bind-Value="pageTherapy.TitlePage"
+                                       placeholder="Напр., Класичний масаж" />
+                            <ValidationMessage For="@(() => pageTherapy.TitlePage)" class="text-danger small" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Вибрати категорію для сторінки</label><span class="text-danger">*</span><strong style="color:red">@ErrorMessageCategory</strong>
+                            <InputSelect class="form-select" TValue="int" @bind-Value="pageTherapy.CategoryId">
+                                <option value="0">Оберіть категорію</option>
+                                @foreach (var item in categories)
+                                {
+                                    <option value="@item.Id">@item.NameCategory</option>
+                                }
+                            </InputSelect>
+                        </div>
+
+                        <div class="col-12">
+                            <label for="DescriptionPage" class="form-label fw-semibold small">
+                                Опис сторінки <span class="text-danger">*</span>
+                            </label>
+                            <InputTextArea id="DescriptionPage"
+                                           class="form-control form-control-sm"
+                                           @bind-Value="pageTherapy.DescriptionPage"
+                                           rows="3"
+                                           placeholder="Короткий опис..." />
+                            <ValidationMessage For="@(() => pageTherapy.DescriptionPage)" class="text-danger small" />
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 mt-3">
+                        <button type="submit" class="btn btn-primary btn-action">
+                            <i class="bi bi-save"></i>
+                            <span class="d-none d-sm-inline ms-1">Зберегти</span>
+                        </button>
+                        <NavLink class="btn btn-outline-secondary btn-action" @onclick="() => CancelPageTherapy()">
+                            <i class="bi bi-x-circle"></i>
+                            <span class="d-none d-sm-inline ms-1">Скасувати</span>
+                        </NavLink>
+                    </div>
+                </div>
+            </EditForm>
+        </div>
+
+        <div class="card shadow-sm border-0 rounded-3 mt-3">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover align-middle mb-0">
+                        <thead class="table-light text-uppercase small text-secondary">
+                            <tr>
+                                <th class="px-4 py-3">Назва сторінки</th>
+                                <th class="px-4 py-3">Опис сторінки</th>
+                                <th class="px-4 py-3 text-end">Дії</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (pageTherapies is null || pageTherapies.Count == 0)
+                            {
+                                <tr>
+                                    <td colspan="3" class="text-center text-muted py-4">
+                                        Немає сторінок терапій. Додайте першу.
+                                    </td>
+                                </tr>
+                            }
+                            else
+                            {
+                                @foreach (var item in pageTherapies)
+                                {
+                                    <tr>
+                                        <td class="px-4 py-3 fw-medium">@item.TitlePage</td>
+                                        <td class="px-4 py-3 text-muted text-truncate" style="max-width: 520px">@item.DescriptionPage</td>
+                                        <td class="px-4 py-3 text-end">
+                                            <div class="d-flex justify-content-end gap-2 flex-wrap">
+                                                <NavLink class="btn btn-outline-primary btn-action"
+                                                         @onclick="() => EditPageTherapy(item.Id)">
+                                                    <i class="bi bi-pencil-square"></i>
+                                                    <span class="d-none d-sm-inline ms-1">Редагувати</span>
+                                                </NavLink>
+                                                <button type="button"
+                                                        class="btn btn-outline-danger btn-action"
+                                                        @onclick="() => DeletePageTherapy(item.Id)">
+                                                    <i class="bi bi-trash"></i>
+                                                    <span class="d-none d-sm-inline ms-1">Видалити</span>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+     <section class="mb-5">
+        <div class="card shadow-sm border-0 rounded-3">
+            <div class="card-header bg-brand text-white d-flex align-items-center">
+                <i class="bi bi-journal-text me-2"></i>
+                <strong>@(Id == 0 ? "Додати картку " : "Редагувати картку")</strong>
+            </div>
+            <EditForm Model="@therapyCard"
+                      OnValidSubmit="SaveTherapyCardAsync"
+                      class="card form-card">
+
+                <DataAnnotationsValidator />
+                <ValidationSummary class="alert alert-danger small" />
+                 <div class="row g-3">
+                    <div class="card-body">
+                        <h5 class="card-title text-center mb-3">
+                            @(therapyCard.Id == 0 ? "Додати нову картку" : "Редагувати картку")
+                        </h5>
+
+                        <div class="mb-3">
+                            <label for="TitleCard" class="form-label form-label-compact">
+                                Назва картки <span class="text-danger">*</span>
+                            </label>
+                            <InputText id="TitleCard"
+                                       @bind-Value="therapyCard.TitleCard"
+                                       class="form-control form-control-sm"
+                                       placeholder="Введіть назву..." />
+                            <ValidationMessage For="@(() => therapyCard.TitleCard)" class="text-danger small" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="DescriptionCard" class="form-label form-label-compact">
+                                Опис картки <span class="text-danger">*</span>
+                            </label>
+                            <InputText id="DescriptionCard"
+                                       @bind-Value="therapyCard.DescriptionCard"
+                                       class="form-control form-control-sm"
+                                       placeholder="Короткий опис..." />
+                            <ValidationMessage For="@(() => therapyCard.DescriptionCard)" class="text-danger small" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="Price" class="form-label form-label-compact">
+                                Ціна за послугу <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text">₴</span>
+                                <InputNumber id="Price"
+                                             @bind-Value="therapyCard.Price"
+                                             class="form-control"
+                                             placeholder="0" />
+                            </div>
+                            <small class="text-muted">Вкажіть вартість у гривнях.</small>
+                            <ValidationMessage For="@(() => therapyCard.Price)" class="text-danger small" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Вибрати категорію для сторінки</label><span class="text-danger">*</span><strong style="color:red">@ErrorMessageCategory</strong>
+                            <InputSelect class="form-select" TValue="int" @bind-Value="therapyCard.CategoryId">
+                                <option value="0">Оберіть категорію</option>
+                                @foreach (var item in categories)
+                                {
+                                    <option value="@item.Id">@item.NameCategory</option>
+                                }
+                            </InputSelect>
+                        </div>
+
+                        <div class="mb-0">
+                            <label class="form-label form-label-compact">Фото (jpg/jpeg/png)</label>
+                            <InputFile OnChange="OnFileSelected"
+                                       class="form-control form-control-sm"
+                                       accept=".jpg,.jpeg,.png" />
+
+                            @if (!string.IsNullOrEmpty(therapyCard.ImagePath))
+                            {
+                                <div class="mt-3 text-left">
+                                    <img src="@therapyCard.ImagePath"
+                                         alt="preview"
+                                         class="img-thumb-soft img-fluid"
+                                         style="max-width: 200px; max-height: 200px; object-fit: cover; border-radius: 0.5rem;" />
+                                </div>
+                            }
+                        </div>
+                    </div>
+                 </div>
+               
+                <div class="d-flex justify-content-end gap-2 mt-3">
+                    <p style="color:red">@ErrorMessage</p>
+                    @if (therapyCard.Id > 0)
+                    {
+                        <button type="button"
+                                class="btn btn-outline-danger btn-action"
+                                @onclick="(() => DeleteTherapyCardAsync(therapyCard.Id))">
+                            <i class="bi bi-trash me-1"></i>
+                            <span class="d-none d-sm-inline ms-1">Видалити</span>
+                        </button>
+                    }
+                    <button type="submit" class="btn btn-primary btn-action">
+                        <i class="bi bi-save me-1"></i>
+                        <span class="d-none d-sm-inline ms-1">Зберегти</span>
+                    </button>
+
+                    <NavLink class="btn btn-outline-secondary btn-action"
+                             href="/edit-cosmetology">
+                        <i class="bi bi-x-circle me-1"></i>
+                        <span class="d-none d-sm-inline ms-1">Скасувати</span>
+                    </NavLink>
+                </div>
+
+            </EditForm>
+        </div>
+     </section>
+
+    <!-- Таблиця в картці -->
+    <section class="pt-3">
+        <div class="container">      
+            <figure class="figure m-0">
+                <div class="row g-2">
+                    @foreach (var item in therapyCards)
+                    {
+                        <div class="col-6 col-lg-3">
+                            <div class="card shadow-sm border-0 rounded-3 product-card h-100">
+                                <div class="ratio ratio-1x1">
+                                    <img src="@item.ImagePath"
+                                         alt="@item.TitleCard"
+                                         class="card-img-top object-fit-cover"
+                                         loading="lazy">
+                                </div>
+                                <div class="card-body d-flex flex-column p-2">
+                                    <h6 class="card-title mb-1 text-dark fw-semibold text-truncate"
+                                        title="@item.TitleCard">
+                                        @item.TitleCard
+                                    </h6>
+                                    <p class="card-text text-muted mb-2 small line-clamp-2"
+                                       title="@item.DescriptionCard">
+                                        @item.DescriptionCard
+                                    </p>
+                                    <div class="mt-auto d-flex flex-column flex-sm-row justify-content-end gap-2">
+                                        <button @onclick="(() => EdittherapyCard(item.Id))"
+                                                class="btn btn-outline-primary w-100 w-sm-auto">
+                                            <i class="bi bi-pencil-square me-1"></i> Редагувати
+                                        </button>
+
+                                        <button class="btn btn-dark w-100 w-sm-auto">
+                                            @item.Price.ToString("C0", new System.Globalization.CultureInfo("uk-UA"))
+                                        </button>
+                                    </div>
+
+
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </figure>
+        </div>
+    </section>
+   
 </div>
 
 
@@ -349,25 +622,30 @@
     private Master master = new();
     private Category category = new();
     private PageTherapy pageTherapy = new();
+    private TherapyCard therapyCard = new();
+
     private List<Master> masters = new();
     private List<Category> categories = new();
     private List<PageTherapy> pageTherapies = new();
+    private List<TherapyCard> therapyCards = new();
 
     private string ErrorMessageCategory = string.Empty;
+    private string ErrorMessage = string.Empty;
+    private IBrowserFile? uploadedFile;
+    private const long maxSize = 5 * 1024 * 1024;
+    private const string UploadsSubfolder = "uploads/cosmetology";
 
-    
     protected override async Task OnInitializedAsync()
     {
         masters = await _seedService.GetAllMasterListAsync();
         categories = await _seedService.GetAllCategoryListAsync();
         pageTherapies = await _seedService.GetAllPageTherapyListAsync();
+        therapyCards = await _seedService.GetAllTherapyCardListAsync();
     }
 
-    private async Task HandleValidSubmit()
+    private void OnFileSelected(InputFileChangeEventArgs e)
     {
-       
-
-        _navigationManager.NavigateTo("/admin-seed");
+        uploadedFile = e.File;
     }
 
     private async Task SaveMaster()
@@ -376,6 +654,7 @@
         master = new();        
         masters = await _seedService.GetAllMasterListAsync();
         categories = await _seedService.GetAllCategoryListAsync();
+        therapyCards = await _seedService.GetAllTherapyCardListAsync();
         StateHasChanged();
     }
 
@@ -396,6 +675,63 @@
         StateHasChanged();
     }
 
+    private async Task SaveTherapyCardAsync()
+    {
+        if (uploadedFile is not null)
+        {
+            var ext = Path.GetExtension(uploadedFile.Name)?.ToLowerInvariant();
+            var allowed = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { ".jpg", ".jpeg", ".png", ".webp" };
+            if (string.IsNullOrWhiteSpace(ext) || !allowed.Contains(ext))
+                throw new InvalidOperationException("Дозволені формати: JPG, JPEG, PNG, WEBP.");
+
+            if (uploadedFile.Size > maxSize)
+                throw new InvalidOperationException("Файл завеликий (максимум 5 МБ).");
+
+            var webRoot = Env.WebRootPath ?? throw new InvalidOperationException("WebRootPath недоступний.");
+
+            var safeSubfolder = (UploadsSubfolder ?? "uploads")
+                .Trim()
+                .TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+
+            // Захист від '..' у шляху
+            if (safeSubfolder.Contains(".."))
+                throw new InvalidOperationException("Некоректний підкаталог для завантажень.");
+
+            var physicalFolder = Path.Combine(webRoot, safeSubfolder);
+            Directory.CreateDirectory(physicalFolder);
+
+            var fileName = $"{Guid.NewGuid():N}{ext}";
+            var physicalPath = Path.Combine(physicalFolder, fileName);
+
+            await using (var fs = new FileStream(physicalPath, FileMode.Create, FileAccess.Write, FileShare.Read, 81920, useAsync: true))
+            {
+                await uploadedFile.OpenReadStream(maxSize).CopyToAsync(fs);
+            }
+
+            //  Якщо був старий файл — пробуємо видалити
+            if (!string.IsNullOrEmpty(therapyCard.ImagePath))
+            {
+                var oldRel = therapyCard.ImagePath.TrimStart('/', '\\')
+                    .Replace('/', Path.DirectorySeparatorChar);
+
+                // захист від '..'
+                if (!oldRel.Contains(".."))
+                {
+                    var oldPhysical = Path.Combine(webRoot, oldRel);
+                    try { if (System.IO.File.Exists(oldPhysical)) System.IO.File.Delete(oldPhysical); } catch { /* TODO: лог */ }
+                }
+            }
+
+            //  Формуємо URL без Path.Combine
+            therapyCard.ImagePath = $"/{safeSubfolder.Replace("\\", "/")}/{fileName}";
+        }
+
+        await _seedService.SaveCosmetologyTherapyCard(therapyCard);
+        therapyCards = await _seedService.GetAllTherapyCardListAsync();
+        therapyCard = new();
+        StateHasChanged();
+    }
+
     private async Task EditMaster(int id)
     {
         master = await _seedService.EditMaster(id);
@@ -410,6 +746,11 @@
     private async Task EditPageTherapy(int id)
     {
         pageTherapy = await _seedService.EditPageTherapy(id);
+    }
+
+    private async Task EdittherapyCard(int id)
+    {
+        therapyCard = await _seedService.EditTherapyCard(id);
     }
 
     private async Task DeleteMaster(int id)
@@ -431,6 +772,35 @@
         await _seedService.DeletePageTherapyAsync(id);
         pageTherapies = await _seedService.GetAllPageTherapyListAsync();
         StateHasChanged();
+    }
+
+    private async Task DeleteTherapyCardAsync(int cardId)
+    {
+        try
+        {
+            if (!string.IsNullOrEmpty(therapyCard.ImagePath))
+            {
+                var webRoot = Env.WebRootPath ?? throw new InvalidOperationException("WebRootPath недоступний.");
+                var relative = therapyCard.ImagePath.TrimStart('/').Replace('/', Path.DirectorySeparatorChar);
+                var physicalPath = Path.Combine(webRoot, relative);
+
+                if (System.IO.File.Exists(physicalPath))
+                {
+                    System.IO.File.Delete(physicalPath);
+                }
+
+                await _seedService.DeleteTCardAsync(cardId);
+
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Помилка при видаленні: {ex.Message}";
+        }
+              
+        therapyCards = await _seedService.GetAllTherapyCardListAsync();
+        therapyCard = new();
+        this.StateHasChanged();
     }
 
     private void CancelMaster()
