@@ -7,14 +7,15 @@
 
 @foreach (var item in cosmetologyTherapyCards)
 {
+    var page = pageTherapies.FirstOrDefault(p => p.TitlePage == "Косметологія");  @* =============> //ToDo:"add field for table img or video" *@
     <section class="text-center pt-32 pb-12 px-4">
-    <h1 class="text-4xl font-extrabold mb-4" style="color: #f8b7d8;">
-      @item.Categories.PageTherapy.FirstOrDefault()?.TitlePage 
-    </h1>
-    <p class="text-gray-700 text-lg max-w-2xl mx-auto">
-      @item.Categories.PageTherapy.FirstOrDefault()?.DescriptionPage 
-    </p>
-</section>
+        <h1 class="text-4xl font-extrabold mb-4" style="color: #f8b7d8;">
+            @(page?.TitlePage ?? "Без сторінки")
+        </h1>
+        <p class="text-gray-700 text-lg max-w-2xl mx-auto">
+            @(page?.DescriptionPage ?? "Без сторінки")
+        </p>
+    </section>
     <section class="pt-3">
         <div class="container">
             <nav aria-label="breadcrumb">

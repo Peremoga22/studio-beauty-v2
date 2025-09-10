@@ -345,120 +345,6 @@
         </div>
     </section>
 
-    <!-- ====== Секція: Сторінка терапії ====== -->
-    <section class="mb-5">
-        <div class="card shadow-sm border-0 rounded-3">
-            <div class="card-header bg-brand text-white d-flex align-items-center">
-                <i class="bi bi-journal-text me-2"></i>
-                <strong>@(Id == 0 ? "Додати титульну сторінку терапії" : "Редагувати титульну сторінку терапії")</strong>
-            </div>
-            <EditForm Model="@pageTherapy" OnValidSubmit="SavePageTherapy">
-                <DataAnnotationsValidator />
-                <div class="card-body">
-                    <ValidationSummary class="alert alert-danger small" />
-
-                    <div class="row g-3">
-                        <div class="col-12">
-                            <label for="TitlePage" class="form-label fw-semibold small">
-                                Назва сторінки <span class="text-danger">*</span>
-                            </label>
-                            <InputText id="TitlePage"
-                                       class="form-control form-control-sm"
-                                       @bind-Value="pageTherapy.TitlePage"
-                                       placeholder="Напр., Класичний масаж" />
-                            <ValidationMessage For="@(() => pageTherapy.TitlePage)" class="text-danger small" />
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Вибрати категорію для сторінки</label><span class="text-danger">*</span><strong style="color:red">@ErrorMessageCategory</strong>
-                            <InputSelect class="form-select" TValue="int" @bind-Value="pageTherapy.CategoryId">
-                                <option value="0">Оберіть категорію</option>
-                                @foreach (var item in categories)
-                                {
-                                    <option value="@item.Id">@item.NameCategory</option>
-                                }
-                            </InputSelect>
-                        </div>
-
-                        <div class="col-12">
-                            <label for="DescriptionPage" class="form-label fw-semibold small">
-                                Опис сторінки <span class="text-danger">*</span>
-                            </label>
-                            <InputTextArea id="DescriptionPage"
-                                           class="form-control form-control-sm"
-                                           @bind-Value="pageTherapy.DescriptionPage"
-                                           rows="3"
-                                           placeholder="Короткий опис..." />
-                            <ValidationMessage For="@(() => pageTherapy.DescriptionPage)" class="text-danger small" />
-                        </div>
-                    </div>
-
-                    <div class="d-flex justify-content-end gap-2 mt-3">
-                        <button type="submit" class="btn btn-primary btn-action">
-                            <i class="bi bi-save"></i>
-                            <span class="d-none d-sm-inline ms-1">Зберегти</span>
-                        </button>
-                        <NavLink class="btn btn-outline-secondary btn-action" @onclick="() => CancelPageTherapy()">
-                            <i class="bi bi-x-circle"></i>
-                            <span class="d-none d-sm-inline ms-1">Скасувати</span>
-                        </NavLink>
-                    </div>
-                </div>
-            </EditForm>
-        </div>
-
-        <div class="card shadow-sm border-0 rounded-3 mt-3">
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-sm table-hover align-middle mb-0">
-                        <thead class="table-light text-uppercase small text-secondary">
-                            <tr>
-                                <th class="px-4 py-3">Назва сторінки</th>
-                                <th class="px-4 py-3">Опис сторінки</th>
-                                <th class="px-4 py-3 text-end">Дії</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @if (pageTherapies is null || pageTherapies.Count == 0)
-                            {
-                                <tr>
-                                    <td colspan="3" class="text-center text-muted py-4">
-                                        Немає сторінок терапій. Додайте першу.
-                                    </td>
-                                </tr>
-                            }
-                            else
-                            {
-                                @foreach (var item in pageTherapies)
-                                {
-                                    <tr>
-                                        <td class="px-4 py-3 fw-medium">@item.TitlePage</td>
-                                        <td class="px-4 py-3 text-muted text-truncate" style="max-width: 520px">@item.DescriptionPage</td>
-                                        <td class="px-4 py-3 text-end">
-                                            <div class="d-flex justify-content-end gap-2 flex-wrap">
-                                                <NavLink class="btn btn-outline-primary btn-action"
-                                                         @onclick="() => EditPageTherapy(item.Id)">
-                                                    <i class="bi bi-pencil-square"></i>
-                                                    <span class="d-none d-sm-inline ms-1">Редагувати</span>
-                                                </NavLink>
-                                                <button type="button"
-                                                        class="btn btn-outline-danger btn-action"
-                                                        @onclick="() => DeletePageTherapy(item.Id)">
-                                                    <i class="bi bi-trash"></i>
-                                                    <span class="d-none d-sm-inline ms-1">Видалити</span>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                }
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </section>
-
      <section class="mb-5">
         <div class="card shadow-sm border-0 rounded-3">
             <div class="card-header bg-brand text-white d-flex align-items-center">
@@ -524,7 +410,7 @@
                                 }
                             </InputSelect>
                         </div>
-
+                        
                         <div class="mb-0">
                             <label class="form-label form-label-compact">Фото (jpg/jpeg/png)</label>
                             <InputFile OnChange="OnFileSelected"
@@ -538,6 +424,21 @@
                                          alt="preview"
                                          class="img-thumb-soft img-fluid"
                                          style="max-width: 200px; max-height: 200px; object-fit: cover; border-radius: 0.5rem;" />
+                                </div>
+                            }                           
+                        </div>
+             @* =============> //ToDo:"add field for table img or video" *@
+                        <div class="mb-0">
+                            <label class="form-label form-label-compact">Додайте силку на відео</label>
+                            <InputText id="ImageUrl"
+                                       @bind-Value="therapyCard.ImagePath"
+                                       class="form-control form-control-sm"
+                                       placeholder="Вставте: url video" />
+
+                            @if (!string.IsNullOrEmpty(therapyCard.ImagePath))
+                            {
+                                <div class="ratio ratio-16x9">
+                                    <lite-youtube videoid="@therapyCard.ImagePath" style="width: 100%; height: auto;" title="Комплексний масаж спини"></lite-youtube>
                                 </div>
                             }
                         </div>
@@ -585,7 +486,7 @@
                                          alt="@item.TitleCard"
                                          class="card-img-top object-fit-cover"
                                          loading="lazy">
-                                </div>
+                                </div>                               
                                 <div class="card-body d-flex flex-column p-2">
                                     <h6 class="card-title mb-1 text-dark fw-semibold text-truncate"
                                         title="@item.TitleCard">
@@ -639,6 +540,7 @@
     private IBrowserFile? uploadedFile;
     private const long maxSize = 5 * 1024 * 1024;
     private const string UploadsSubfolder = "uploads/cosmetology";
+    public enum MediaMode { Image, Video }
 
     protected override async Task OnInitializedAsync()
     {

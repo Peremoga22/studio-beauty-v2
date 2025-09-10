@@ -1,6 +1,63 @@
 ﻿@page "/massage-therapy"
-<h3>MassageTherapy</h3>
+
+@inject SeedService _seedService
+
+
+<h3 style="padding-top: 7%;"></h3>
+@{
+    var page = pageTherapies.FirstOrDefault(p => p.TitlePage == "Масаж");  @* =============> //ToDo:"add field for table img or video" *@
+    <section class="text-center pt-32 pb-12 px-4">
+        <h1 class="text-4xl font-extrabold mb-4" style="color: #f8b7d8;">
+            @(page?.TitlePage ?? "Без сторінки")
+        </h1>
+        <p class="text-gray-700 text-lg max-w-2xl mx-auto">
+            @(page?.DescriptionPage ?? "Без сторінки")
+        </p>
+    </section>
+}
+@foreach (var item in massageTherapyCards.Where(c => c.CategoryId == 5))  //ToDo:"add field for table img or video"
+{   
+    <section class="pt-3">
+        <div class="container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb bg-white p-2 mb-5 rounded shadow-sm">
+                    <li class="breadcrumb-item"><a href="/" style="color: #f8b7d8;">Домашня сторінка</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Косметологія</li>
+                </ol>
+            </nav>
+            <figure class="figure m-0">
+                <div class="row g-2">
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card h-100 shadow-lg" target="_blank">
+                            <div class="ratio ratio-16x9">
+                                <lite-youtube videoid="@item.ImagePath" style="width: 100%; height: auto;" title="@item.ImagePath"></lite-youtube>
+                            </div>
+                            <div class="card-body text-center">
+                                <h5 class="card-title" style="color: #f8b7d8;">@item.TitleCard</h5>
+                                <p class="card-text">@item.DescriptionCard</p>
+                            </div>
+                            <div class="card-footer bg-transparent border-0 text-center  mt-auto">
+                                <i class="bi bi-cash-stack me-1"></i>
+                                @item.Price.ToString("C0", new System.Globalization.CultureInfo("uk-UA"))
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </figure>
+        </div>
+    </section>
+}
+
 
 @code {
+    private List<TherapyCard> massageTherapyCards = new();
+    private List<Category> categories = new();
+    private List<PageTherapy> pageTherapies = new();
 
+    protected override async Task OnInitializedAsync()
+    {
+        massageTherapyCards = await _seedService.GetAllTherapyCardListAsync();
+        categories = await _seedService.GetAllCategoryListAsync();
+        pageTherapies = await _seedService.GetAllPageTherapyListAsync();
+    }
 }
