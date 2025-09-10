@@ -14,6 +14,8 @@
 @inject ILogger<Register> Logger
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
+@inject RoleManager<IdentityRole> RoleManager
+@inject IConfiguration Configuration
 
 <PageTitle>Register</PageTitle>
 
@@ -64,6 +66,12 @@
     private string? ReturnUrl { get; set; }
 
     private string? Message => identityErrors is null ? null : $"Error: {string.Join(", ", identityErrors.Select(error => error.Description))}";
+    private string? adminEmail;
+
+    protected override void OnInitialized()
+    {
+        adminEmail = Configuration.GetValue<string>("Admin:Login");
+    }
 
     public async Task RegisterUser(EditContext editContext)
     {
@@ -78,6 +86,34 @@
         {
             identityErrors = result.Errors;
             return;
+        }
+        else
+        {
+            var roleResult = await RoleManager.FindByNameAsync("Admin");
+            if (roleResult == null)
+            {
+                await RoleManager.CreateAsync(new IdentityRole("Admin"));
+            }
+
+            var currentUser = await UserManager.FindByEmailAsync(Input.Email);
+            if (currentUser.Email == adminEmail)
+            {
+                var isInRole = await UserManager.IsInRoleAsync(currentUser, "Admin");
+                if (!isInRole)
+                {
+                    await UserManager.AddToRoleAsync(currentUser, "Admin");
+                    await SignInManager.RefreshSignInAsync(currentUser);
+                }
+            }
+            // else
+            // {
+            //     var isInRole = await UserManager.IsInRoleAsync(currentUser, "User");
+            //     if (!isInRole)
+            //     {
+            //         await UserManager.AddToRoleAsync(currentUser, "User");
+            //         await SignInManager.RefreshSignInAsync(currentUser);
+            //     }
+            // }
         }
 
         Logger.LogInformation("User created a new account with password.");

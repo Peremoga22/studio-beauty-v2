@@ -1,0 +1,19 @@
+﻿@page "/admin-clients"
+@using Microsoft.AspNetCore.Authorization
+@using webStudioBlazor.Components.Layout
+
+@layout AdminLayout
+@using System.Globalization
+@inject NavigationManager _navigationManager
+@rendermode InteractiveServer
+@attribute [Authorize(Roles = "Admin")]
+
+
+<h3 style="padding-top: 2%;"></h3>
+<div class="container mt-4">
+    <h3 style="color:hotpink">Записи клієнтів</h3>
+</div>
+
+@code {
+
+}

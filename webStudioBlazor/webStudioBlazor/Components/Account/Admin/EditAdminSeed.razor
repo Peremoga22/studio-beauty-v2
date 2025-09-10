@@ -6,9 +6,14 @@
 @inject SeedService _seedService
 @inject NavigationManager _navigationManager
 @using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Authorization
+@using webStudioBlazor.Components.Layout
 @using webStudioBlazor.EntityModels
 @using webStudioBlazor.Services
+@layout AdminLayout
+@inject NavigationManager _navigationManager
 @rendermode InteractiveServer
+@attribute [Authorize(Roles = "Admin")]
 
 <div class="container my-4">
 

@@ -1,8 +1,14 @@
 ﻿@page "/admin-seed"
+@using Microsoft.AspNetCore.Authorization
+@using webStudioBlazor.Components.Layout
 @using webStudioBlazor.EntityModels
 @using webStudioBlazor.Services
 @inject SeedService _seedService
-
+@layout AdminLayout
+@using System.Globalization
+@inject NavigationManager _navigationManager
+@rendermode InteractiveServer
+@attribute [Authorize(Roles = "Admin")]
 
 <div class="container my-4">
     <h3 class="mb-3 fw-bold text-primary"> Наповнення послуг</h3>
@@ -22,7 +28,7 @@
                  href="/edit-seed">
 
             <i class="bi bi-plus-lg"></i>
-            <span class="d-none d-sm-inline ms-1">Додати seed</span>
+            <span class="d-none d-sm-inline ms-1">Додати наповнення даних</span>
         </NavLink>
     </div>
     <!-- Таблиця в картці -->
@@ -33,7 +39,7 @@
                     <thead class="table-light text-uppercase small text-secondary">
                         <tr>
                             <th scope="col" class="px-4 py-3">Назва категорії</th>
-                            <th scope="col" class="px-4 py-3 text-end">Дії</th>
+                            <th scope="col" class="px-4 py-3 text-end"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -58,7 +64,7 @@
                                         </div>
                                     </td>
 
-                                    <td class="px-4 py-3 text-end">
+                                   @*  <td class="px-4 py-3 text-end">
                                         <div class="d-flex flex-wrap justify-content-end gap-2">
 
                                             <NavLink class="btn btn-sm btn-outline-primary"
@@ -75,7 +81,7 @@
                                             </button>
 
                                         </div>
-                                    </td>
+                                    </td> *@
 
                                 </tr>
 
@@ -94,7 +100,7 @@
                     <thead class="table-light text-uppercase small text-secondary">
                         <tr>
                             <th scope="col" class="px-4 py-3">Назва категорії</th>
-                            <th scope="col" class="px-4 py-3 text-end">Дії</th>
+                            <th scope="col" class="px-4 py-3 text-end"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -114,7 +120,7 @@
                                 <tr>
                                     <td class="px-4 py-3 fw-medium">@item.NameCategory</td>
                                     <td class="px-4 py-3 text-end">
-                                        <div class="d-flex flex-wrap justify-content-end gap-2">
+                                       @*  <div class="d-flex flex-wrap justify-content-end gap-2">
 
                                             <NavLink class="btn btn-sm btn-outline-primary"
                                                      href="@($"/edit-category/{item.Id}")">
@@ -129,7 +135,7 @@
                                                 <span class="d-none d-sm-inline ms-1">Видалити</span>
                                             </button>
 
-                                        </div>
+                                        </div> *@
                                     </td>
                                 </tr>
 
@@ -148,7 +154,7 @@
                     <thead class="table-light text-uppercase small text-secondary">
                         <tr>
                             <th scope="col" class="px-4 py-3">Назва категорії</th>
-                            <th scope="col" class="px-4 py-3 text-end">Дії</th>
+                            <th scope="col" class="px-4 py-3 text-end"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -173,7 +179,7 @@
                                         </div>
                                     </td>
 
-                                    <td class="px-4 py-3 text-end">
+                                   @*  <td class="px-4 py-3 text-end">
                                         <div class="d-flex justify-content-end gap-2">
                                             <NavLink class="btn btn-sm btn-outline-primary"
                                                      href="@($"/edit-category/{item.Id}")">
@@ -188,7 +194,7 @@
                                                 <span class="d-none d-sm-inline ms-1">Видалити</span>
                                             </button>
                                         </div>
-                                    </td>
+                                    </td> *@
                                 </tr>
 
                                
