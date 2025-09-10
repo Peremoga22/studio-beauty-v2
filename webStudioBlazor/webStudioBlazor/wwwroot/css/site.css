@@ -1,0 +1,386 @@
+@import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
+
+html, body {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+a, .btn-link {
+    color: #0366d6;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
+}
+
+app {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.top-row {
+    height: 3.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.main {
+    flex: 1;
+}
+
+    .main .top-row {
+        background-color: #f7f7f7;
+        border-bottom: 1px solid #d6d5d5;
+        justify-content: flex-end;
+    }
+
+        .main .top-row > a, .main .top-row .btn-link {
+            white-space: nowrap;
+            margin-left: 1.5rem;
+        }
+
+.main .top-row a:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sidebar {
+    background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+}
+
+    .sidebar .top-row {
+        background-color: rgba(0,0,0,0.4);
+    }
+
+    .sidebar .navbar-brand {
+        font-size: 1.1rem;
+    }
+
+    .sidebar .oi {
+        width: 2rem;
+        font-size: 1.1rem;
+        vertical-align: text-top;
+        top: -2px;
+    }
+
+    .sidebar .nav-item {
+        font-size: 0.9rem;
+        padding-bottom: 0.5rem;
+    }
+
+        .sidebar .nav-item:first-of-type {
+            padding-top: 1rem;
+        }
+
+        .sidebar .nav-item:last-of-type {
+            padding-bottom: 1rem;
+        }
+
+        .sidebar .nav-item a {
+            color: #d7d7d7;
+            border-radius: 4px;
+            height: 3rem;
+            display: flex;
+            align-items: center;
+            line-height: 3rem;
+        }
+
+            .sidebar .nav-item a.active {
+                background-color: rgba(255,255,255,0.25);
+                color: white;
+            }
+
+            .sidebar .nav-item a:hover {
+                background-color: rgba(255,255,255,0.1);
+                color: white;
+            }
+
+.content {
+    padding-top: 1.1rem;
+}
+
+.navbar-toggler {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.valid.modified:not([type=checkbox]) {
+    outline: 1px solid #26b050;
+}
+
+.invalid {
+    outline: 1px solid red;
+}
+
+.validation-message {
+    color: red;
+}
+
+#blazor-error-ui {
+    background: lightyellow;
+    bottom: 0;
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+    display: none;
+    left: 0;
+    padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+}
+
+#blazor-error-ui .dismiss {
+    cursor: pointer;
+    position: absolute;
+    right: 0.75rem;
+    top: 0.5rem;
+}
+
+@media (max-width: 767.98px) {
+    .main .top-row:not(.auth) {
+        display: none;
+    }
+
+    .main .top-row.auth {
+        justify-content: space-between;
+    }
+
+    .main .top-row a, .main .top-row .btn-link {
+        margin-left: 0;
+    }
+}
+
+@media (min-width: 768px) {
+    app {
+        flex-direction: row;
+    }
+
+    .sidebar {
+        width: 250px;
+        height: 100vh;
+        position: sticky;
+        top: 0;
+    }
+
+    .main .top-row {
+        position: sticky;
+        top: 0;
+    }
+
+    .main > div {
+        padding-left: 2rem !important;
+        padding-right: 1.5rem !important;
+    }
+
+    .navbar-toggler {
+        display: none;
+    }
+
+    .sidebar .collapse {
+        /* Never collapse the sidebar for wide screens */
+        display: block;
+    }    
+}
+
+@media (min-width: 800px) {
+}
+.nav-link.active {
+    border-bottom: 2px solid #0d6efd;
+    color: #0d6efd !important;
+    font-weight: 600;
+}
+
+.text-light-pink {
+    color: #f8b7d8 !important;
+}
+
+
+/*.product-card .object-fit-cover {
+    object-fit: cover;
+}
+
+.line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3; 
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.bg-primary-subtle { 
+    background-color: #e8f0ff;
+}*/
+
+/*.product-card .object-fit-cover {
+    object-fit: cover;
+}
+
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}*/
+
+/* ====== EditCosmetology.razor.css (або site.css) ====== */
+
+/* Заголовки & кольори */
+.page-title {
+    color: #0d6efd;
+    font-weight: 700;
+}
+
+.section-title {
+    font-weight: 600;
+    color: #334155;
+}
+
+/* Breadcrumb як картка */
+.breadcrumb-card {
+    background: #fff;
+    border-radius: .75rem;
+    padding: .75rem 1rem;
+    box-shadow: 0 4px 14px rgba(15,23,42,.06);
+}
+
+.link-accent {
+    color: #f06292;
+    text-decoration: none;
+}
+
+    .link-accent:hover {
+        color: #e91e63;
+    }
+
+/* Форми-картки */
+.form-card {
+    border: 0;
+    border-radius: .9rem;
+    box-shadow: 0 4px 16px rgba(15,23,42,.08);
+    overflow: hidden;
+}
+
+.form-label-compact {
+    font-weight: 600;
+    font-size: .85rem;
+    color: #334155;
+}
+
+/* Зображення прев’ю */
+.img-thumb-soft {
+    max-height: 200px;
+    border-radius: .5rem;
+    object-fit: contain;
+    background: #f8fafc;
+    padding: .25rem;
+    box-shadow: 0 2px 12px rgba(15,23,42,.06);
+}
+
+/* Картки списку */
+.product-card .object-fit-cover {
+    object-fit: cover;
+}
+
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+
+
+/* Дрібні покращення */
+.card-title {
+    color: #1f2937;
+}
+
+.btn i {
+    line-height: 1;
+}
+
+.img-thumb-soft {
+    max-width: 260px;
+    max-height: 260px;
+    object-fit: cover;
+    border-radius: 0.5rem;
+    background: #f8fafc;
+    padding: 4px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    transition: transform 0.2s ease-in-out;
+}
+
+    .img-thumb-soft:hover {
+        transform: scale(1.03);
+    }
+
+.action-btn,
+.price-btn {
+    font-size: 0.9rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.section-title {
+    font-weight: 600;
+    color: #334155;
+}
+
+/* Картка */
+.service-card {
+    border: 0;
+    border-radius: .9rem;
+    box-shadow: 0 6px 18px rgba(15,23,42,.06);
+    overflow: hidden;
+    transition: transform .16s ease, box-shadow .16s ease;
+    background: #fff;
+}
+
+    .service-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 24px rgba(15,23,42,.10);
+    }
+
+/* Обрізання опису до 2 рядків */
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* lite-youtube займає всю площу ratio-контейнера */
+lite-youtube.w-100.h-100 {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    border-radius: .5rem .5rem 0 0;
+}
+
+/* Кнопка-ціна як сучасна плашка */
+.price-chip {
+    background: #0d6efd;
+    color: #fff;
+    border-radius: 999px;
+    padding: .35rem .75rem;
+    font-weight: 600;
+    font-size: .9rem;
+    display: inline-flex;
+    align-items: center;
+    box-shadow: 0 2px 6px rgba(13,110,253,.3);
+}
+
+/* Компактні кнопки, добре масштабуються */
+.btn.btn-sm {
+    border-radius: .5rem;
+    padding: .45rem .75rem;
+}
+
+/* Відступи між картками на мобайлі трохи менші */
+@media (max-width: 575.98px) {
+    .row.g-3 {
+        --bs-gutter-x: .5rem;
+        --bs-gutter-y: .5rem;
+    }
+}

@@ -59,6 +59,320 @@ h1:focus {
     text-align: start;
 }
 
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background: #f2f4f7;
+}
+
+/* Головна велика картка */
+.main-card {
+    max-width: 800px;
+    margin: auto;
+    background: #fff;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+    .main-card h1 {
+        margin-bottom: 16px;
+    }
+
+.date-picker {
+    margin-bottom: 20px;
+}
+
+/* Сітка маленьких карток */
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+}
+
+.card {
+    background: #fafafa;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+    .card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .card .time {
+        font-weight: bold;
+        margin-bottom: 8px;
+        color: #333;
+    }
+
+    .card .service {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 16px;
+        font-size: 0.85rem;
+        color: #fff;
+        margin-bottom: 8px;
+    }
+
+    .card .client {
+        font-size: 0.95rem;
+        color: #555;
+    }
+
+/* Кольори послуг */
+.service.massage {
+    background: #4caf50; /* зелений */
+}
+
+.service.cosmo {
+    background: #2196f3; /* синій */
+}
+
+
+
+/* ==== ТЕМИ ТА ЗМІННІ ==== */
+/*:root {
+    --bg: #f4f7fb;
+    --card-bg: #ffffff;
+    --text: #101828;
+    --muted: #667085;*/
+    /* Акценти у фірмовій палітрі: синій/жовтий */
+    /*--primary: #1d4ed8;*/ /* синій */
+    /*--primary-10: rgba(29,78,216,.10);
+    --accent: #f5c518;*/ /* жовтий (м’який акцент) */
+
+    /*--success: #16a34a;*/ /* масаж */
+    /*--info: #0ea5e9;*/ /* косметологія */
+
+    /*--ring: 3px;
+    --radius-lg: 16px;
+    --radius-md: 12px;
+    --radius-sm: 10px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+    --shadow-md: 0 6px 16px rgba(16,24,40,.10);
+    --shadow-lg: 0 18px 40px rgba(16,24,40,.12);
+}*/
+
+/* ==== БАЗА ==== */
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
+    color: var(--text);
+    background: radial-gradient(1200px 800px at 10% -10%, var(--primary-10), transparent) no-repeat, radial-gradient(1200px 800px at 110% 10%, rgba(245,197,24,.12), transparent) no-repeat, var(--bg);
+}
+
+/* ==== КОНТЕЙНЕР ==== */
+.container {
+    max-width: 960px;
+    margin: 40px auto;
+    padding: 0 16px;
+}
+
+/* ==== КАРТКА-ОБГОРТКА ==== */
+.card {
+    background: var(--card-bg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    overflow: clip;
+    border: 1px solid rgba(16,24,40,.06);
+}
+
+.card--elevated:hover {
+    box-shadow: var(--shadow-lg);
+    transition: box-shadow .25s ease;
+}
+
+/* ==== ХЕДЕР ==== */
+.card__header {
+    display: flex;
+    gap: 24px;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding: 24px;
+}
+
+.title {
+    margin: 0 0 6px 0;
+    font-size: clamp(20px, 2.4vw, 28px);
+    letter-spacing: .2px;
+}
+
+.subtitle {
+    margin: 0;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.controls {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+
+.control {
+    display: grid;
+    gap: 6px;
+}
+
+.control__label {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.control__input {
+    appearance: none;
+    font: inherit;
+    padding: 10px 12px;
+    min-height: 40px;
+    min-width: 220px;
+    border: 1px solid #e5e7eb;
+    border-radius: var(--radius-sm);
+    background: #fff;
+    color: var(--text);
+    box-shadow: var(--shadow-sm);
+    outline: none;
+    transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+    .control__input:hover {
+        border-color: #d1d5db;
+    }
+
+    .control__input:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 var(--ring) rgba(29,78,216,.18);
+    }
+
+/* ==== ДІЛИТЕЛЬ ==== */
+.divider {
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(16,24,40,.08), transparent);
+}
+
+/* ==== СІТКА ЗАПИСІВ ==== */
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px,1fr));
+    gap: 16px;
+    padding: 20px 24px 28px;
+}
+
+/* Окрема картка запису */
+.entry {
+    background: linear-gradient(180deg, #fff, #fcfcfd);
+    border: 1px solid #eef2f6;
+    border-radius: var(--radius-md);
+    padding: 14px 14px 12px;
+    box-shadow: var(--shadow-sm);
+    transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+
+    .entry:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(16,24,40,.1);
+        border-color: #e6edf5;
+    }
+
+.entry__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+/* Бейджі послуг */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .2px;
+    color: #fff;
+}
+
+.badge--massage {
+    background: linear-gradient(90deg, #16a34a, #22c55e);
+}
+
+.badge--cosmo {
+    background: linear-gradient(90deg, #0ea5e9, #38bdf8);
+}
+
+/* Час і клієнт */
+.time {
+    font-weight: 700;
+    font-feature-settings: "tnum" 1, "lnum" 1;
+    color: #1f2937;
+}
+
+.client {
+    color: #344054;
+    font-size: 14px;
+}
+
+/* ==== АДАПТИВ ==== */
+@media (max-width: 640px) {
+    .card__header {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .controls {
+        width: 100%;
+    }
+
+    .control__input {
+        width: 100%;
+        min-width: 0;
+    }
+}
+
+/* Назва процедури */
+.procedure {
+    margin-top: 6px;
+    font-weight: 500;
+    font-size: 14px;
+    color: #1f2937;
+}
+
+/* Метадані: ціна та тривалість */
+.meta {
+    margin-top: 6px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: #475467;
+}
+
+    .meta .price {
+        font-weight: 600;
+        color: var(--primary);
+    }
+
+/* Обрізання довгих описів у таблиці */
+.text-truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 /* Брендові акценти (за потреби підлаштуй під свої кольори) */
 .bg-brand {
     background-color: #233565;
