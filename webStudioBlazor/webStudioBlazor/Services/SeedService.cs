@@ -161,7 +161,7 @@ namespace webStudioBlazor.Services
             await _db.SaveChangesAsync();
         }
 
-        public async Task DeleteTCardAsync(int cardId)
+        public async Task DeleteTherapyCardAsync(int cardId)
         {
             var result = await _db.TherapyCards.SingleOrDefaultAsync(e => e.Id == cardId);
             if (result == null)
