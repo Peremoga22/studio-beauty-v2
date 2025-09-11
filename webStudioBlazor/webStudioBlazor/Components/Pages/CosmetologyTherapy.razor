@@ -4,10 +4,8 @@
 @inject SeedService _seedService
 
 <h3 style="padding-top: 7%;"></h3>
-
-@foreach (var item in cosmetologyTherapyCards)
-{
-    var page = pageTherapies.FirstOrDefault(p => p.TitlePage == "Косметологія");  @* =============> //ToDo:"add field for table img or video" *@
+@{
+    var page = pageTherapies.FirstOrDefault(p => p.TitlePage == @selectedCosmetology);  @* =============> //ToDo:"add field for table img or video" *@
     <section class="text-center pt-32 pb-12 px-4">
         <h1 class="text-4xl font-extrabold mb-4" style="color: #f8b7d8;">
             @(page?.TitlePage ?? "Без сторінки")
@@ -16,6 +14,9 @@
             @(page?.DescriptionPage ?? "Без сторінки")
         </p>
     </section>
+}
+@foreach (var item in cosmetologyTherapyCards.Where(c => c.CategoryId == page.CategoryId).ToList())
+{   
     <section class="pt-3">
         <div class="container">
             <nav aria-label="breadcrumb">
@@ -50,6 +51,7 @@
     private List<TherapyCard> cosmetologyTherapyCards = new();
     private List<Category> categories = new();
     private List<PageTherapy> pageTherapies = new();
+    private string selectedCosmetology = "Косметологія";
 
     protected override async Task OnInitializedAsync()
     {
