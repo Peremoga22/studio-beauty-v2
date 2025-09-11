@@ -14,37 +14,41 @@
             @(page?.DescriptionPage ?? "Без сторінки")
         </p>
     </section>
+     <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb bg-white p-2 mb-5 rounded shadow-sm">
+                <li class="breadcrumb-item"><a href="/" style="color: #f8b7d8;">Домашня сторінка</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Косметологія</li>
+            </ol>
+        </nav>
+     </div>
 }
-@foreach (var item in cosmetologyTherapyCards.Where(c => c.CategoryId == page.CategoryId).ToList())
-{   
-    <section class="pt-3">
-        <div class="container">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb bg-white p-2 mb-5 rounded shadow-sm">
-                    <li class="breadcrumb-item"><a href="/" style="color: #f8b7d8;">Домашня сторінка</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Косметологія</li>
-                </ol>
-            </nav>
-            <figure class="figure m-0">
-                <div class="row g-2">
-                    <div class="col-md-6 col-lg-4">
+<section class="pt-3">
+    <div class="container">
+        <figure class="figure m-0">
+            <div class="row g-3">
+                @foreach (var item in cosmetologyTherapyCards.Where(x => x.CategoryId == page.CategoryId))
+                {
+                    <div class="col-12 col-sm-6 col-lg-4">
                         <div class="card h-100 shadow-sm">
                             <img src="@item.ImagePath" class="card-img-top" alt="@item.TitleCard">
                             <div class="card-body d-flex flex-column">
-                                <h5 class="card-title fw-bold" style="color: #f8b7d8;">@item.TitleCard</h5>
+                                <h5 class="card-title fw-bold" style="color: #f8b7d8;">
+                                    @item.TitleCard
+                                </h5>
                                 <p class="card-text">@item.DescriptionCard</p>
-                                <div class="card-footer bg-transparent border-0 text-center  mt-auto">
+                                <div class="card-footer bg-transparent border-0 text-center mt-auto">
                                     <i class="bi bi-cash-stack me-1"></i>
                                     @item.Price.ToString("C0", new System.Globalization.CultureInfo("uk-UA"))
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </figure>
-        </div>
-    </section>
-}
+                }
+            </div>
+        </figure>
+    </div>
+</section>
 
 
 @code {

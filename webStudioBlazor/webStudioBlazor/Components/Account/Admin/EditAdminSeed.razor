@@ -462,7 +462,7 @@
                     </button>
 
                     <NavLink class="btn btn-outline-secondary btn-action"
-                             href="/edit-cosmetology">
+                             @onclick="() => CancelTherapyCard()">
                         <i class="bi bi-x-circle me-1"></i>
                         <span class="d-none d-sm-inline ms-1">Скасувати</span>
                     </NavLink>
@@ -478,15 +478,24 @@
             <figure class="figure m-0">
                 <div class="row g-2">
                     @foreach (var item in therapyCards)
-                    {
+                    {                       
                         <div class="col-6 col-lg-3">
                             <div class="card shadow-sm border-0 rounded-3 product-card h-100">
-                                <div class="ratio ratio-1x1">
-                                    <img src="@item.ImagePath"
-                                         alt="@item.TitleCard"
-                                         class="card-img-top object-fit-cover"
-                                         loading="lazy">
-                                </div>                               
+                                @if (item.CategoryId == 5)
+                                {
+                                    <div class="ratio ratio-16x9">
+                                        <lite-youtube class="card-img-top object-fit-cover" videoid="@item.ImagePath" style="width: 100%; height: auto;" title="@item.ImagePath"></lite-youtube>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="ratio ratio-1x1">
+                                        <img src="@item.ImagePath"
+                                             alt="@item.TitleCard"
+                                             class="card-img-top object-fit-cover"
+                                             loading="lazy">
+                                    </div>
+                                }                                                          
                                 <div class="card-body d-flex flex-column p-2">
                                     <h6 class="card-title mb-1 text-dark fw-semibold text-truncate"
                                         title="@item.TitleCard">
@@ -541,6 +550,7 @@
     private const long maxSize = 5 * 1024 * 1024;
     private const string UploadsSubfolder = "uploads/cosmetology";
     public enum MediaMode { Image, Video }
+    string nameCategory =  "Масаж";
 
     protected override async Task OnInitializedAsync()
     {
@@ -726,5 +736,11 @@
     {
         pageTherapy = new();
         StateHasChanged();
-    }        
+    }  
+    
+    private void CancelTherapyCard()
+    {
+        therapyCard = new();
+        StateHasChanged();
+    }
 }
