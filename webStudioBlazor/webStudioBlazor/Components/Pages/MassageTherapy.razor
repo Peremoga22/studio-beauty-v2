@@ -1,11 +1,11 @@
 ﻿@page "/massage-therapy"
 
 @inject SeedService _seedService
-
+@rendermode InteractiveServer
 
 <h3 style="padding-top: 7%;"></h3>
 @{
-    var page = pageTherapies.FirstOrDefault(p => p.TitlePage == "Масаж");  @* =============> //ToDo:"add field for table img or video" *@
+    var page = pageTherapies.FirstOrDefault(p => p.TitlePage == @selectedMassage);  @* =============> //ToDo:"add field for table img or video" *@
     <section class="text-center pt-32 pb-12 px-4">
         <h1 class="text-4xl font-extrabold mb-4" style="color: #f8b7d8;">
             @(page?.TitlePage ?? "Без сторінки")
@@ -15,7 +15,7 @@
         </p>
     </section>
 }
-@foreach (var item in massageTherapyCards.Where(c => c.CategoryId == 5))  //ToDo:"add field for table img or video"
+@foreach (var item in massageTherapyCards.Where(c => c.CategoryId == page.CategoryId).ToList()) //ToDo:"add field for table img or video"
 {   
     <section class="pt-3">
         <div class="container">
@@ -53,6 +53,7 @@
     private List<TherapyCard> massageTherapyCards = new();
     private List<Category> categories = new();
     private List<PageTherapy> pageTherapies = new();
+    private string selectedMassage = "Масаж";
 
     protected override async Task OnInitializedAsync()
     {
