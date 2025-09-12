@@ -147,22 +147,7 @@
 
         clientUser.AppointmentDate = DateOnly.FromDateTime(DateTime.Now);
         UpdateAvailableSlots(clientUser.AppointmentDate);
-    }
-
-    private void OnDateChanged(DateOnly newDate)
-    {
-        clientUser.AppointmentDate = newDate;
-        UpdateAvailableSlots(newDate);       
-    }
-
-    private void UpdateAvailableSlots(DateOnly date)
-    {
-        var allSlots = Enum.GetValues<MassageTime>();      
-        var booked = clientList.Where(c => c.AppointmentDate == date).Select(c => ConvertToMassageTime(c.SetHour)).Where(x => x.HasValue).Select(x => x.Value).ToHashSet();
-        availableSlots = booked.Count == 0 ? new List<MassageTime>(allSlots)  : allSlots.Where(s => !booked.Contains(s)).ToList();
-        if (booking.SelectedTime is { } sel && !availableSlots.Contains(sel))booking.SelectedTime = null;
-        StateHasChanged();
-    }
+    }          
 
     private void HandleValidSubmit()
     {
@@ -183,14 +168,28 @@
         else
         {            
             ErrorMessageSelectedTime = "Оберіть час";
-        }
-      
+        }      
+    }
+
+    #region Booking state
+    private void OnDateChanged(DateOnly newDate)
+    {
+        clientUser.AppointmentDate = newDate;
+        UpdateAvailableSlots(newDate);
     }
 
     public class MassageTherapyBooking
     {
         [Required(ErrorMessage = "Оберіть час")]       
         public MassageTime? SelectedTime { get; set; }
+    }
+
+    private void UpdateAvailableSlots(DateOnly date)
+    {
+        var allSlots = Enum.GetValues<MassageTime>();
+        var booked = clientList.Where(c => c.AppointmentDate == date).Select(c => ConvertToMassageTime(c.SetHour)).Where(x => x.HasValue).Select(x => x.Value).ToHashSet();
+        availableSlots = booked.Count == 0 ? new List<MassageTime>(allSlots) : allSlots.Where(s => !booked.Contains(s)).ToList();
+        if (booking.SelectedTime is { } sel && !availableSlots.Contains(sel)) booking.SelectedTime = null;
     }
 
     private TimeOnly MassageTimeToTimeOnly(MassageTime time)
@@ -240,4 +239,5 @@
         var display = member.GetCustomAttributes(typeof(DisplayAttribute), false).Cast<DisplayAttribute>().FirstOrDefault();
         return display?.Name ?? time.ToString();
     }
+    #endregion
 }
