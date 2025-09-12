@@ -101,6 +101,55 @@ namespace webStudioBlazor.Services
             }
         }
 
+        public int SaveClient(Appointment appointmentUser)
+        {
+
+            if (appointmentUser.Id == 0)
+            {
+                var result = _db.Appointments.Add(appointmentUser);
+                if (result.State == EntityState.Added)
+                {
+                    _db.Appointments.Add(appointmentUser);
+                    _db.SaveChanges();
+                }
+            }
+            else
+            {
+                var categoryInDbEntuty = _db.Appointments.Find(appointmentUser.Id);
+                if (categoryInDbEntuty != null)
+                {
+                    _db.Appointments.Update(appointmentUser);
+                    _db.SaveChanges();
+                }
+            }
+
+            return appointmentUser.Id;
+        }
+
+        public void SaveClientService(AppointmentService appointmentUser)
+        {
+
+            if (appointmentUser.Id == 0)
+            {
+                var result = _db.AppointmentServices.Add(appointmentUser);
+                if (result.State == EntityState.Added)
+                {
+                    _db.AppointmentServices.Add(appointmentUser);
+                    _db.SaveChanges();
+                }
+            }
+            else
+            {
+                var categoryInDbEntuty = _db.AppointmentServices.Find(appointmentUser.Id);
+                if (categoryInDbEntuty != null)
+                {
+                    _db.AppointmentServices.Update(appointmentUser);
+                    _db.SaveChanges();
+                }
+            }                      
+        }
+
+
         public async Task<Master> EditMaster(int masterId)
         {
             var result = await _db.Masters.FirstOrDefaultAsync(c => c.Id == masterId);
@@ -194,6 +243,12 @@ namespace webStudioBlazor.Services
         public async Task<List<TherapyCard>> GetAllTherapyCardListAsync()
         {
             var result = await _db.TherapyCards.ToListAsync();
+            return result;
+        }
+
+        public async Task<List<Appointment>> GetAllClientListAsync()
+        {
+            var result = await _db.Appointments.ToListAsync();
             return result;
         }
     }

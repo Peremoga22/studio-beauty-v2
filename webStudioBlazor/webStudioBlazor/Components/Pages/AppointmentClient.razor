@@ -65,7 +65,7 @@
                             <label class="form-label">Категорія</label><span class="text-danger">*</span><strong style="color:red">@ErrorMessageService</strong>
                             <InputSelect class="form-select" @bind-Value="clientUser.TherapyId" TValue="int">
                                 <option value="">Оберіть послугу</option>
-                                @foreach (var srv in therapyCard.Where(c =>c.CategoryId == clientUser.CategoryId).ToList())
+                                @foreach (var srv in therapyCards.Where(c =>c.CategoryId == clientUser.CategoryId).ToList())
                                 {
                                     <option value="@srv.Id">@srv.TitleCard</option>
                                 }
@@ -75,15 +75,28 @@
 
                         <div class="mb-3">
                             <label class="form-label">Дата</label><span class="text-danger">*</span><strong style="color:red">@ErrorMessageSelectedDate</strong>
-                            <InputDate class="form-control" @bind-Value="clientUser.AppointmentDate" />
+                           @*  <InputDate class="form-control" @bind-Value="clientUser.AppointmentDate" /> *@
+
+                            <InputDate TValue="DateOnly"
+                                       Value="clientUser.AppointmentDate"
+                                       ValueChanged="@( (DateOnly v) => OnDateChanged(v) )"
+                                       ValueExpression="() => clientUser.AppointmentDate"
+                                       class="form-control" />
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Час</label><span class="text-danger">*</span><strong style="color:red">@ErrorMessageSelectedTime</strong>
                             <InputSelect @bind-Value="booking.SelectedTime" class="form-select" TValue="MassageTime?">
                                 <option value="">Оберіть час</option>
-                                @foreach (var time in Enum.GetValues<MassageTime>())
+                                @if (availableSlots?.Count > 0)
                                 {
-                                    <option value="@time">@GetDisplayName(time)</option>
+                                    foreach (var time in availableSlots)
+                                    {
+                                        <option value="@time">@GetDisplayName(time)</option>
+                                    }
+                                }
+                                else
+                                {
+                                    <option disabled>Немає вільних слотів на цю дату</option>
                                 }
                             </InputSelect>
                         </div>
@@ -109,11 +122,14 @@
 
     private Appointment clientUser = new();
     private MassageTherapyBooking booking = new();
+    private AppointmentService appointmentService= new();
 
+    private static readonly List<MassageTime> AllSlots = Enum.GetValues<MassageTime>().ToList();
+    private List<MassageTime> availableSlots = new();
     private List<Appointment> clientList = new();
     private List<Master> masters = new();
     private List<Category> categories = new();
-    private List<TherapyCard> therapyCard = new();
+    private List<TherapyCard> therapyCards = new();
 
     private string ErrorMessageSelectedTime = string.Empty;
     private string ErrorMessageSelectedDate = string.Empty;
@@ -126,24 +142,70 @@
     {
         masters = await _seedService.GetAllMasterListAsync();
         categories = await _seedService.GetAllCategoryListAsync();
-        therapyCard = await _seedService.GetAllTherapyCardListAsync();
+        therapyCards = await _seedService.GetAllTherapyCardListAsync();
+        clientList = await _seedService.GetAllClientListAsync();
+
         clientUser.AppointmentDate = DateOnly.FromDateTime(DateTime.Now);
+        UpdateAvailableSlots(clientUser.AppointmentDate);
+    }
+
+    private void OnDateChanged(DateOnly newDate)
+    {
+        clientUser.AppointmentDate = newDate;
+        UpdateAvailableSlots(newDate);       
+    }
+
+    private void UpdateAvailableSlots(DateOnly date)
+    {
+        var allSlots = Enum.GetValues<MassageTime>();      
+        var booked = clientList.Where(c => c.AppointmentDate == date).Select(c => ConvertToMassageTime(c.SetHour)).Where(x => x.HasValue).Select(x => x.Value).ToHashSet();
+        availableSlots = booked.Count == 0 ? new List<MassageTime>(allSlots)  : allSlots.Where(s => !booked.Contains(s)).ToList();
+        if (booking.SelectedTime is { } sel && !availableSlots.Contains(sel))booking.SelectedTime = null;
+        StateHasChanged();
     }
 
     private void HandleValidSubmit()
     {
-        if (Id > 0)
+        if (booking.SelectedTime.HasValue)
         {
-            booking.SelectedTime = ConvertToMassageTime(clientUser.SetHour);
-        }
+            var selectedTimeOnly = MassageTimeToTimeOnly(booking.SelectedTime.Value);
+            clientUser.SetHour = selectedTimeOnly;
+            clientUser.MasterId = categories.FirstOrDefault(c => c.Id == clientUser.CategoryId)?.MasterId ?? 0;
+            clientUser.Price = therapyCards.FirstOrDefault(t => t.Id == clientUser.CategoryId)?.Price ?? 0;
+            var idClient = _seedService.SaveClient(clientUser);
+            appointmentService.AppointmentId = idClient;
+            appointmentService.CategoryId = clientUser.CategoryId;
+            appointmentService.TherapyId = clientUser.TherapyId;
 
-        clientUser.AppointmentDate = DateOnly.FromDateTime(DateTime.Now);
+            _seedService.SaveClientService(appointmentService);
+            _navigationManager.NavigateTo($"/appointment-confirm/{idClient}");
+        }
+        else
+        {            
+            ErrorMessageSelectedTime = "Оберіть час";
+        }
+      
     }
 
     public class MassageTherapyBooking
     {
         [Required(ErrorMessage = "Оберіть час")]       
         public MassageTime? SelectedTime { get; set; }
+    }
+
+    private TimeOnly MassageTimeToTimeOnly(MassageTime time)
+    {
+        return time switch
+        {
+            MassageTime.Morning_10_00 => new TimeOnly(10, 0),
+            MassageTime.Morning_11_30 => new TimeOnly(11, 30),
+            MassageTime.Noon_13_00 => new TimeOnly(13, 0),
+            MassageTime.Afternoon_14_30 => new TimeOnly(14, 30),
+            MassageTime.Evening_16_00 => new TimeOnly(16, 0),
+            MassageTime.Evening_17_30 => new TimeOnly(17, 30),
+            MassageTime.Evening_18_30 => new TimeOnly(18, 30),
+            _ => throw new ArgumentOutOfRangeException(nameof(time), time, null)
+        };
     }
 
     private MassageTime? ConvertToMassageTime(TimeOnly time)
