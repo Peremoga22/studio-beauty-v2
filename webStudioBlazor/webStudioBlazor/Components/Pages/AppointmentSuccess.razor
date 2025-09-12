@@ -1,0 +1,46 @@
+﻿@page "/appointment-success"
+@page "/appointment-success/{Id:int}"
+
+@inject SeedService _seedService
+@inject NavigationManager _navigationManager
+@rendermode InteractiveServer
+
+
+<h3 style="padding-top: 5%;"></h3>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="card shadow rounded text-center p-4">
+                <div class="mb-3">
+                    <span class="badge rounded-pill px-3 py-2"
+                          style="background-color:#f8b7d8; color:white;">
+                        Успішно
+                    </span>
+                </div>
+                <h1 class="display-5 mb-3">Дякуємо! Запис створено</h1>
+                <p class="lead">@clientUser.ClientName - ми зв’яжемося з вами для підтвердження деталей найближчим часом.</p>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-center mt-4">
+                    <a href="/" class="btn btn-outline-primary rounded-pill w-100 w-md-auto">
+                        На головну
+                    </a>
+                    <a href="/appointment-user" class="btn btn-primary rounded-pill text-white w-100 w-md-auto">
+                        Новий запис
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    private Appointment clientUser = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        clientUser = await _seedService.GetClientAppointmentId(Id);
+    }
+}

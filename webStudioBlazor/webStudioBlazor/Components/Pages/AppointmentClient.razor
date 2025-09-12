@@ -140,6 +140,11 @@
 
     protected override async Task OnInitializedAsync()
     {
+        masters = await _seedService.GetAllMasterListAsync();
+        categories = await _seedService.GetAllCategoryListAsync();
+        therapyCards = await _seedService.GetAllTherapyCardListAsync();
+        clientList = await _seedService.GetAllClientListAsync();
+
         if (Id > 0)
         {
             clientUser = await _seedService.GetClientAppointmentId(Id);
@@ -149,14 +154,9 @@
         else
         {
             clientUser = new();
-            clientUser.AppointmentDate = DateOnly.FromDateTime(DateTime.Today);
-            UpdateAvailableSlots(clientUser.AppointmentDate);
+            clientUser.AppointmentDate = DateOnly.FromDateTime(DateTime.Today);                       
+            UpdateAvailableSlots(clientUser.AppointmentDate, excludeCurrent: false);
         }
-
-        masters = await _seedService.GetAllMasterListAsync();
-        categories = await _seedService.GetAllCategoryListAsync();
-        therapyCards = await _seedService.GetAllTherapyCardListAsync();
-        clientList = await _seedService.GetAllClientListAsync();     
     }          
 
     private void HandleValidSubmit()
@@ -198,7 +198,7 @@
     private void UpdateAvailableSlots(DateOnly date, bool excludeCurrent = false)
     {
         var allSlots = Enum.GetValues<MassageTime>();
-        var booked = clientList.Where(c => c.AppointmentDate == date).Where(c => !excludeCurrent || c.Id != clientUser.Id).Select(c => ConvertToMassageTime(c.SetHour)).Where(x => x.HasValue).Select(x => x.Value).ToHashSet();
+        var booked = clientList.Where(c => c.AppointmentDate == date).Select(c => ConvertToMassageTime(c.SetHour)).Where(x => x.HasValue).Select(x => x.Value).ToHashSet();       
         availableSlots = booked.Count == 0 ? new List<MassageTime>(allSlots) : allSlots.Where(s => !booked.Contains(s)).ToList();
         if (excludeCurrent && booking.SelectedTime is { } sel && !availableSlots.Contains(sel)) availableSlots.Insert(0, sel);
     }
