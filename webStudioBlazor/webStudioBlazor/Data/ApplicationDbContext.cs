@@ -13,7 +13,7 @@ namespace webStudioBlazor.Data
         public DbSet<PageTherapy> PageTherapyies => Set<PageTherapy>();
         public DbSet<TherapyCard> TherapyCards => Set<TherapyCard>();
         public DbSet<Appointment> Appointments => Set<Appointment>();
-        public DbSet<AppointmentService> AppointmentAppointmentServices => Set<AppointmentService>();
+        public DbSet<AppointmentService> AppointmentServices => Set<AppointmentService>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

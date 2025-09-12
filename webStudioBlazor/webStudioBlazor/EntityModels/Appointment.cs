@@ -5,7 +5,7 @@
         public int Id { get; set; }
         public string ClientName { get; set; }
         public string ClientPhone { get; set; }
-        public DateTime AppointmentDate { get; set; }
+        public DateOnly AppointmentDate { get; set; }
         public TimeOnly SetHour { get; set; }
         public int MasterId { get; set; }
         public int CategoryId { get; set; }

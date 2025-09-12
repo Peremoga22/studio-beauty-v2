@@ -74,7 +74,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Дата</label>
+                            <label class="form-label">Дата</label><span class="text-danger">*</span><strong style="color:red">@ErrorMessageSelectedDate</strong>
                             <InputDate class="form-control" @bind-Value="clientUser.AppointmentDate" />
                         </div>
                         <div class="mb-3">
@@ -116,6 +116,7 @@
     private List<TherapyCard> therapyCard = new();
 
     private string ErrorMessageSelectedTime = string.Empty;
+    private string ErrorMessageSelectedDate = string.Empty;
     private string ErrorMessageFullName = string.Empty;
     private string ErrorMessagePhone = string.Empty;
     private string ErrorMessageService = string.Empty;
@@ -126,11 +127,17 @@
         masters = await _seedService.GetAllMasterListAsync();
         categories = await _seedService.GetAllCategoryListAsync();
         therapyCard = await _seedService.GetAllTherapyCardListAsync();
+        clientUser.AppointmentDate = DateOnly.FromDateTime(DateTime.Now);
     }
 
     private void HandleValidSubmit()
     {
+        if (Id > 0)
+        {
+            booking.SelectedTime = ConvertToMassageTime(clientUser.SetHour);
+        }
 
+        clientUser.AppointmentDate = DateOnly.FromDateTime(DateTime.Now);
     }
 
     public class MassageTherapyBooking
@@ -149,7 +156,8 @@
             { Hour: 14, Minute: 30 } => MassageTime.Afternoon_14_30,
             { Hour: 16, Minute: 0 } => MassageTime.Evening_16_00,
             { Hour: 17, Minute: 30 } => MassageTime.Evening_17_30,
-            _ => null // Якщо час не підходить під жоден слот
+            { Hour: 18, Minute: 30 } => MassageTime.Evening_18_30,
+            _ => null 
         };
     }
 
@@ -160,11 +168,14 @@
         [Display(Name = "13:00")] Noon_13_00,
         [Display(Name = "14:30")] Afternoon_14_30,
         [Display(Name = "16:00")] Evening_16_00,
-        [Display(Name = "17:30")] Evening_17_30
+        [Display(Name = "17:30")] Evening_17_30,
+        [Display(Name = "18:30")] Evening_18_30
     }
 
     private string GetDisplayName(MassageTime time)
     {
-        return "";
+        var member = time.GetType().GetMember(time.ToString()).First();
+        var display = member.GetCustomAttributes(typeof(DisplayAttribute), false).Cast<DisplayAttribute>().FirstOrDefault();
+        return display?.Name ?? time.ToString();
     }
 }
