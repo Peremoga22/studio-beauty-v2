@@ -1,0 +1,170 @@
+﻿@page "/appointment-user"
+@page "/appointment-user/{Id:int}"
+@using System.ComponentModel.DataAnnotations
+
+
+@inject NavigationManager _navigationManager
+@rendermode InteractiveServer
+@inject SeedService _seedService
+
+
+<h3 style="padding-top: 5%;"></h3>
+<div class="container py-4">
+    <div class="section-title mb-5 text-center">
+        <div class="sub-style">
+            <h4 class="sub-title px-3 mb-0">Запис онлайн</h4>
+        </div>
+        <h1 class="display-5 mb-3">Залиште заявку на прийом</h1>
+        <p>Заповніть форму, і ми з вами зв'яжемося для підтвердження запису.</p>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow rounded">
+                <div class="card-body p-4">
+                    <EditForm Model="@clientUser" method="post" OnSubmit="HandleValidSubmit"
+                              FormName="AppointmentClientRead"
+                              class="card shadow-sm border rounded-3 p-4 bg-white"
+                              style="width: 100%; max-width: 600px;">
+
+                        <DataAnnotationsValidator />
+                        <ValidationSummary class="alert alert-danger small" />
+
+                        <div class="mb-3">
+                            <label for="Input_Name" class="form-label fw-semibold small">
+                                Ім’я та прізвище <span class="text-danger">*</span><strong style="color:red">@ErrorMessageFullName</strong>
+                            </label>
+                            <InputText @bind-Value="clientUser.ClientName" id="InputCategory_Name"
+                                       class="form-control form-control-sm"
+                                       placeholder="Введіть назву..." />
+                            <ValidationMessage For="@(() => clientUser.ClientName)" class="text-danger small" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="Input_Phone" class="form-label fw-semibold small">
+                                Телефон <span class="text-danger">*</span><strong style="color:red">@ErrorMessagePhone</strong>
+                            </label>
+                            <InputText @bind-Value="clientUser.ClientPhone" id="InputCategory_Name"
+                                       class="form-control form-control-sm"
+                                       placeholder="+380..." />
+                            <ValidationMessage For="@(() => clientUser.ClientPhone)" class="text-danger small" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Послуга</label><span class="text-danger">*</span><strong style="color:red">@ErrorMessageCategory</strong>
+                            <InputSelect class="form-select" @bind-Value="clientUser.CategoryId" TValue="int">
+                                <option value="">Оберіть послугу</option>
+                                @foreach (var cat in categories)
+                                {
+                                    <option value="@cat.Id">@cat.NameCategory</option>
+                                }
+                            </InputSelect>
+                        </div>
+
+                        <!-- Послуга -->
+                        <div class="mb-3">
+                            <label class="form-label">Категорія</label><span class="text-danger">*</span><strong style="color:red">@ErrorMessageService</strong>
+                            <InputSelect class="form-select" @bind-Value="clientUser.TherapyId" TValue="int">
+                                <option value="">Оберіть послугу</option>
+                                @foreach (var srv in therapyCard.Where(c =>c.CategoryId == clientUser.CategoryId).ToList())
+                                {
+                                    <option value="@srv.Id">@srv.TitleCard</option>
+                                }
+                            </InputSelect>
+                            <ValidationMessage For="@(() => clientUser.TherapyId)" class="text-danger small" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Дата</label>
+                            <InputDate class="form-control" @bind-Value="clientUser.AppointmentDate" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Час</label><span class="text-danger">*</span><strong style="color:red">@ErrorMessageSelectedTime</strong>
+                            <InputSelect @bind-Value="booking.SelectedTime" class="form-select" TValue="MassageTime?">
+                                <option value="">Оберіть час</option>
+                                @foreach (var time in Enum.GetValues<MassageTime>())
+                                {
+                                    <option value="@time">@GetDisplayName(time)</option>
+                                }
+                            </InputSelect>
+                        </div>
+
+                        <div class="d-flex justify-content-center gap-2 mt-3">
+                            <button type="submit" class="btn rounded-pill px-4" style="background-color: #f8b7d8; color: white; border: none;">
+                                Записатися
+                            </button>
+                        </div>
+
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Appointment clientUser = new();
+    private MassageTherapyBooking booking = new();
+
+    private List<Appointment> clientList = new();
+    private List<Master> masters = new();
+    private List<Category> categories = new();
+    private List<TherapyCard> therapyCard = new();
+
+    private string ErrorMessageSelectedTime = string.Empty;
+    private string ErrorMessageFullName = string.Empty;
+    private string ErrorMessagePhone = string.Empty;
+    private string ErrorMessageService = string.Empty;
+    private string ErrorMessageCategory = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        masters = await _seedService.GetAllMasterListAsync();
+        categories = await _seedService.GetAllCategoryListAsync();
+        therapyCard = await _seedService.GetAllTherapyCardListAsync();
+    }
+
+    private void HandleValidSubmit()
+    {
+
+    }
+
+    public class MassageTherapyBooking
+    {
+        [Required(ErrorMessage = "Оберіть час")]       
+        public MassageTime? SelectedTime { get; set; }
+    }
+
+    private MassageTime? ConvertToMassageTime(TimeOnly time)
+    {
+        return time switch
+        {
+            { Hour: 10, Minute: 0 } => MassageTime.Morning_10_00,
+            { Hour: 11, Minute: 30 } => MassageTime.Morning_11_30,
+            { Hour: 13, Minute: 0 } => MassageTime.Noon_13_00,
+            { Hour: 14, Minute: 30 } => MassageTime.Afternoon_14_30,
+            { Hour: 16, Minute: 0 } => MassageTime.Evening_16_00,
+            { Hour: 17, Minute: 30 } => MassageTime.Evening_17_30,
+            _ => null // Якщо час не підходить під жоден слот
+        };
+    }
+
+    public enum MassageTime
+    {
+        [Display(Name = "10:00")] Morning_10_00,
+        [Display(Name = "11:30")] Morning_11_30,
+        [Display(Name = "13:00")] Noon_13_00,
+        [Display(Name = "14:30")] Afternoon_14_30,
+        [Display(Name = "16:00")] Evening_16_00,
+        [Display(Name = "17:30")] Evening_17_30
+    }
+
+    private string GetDisplayName(MassageTime time)
+    {
+        return "";
+    }
+}
