@@ -251,5 +251,11 @@ namespace webStudioBlazor.Services
             var result = await _db.Appointments.ToListAsync();
             return result;
         }
+
+        public async Task<Appointment> GetClientAppointmentId(int clientId)
+        {
+            var result = await _db.Appointments.FirstOrDefaultAsync(c => c.Id == clientId);
+            return result;
+        }
     }
 }

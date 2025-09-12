@@ -1,0 +1,164 @@
+﻿@page "/appointment-confirm"
+@page "/appointment-confirm/{Id:int}"
+@using System.Globalization
+
+@inject SeedService _seedService
+@inject NavigationManager _navigationManager
+@rendermode InteractiveServer
+
+<h3 style="padding-top: 5%;"></h3>
+<div class="container py-4">
+    <div class="section-title mb-5 text-center">
+        <div class="sub-style">
+            <h4 class="sub-title px-3 mb-0">Підтвердження</h4>
+        </div>
+        <h1 class="display-5 mb-3">Перевірте деталі запису</h1>
+        <p>Якщо все вірно — натисніть «Підтвердити».</p>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow rounded">
+                <div class="card-body p-4">
+
+                    @if (isLoading)
+                    {
+                        <div class="text-center py-4">Завантаження…</div>
+                    }
+                    else if (clientUser is null)
+                    {
+                        <div class="alert alert-warning">Запис не знайдено.</div>
+                    }
+                    else
+                    {
+                        <EditForm Model="@clientUser"
+                                  OnValidSubmit="HandleValidSubmit"
+                                  class="card shadow-sm border rounded-3 p-4 bg-white"
+                                  style="width: 100%; max-width: 600px;">
+                            <DataAnnotationsValidator />
+
+                            <dl class="row mb-0">
+                                <dt class="col-5">Ім’я:</dt>
+                                <dd class="col-7"><span class="js-name">@clientUser.ClientName</span></dd>
+
+                                <dt class="col-5">Телефон:</dt>
+                                <dd class="col-7">
+                                    <span class="js-phone">
+                                        @if (ShowPhoneAsLink)
+                                        {
+                                            <a href="tel:@clientUser.ClientPhone">@clientUser.ClientPhone</a>
+                                        }
+                                        else
+                                        {
+                                            @clientUser.ClientPhone
+                                        }
+                                    </span>
+                                </dd>
+
+                                @if (!string.IsNullOrWhiteSpace(categoryName))
+                                {
+                                    <dt class="col-5">Категорія:</dt>
+                                    <dd class="col-7">@categoryName</dd>
+                                }
+
+                                @if (!string.IsNullOrWhiteSpace(serviceTitle))
+                                {
+                                    <dt class="col-5">Послуга:</dt>
+                                    <dd class="col-7"><span class="js-service">@serviceTitle</span></dd>
+                                }
+
+                                @if (servicePrice.HasValue)
+                                {
+                                    <dt class="col-5">Оплата:</dt>
+                                    <dd class="col-7">
+                                        <span class="js-price">@servicePrice.Value.ToString("C0", ua)</span>
+                                    </dd>
+                                }
+
+                                <dt class="col-5">Дата:</dt>
+                                <dd class="col-7"><span class="js-date">@FormatDate(clientUser.AppointmentDate)</span></dd>
+
+                                <dt class="col-5">Час:</dt>
+                                <dd class="col-7">
+                                    <span class="js-time">@FormatTimeRange(clientUser.SetHour, DurationMinutes)</span>
+                                </dd>
+                            </dl>
+
+                            <div class="d-flex flex-column flex-md-row gap-3 mt-4">
+                                <a href="/appointment-user/@Id"
+                                   class="btn btn-outline-primary rounded-pill shadow-sm flex-fill flex-md-grow-0 text-center">
+                                    Редагувати
+                                </a>
+
+                                <button type="submit"
+                                        class="btn confirm-btn rounded-pill px-4 flex-fill flex-md-grow-0"
+                                        style="background-color: #f8b7d8; color: white; border: none;">
+                                    Підтвердити запис
+                                </button>
+                            </div>
+                        </EditForm>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@code {
+    [Parameter] 
+    public int Id { get; set; }
+    [Parameter]
+    public int DurationMinutes { get; set; } = 60;
+    [Parameter] 
+    public bool ShowPhoneAsLink { get; set; } = true;
+
+    private Appointment clientUser = new();
+
+    private List<Master> masters = new();
+    private List<Category> categories = new();
+    private List<TherapyCard> therapyCards = new();
+
+    private readonly CultureInfo ua = new("uk-UA");
+    private bool isLoading = true;
+    private string? categoryName;
+    private string? serviceTitle;
+    private decimal? servicePrice;
+    private string FormatDate(DateTime d) => d.ToString("dd.MM.yyyy", ua);
+    private string FormatDate(DateOnly d) => d.ToString("dd.MM.yyyy", ua);
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            isLoading = true;
+            clientUser = await _seedService.GetClientAppointmentId(Id);
+            categories = await _seedService.GetAllCategoryListAsync();
+            therapyCards = await _seedService.GetAllTherapyCardListAsync();
+
+            if(clientUser is not null)
+            {
+                categoryName = categories.FirstOrDefault(c => c.Id == clientUser.CategoryId)?.NameCategory;
+                var srv = therapyCards.FirstOrDefault(s => s.Id == clientUser.TherapyId);
+                serviceTitle = srv?.TitleCard;
+                servicePrice = srv?.Price;
+            }
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void HandleValidSubmit()
+    {
+        if (clientUser is null) return;
+
+        clientUser.IsCompleted = true;
+
+        var idClient = _seedService.SaveClient(clientUser);
+        _navigationManager.NavigateTo($"/appointment-success/{idClient}");
+    }
+
+    private static string FormatTimeRange(TimeOnly start, int durationMinutes)
+        => $"{start:HH\\:mm} – {start.AddMinutes(durationMinutes):HH\\:mm}";
+}

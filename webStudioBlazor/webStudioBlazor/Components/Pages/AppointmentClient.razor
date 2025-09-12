@@ -140,13 +140,23 @@
 
     protected override async Task OnInitializedAsync()
     {
+        if (Id > 0)
+        {
+            clientUser = await _seedService.GetClientAppointmentId(Id);
+            booking.SelectedTime = ConvertToMassageTime(clientUser.SetHour);
+            UpdateAvailableSlots(clientUser.AppointmentDate, excludeCurrent: true);
+        }
+        else
+        {
+            clientUser = new();
+            clientUser.AppointmentDate = DateOnly.FromDateTime(DateTime.Today);
+            UpdateAvailableSlots(clientUser.AppointmentDate);
+        }
+
         masters = await _seedService.GetAllMasterListAsync();
         categories = await _seedService.GetAllCategoryListAsync();
         therapyCards = await _seedService.GetAllTherapyCardListAsync();
-        clientList = await _seedService.GetAllClientListAsync();
-
-        clientUser.AppointmentDate = DateOnly.FromDateTime(DateTime.Now);
-        UpdateAvailableSlots(clientUser.AppointmentDate);
+        clientList = await _seedService.GetAllClientListAsync();     
     }          
 
     private void HandleValidSubmit()
@@ -175,7 +185,8 @@
     private void OnDateChanged(DateOnly newDate)
     {
         clientUser.AppointmentDate = newDate;
-        UpdateAvailableSlots(newDate);
+        var isEdit = clientUser.Id > 0;
+        UpdateAvailableSlots(newDate, excludeCurrent: isEdit);
     }
 
     public class MassageTherapyBooking
@@ -184,12 +195,12 @@
         public MassageTime? SelectedTime { get; set; }
     }
 
-    private void UpdateAvailableSlots(DateOnly date)
+    private void UpdateAvailableSlots(DateOnly date, bool excludeCurrent = false)
     {
         var allSlots = Enum.GetValues<MassageTime>();
-        var booked = clientList.Where(c => c.AppointmentDate == date).Select(c => ConvertToMassageTime(c.SetHour)).Where(x => x.HasValue).Select(x => x.Value).ToHashSet();
+        var booked = clientList.Where(c => c.AppointmentDate == date).Where(c => !excludeCurrent || c.Id != clientUser.Id).Select(c => ConvertToMassageTime(c.SetHour)).Where(x => x.HasValue).Select(x => x.Value).ToHashSet();
         availableSlots = booked.Count == 0 ? new List<MassageTime>(allSlots) : allSlots.Where(s => !booked.Contains(s)).ToList();
-        if (booking.SelectedTime is { } sel && !availableSlots.Contains(sel)) booking.SelectedTime = null;
+        if (excludeCurrent && booking.SelectedTime is { } sel && !availableSlots.Contains(sel)) availableSlots.Insert(0, sel);
     }
 
     private TimeOnly MassageTimeToTimeOnly(MassageTime time)
