@@ -1,19 +1,120 @@
 ﻿@page "/admin-clients"
 @using Microsoft.AspNetCore.Authorization
 @using webStudioBlazor.Components.Layout
-
+@inject SeedService _seedService
 @layout AdminLayout
 @using System.Globalization
 @inject NavigationManager _navigationManager
-@rendermode InteractiveServer
 @attribute [Authorize(Roles = "Admin")]
-
+@rendermode InteractiveServer
 
 <h3 style="padding-top: 2%;"></h3>
 <div class="container mt-4">
     <h3 style="color:hotpink">Записи клієнтів</h3>
 </div>
+<main class="container">
+
+    <section class="card card--elevated">
+        <header class="card__header">
+            <div>
+                <h1 class="title">Календар записів</h1>
+                <p class="subtitle">Оберіть день і перегляньте всі записи за послугами</p>
+            </div>
+        </header>
+
+        <div class="divider"></div>
+
+        <section aria-label="Список записів" class="cards">
+            @if (rows.Count == 0)
+            {
+                <div class="text-muted py-3">Немає записів</div>
+            }
+            else
+            {
+                @foreach (var row in rows)
+                {
+                    var appt = row.Appointment;
+                    var cat = row.Category;
+                    var therapy = row.TherapyCard;
+
+                    <article class="entry">
+                        <div class="entry__row">
+                            <span class="badge badge--massage">@cat?.NameCategory</span>
+                            <span class="time">
+                                @($"{appt.SetHour:HH\\:mm} – {appt.SetHour.AddMinutes(60):HH\\:mm}")
+                            </span>
+                        </div>
+
+                        <div class="text-end">
+                            <span>@appt.AppointmentDate.ToString("dd.MM.yyyy")</span>
+                        </div>
+
+                        <div class="client"><strong>@appt.ClientName</strong></div>
+                        <div class="client">
+                            <strong><a href="tel:@appt.ClientPhone">@appt.ClientPhone</a></strong>
+                        </div>
+
+                        @if (therapy is not null)
+                        {
+                            <div class="procedure">@therapy.TitleCard</div>
+                            <div class="meta">
+                                <span class="duration">@therapy.Price.ToString("C0", ua)</span>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="procedure text-muted">Послуга не знайдена</div>
+                        }
+
+                        <div class="ms-auto text-left">
+                            <button class="btn btn-outline-danger btn-sm rounded-pill d-inline-flex align-items-center gap-1"
+                                    title="Видалити картку"
+                                    disabled="@deleting.Contains(row.Id)"
+                                    @onclick="() => ConfirmAndDeleteAsync(row)">
+                                <i class="fa-solid fa-trash" aria-hidden="true"></i>
+                                <span>@(deleting.Contains(row.Id) ? "Видаляю..." : "Видалити")</span>
+                            </button>
+                        </div>
+                    </article>
+                }
+            }
+        </section>
+     </section>
+
+</main>
+
+
 
 @code {
+    private List<AppointmentService> rows = new();
+    private Appointment clientUser = new();
+    private List<Appointment> clientList = new();
+    private List<Master> masters = new();
+    private List<Category> categories = new();
+    private List<TherapyCard> therapyCards = new();
+    private static readonly CultureInfo ua = new("uk-UA");
+    private HashSet<int> deleting = new();
 
+    protected override async Task OnInitializedAsync()
+    {        
+        rows = await _seedService.ListForCalendarAsync(onlyCompleted: true);
+    }
+
+    private async Task ConfirmAndDeleteAsync(AppointmentService row)
+    {
+        if (row is null) return;
+
+        deleting.Add(row.Id);
+        try
+        {
+            await _seedService.DeleteAsync(row.Id);
+            // Локально прибираємо запис — більше не рендериться
+            rows.RemoveAll(r => r.Id == row.Id);
+            StateHasChanged();
+        }
+        finally
+        {
+            deleting.Remove(row.Id);
+        }
+    }
 }
