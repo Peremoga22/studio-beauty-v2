@@ -83,14 +83,9 @@
                                 </dd>
                             </dl>
 
-                            <div class="d-flex flex-column flex-md-row gap-3 mt-4">
-                                <a href="/appointment-user/@Id"
-                                   class="btn btn-outline-primary rounded-pill shadow-sm flex-fill flex-md-grow-0 text-center">
-                                    Редагувати
-                                </a>
-
+                            <div class="d-flex justify-content-center mt-4">
                                 <button type="submit"
-                                        class="btn confirm-btn rounded-pill px-4 flex-fill flex-md-grow-0"
+                                        class="btn confirm-btn rounded-pill px-4"
                                         style="background-color: #f8b7d8; color: white; border: none;">
                                     Підтвердити запис
                                 </button>
@@ -123,6 +118,7 @@
     private string? categoryName;
     private string? serviceTitle;
     private decimal? servicePrice;
+    private bool IsCompleted = false;
     private string FormatDate(DateTime d) => d.ToString("dd.MM.yyyy", ua);
     private string FormatDate(DateOnly d) => d.ToString("dd.MM.yyyy", ua);
 
@@ -150,13 +146,8 @@
     }
 
     private void HandleValidSubmit()
-    {
-        if (clientUser is null) return;
-
-        clientUser.IsCompleted = true;
-
-        var idClient = _seedService.SaveClient(clientUser);
-        _navigationManager.NavigateTo($"/appointment-success/{idClient}");
+    {     
+        _navigationManager.NavigateTo($"/appointment-success/{Id}");
     }
 
     private static string FormatTimeRange(TimeOnly start, int durationMinutes)
