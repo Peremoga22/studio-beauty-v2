@@ -107,8 +107,7 @@
         deleting.Add(row.Id);
         try
         {
-            await _seedService.DeleteAsync(row.Id);
-            // Локально прибираємо запис — більше не рендериться
+            await _seedService.DeleteAdminClientCardAsync(row.Id);           
             rows.RemoveAll(r => r.Id == row.Id);
             StateHasChanged();
         }

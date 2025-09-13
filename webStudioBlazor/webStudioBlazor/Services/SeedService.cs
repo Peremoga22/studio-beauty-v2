@@ -125,7 +125,6 @@ namespace webStudioBlazor.Services
 
             return appointmentUser.Id;
         }
-
         public void SaveClientService(AppointmentService appointmentUser)
         {
 
@@ -148,32 +147,26 @@ namespace webStudioBlazor.Services
                 }
             }                      
         }
-
-
         public async Task<Master> EditMaster(int masterId)
         {
             var result = await _db.Masters.FirstOrDefaultAsync(c => c.Id == masterId);
             return result;
         }
-
         public async Task<Category> EditCategory(int categoryId)
         {
             var result = await _db.Categories.FirstOrDefaultAsync(c => c.Id == categoryId);
             return result;
         }
-
         public async Task<PageTherapy> EditPageTherapy(int pageTherapyId)
         {
             var result = await _db.PageTherapyies.FirstOrDefaultAsync(c => c.Id == pageTherapyId);
             return result;
         }
-
         public async Task<TherapyCard> EditTherapyCard(int therapyCardId)
         {
             var result = _db.TherapyCards.FirstOrDefault(e => e.Id == therapyCardId);
             return await Task.FromResult(result);
         }
-
         public async Task DeleteMasterAsync(int masterId)
         {
             var result = await _db.Masters.SingleOrDefaultAsync(c => c.Id == masterId);
@@ -185,7 +178,6 @@ namespace webStudioBlazor.Services
             _db.Masters.Remove(result);
             await _db.SaveChangesAsync();
         }
-
         public async Task DeleteCategoryAsync(int categoryId)
         {
             var result = await _db.Categories.SingleOrDefaultAsync(c => c.Id == categoryId);
@@ -197,7 +189,6 @@ namespace webStudioBlazor.Services
             _db.Categories.Remove(result);
             await _db.SaveChangesAsync();
         }
-
         public async Task DeletePageTherapyAsync(int pageTherapyId)
         {
             var result = await _db.PageTherapyies.SingleOrDefaultAsync(c => c.Id == pageTherapyId);
@@ -209,7 +200,6 @@ namespace webStudioBlazor.Services
             _db.PageTherapyies.Remove(result);
             await _db.SaveChangesAsync();
         }
-
         public async Task DeleteTherapyCardAsync(int cardId)
         {
             var result = await _db.TherapyCards.SingleOrDefaultAsync(e => e.Id == cardId);
@@ -221,41 +211,62 @@ namespace webStudioBlazor.Services
             _db.TherapyCards.Remove(result);
             await _db.SaveChangesAsync();
         }
-
         public async Task<List<Master>> GetAllMasterListAsync()
         {
             var result = await _db.Masters.ToListAsync();
             return result;
         }
-
         public async Task<List<Category>> GetAllCategoryListAsync()
         {
             var result = await _db.Categories.ToListAsync();
             return result;
         }
-
         public async Task<List<PageTherapy>> GetAllPageTherapyListAsync()
         {
             var result = await _db.PageTherapyies.ToListAsync();
             return result;
         }
-
         public async Task<List<TherapyCard>> GetAllTherapyCardListAsync()
         {
             var result = await _db.TherapyCards.ToListAsync();
             return result;
         }
-
         public async Task<List<Appointment>> GetAllClientListAsync()
         {
             var result = await _db.Appointments.ToListAsync();
             return result;
         }
-
         public async Task<Appointment> GetClientAppointmentId(int clientId)
         {
             var result = await _db.Appointments.FirstOrDefaultAsync(c => c.Id == clientId);
             return result;
         }
+        public async Task<List<AppointmentService>> ListForCalendarAsync(       
+        bool onlyCompleted = false,
+        CancellationToken ct = default)
+        {
+            var q = _db.AppointmentServices
+                .Include(x => x.Appointment)
+                .Include(x => x.Category)
+                .Include(x => x.TherapyCard)
+                .AsQueryable();
+                       
+            if (onlyCompleted) q = q.Where(x => x.Appointment.IsCompleted);
+
+            return await q
+                .OrderBy(x => x.Appointment.AppointmentDate)
+                .ThenBy(x => x.Appointment.SetHour)
+                .ToListAsync(ct);
+        }
+        public async Task DeleteAdminClientCardAsync(int appointmentServiceId, CancellationToken ct = default)
+        {
+            var entity = await _db.AppointmentServices
+                .FirstOrDefaultAsync(x => x.Id == appointmentServiceId, ct);
+
+            if (entity is null) return;
+
+            _db.AppointmentServices.Remove(entity);
+            await _db.SaveChangesAsync(ct);
+        }              
     }
 }
