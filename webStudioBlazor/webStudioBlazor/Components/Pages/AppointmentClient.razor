@@ -25,10 +25,7 @@
                     <EditForm Model="@clientUser" method="post" OnSubmit="HandleValidSubmit"
                               FormName="AppointmentClientRead"
                               class="card shadow-sm border rounded-3 p-4 bg-white"
-                              style="width: 100%; max-width: 600px;">
-
-                        <DataAnnotationsValidator />
-                        <ValidationSummary class="alert alert-danger small" />
+                              style="width: 100%; max-width: 600px;">                                                    
 
                         <div class="mb-3">
                             <label for="Input_Name" class="form-label fw-semibold small">
@@ -36,8 +33,7 @@
                             </label>
                             <InputText @bind-Value="clientUser.ClientName" id="InputCategory_Name"
                                        class="form-control form-control-sm"
-                                       placeholder="Введіть назву..." />
-                            <ValidationMessage For="@(() => clientUser.ClientName)" class="text-danger small" />
+                                       placeholder="Введіть назву..." />                         
                         </div>
                         <div class="mb-3">
                             <label for="Input_Phone" class="form-label fw-semibold small">
@@ -46,7 +42,7 @@
                             <InputText @bind-Value="clientUser.ClientPhone" id="InputCategory_Name"
                                        class="form-control form-control-sm"
                                        placeholder="+380..." />
-                            <ValidationMessage For="@(() => clientUser.ClientPhone)" class="text-danger small" />
+                           
                         </div>
 
                         <div class="mb-3">
@@ -70,19 +66,19 @@
                                     <option value="@srv.Id">@srv.TitleCard</option>
                                 }
                             </InputSelect>
-                            <ValidationMessage For="@(() => clientUser.TherapyId)" class="text-danger small" />
+                           @*  <ValidationMessage For="@(() => clientUser.TherapyId)" class="text-danger small" /> *@
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Дата</label><span class="text-danger">*</span><strong style="color:red">@ErrorMessageSelectedDate</strong>
-                           @*  <InputDate class="form-control" @bind-Value="clientUser.AppointmentDate" /> *@
-
+                         
                             <InputDate TValue="DateOnly"
                                        Value="clientUser.AppointmentDate"
                                        ValueChanged="@( (DateOnly v) => OnDateChanged(v) )"
                                        ValueExpression="() => clientUser.AppointmentDate"
                                        class="form-control" />
                         </div>
+                     
                         <div class="mb-3">
                             <label class="form-label">Час</label><span class="text-danger">*</span><strong style="color:red">@ErrorMessageSelectedTime</strong>
                             <InputSelect @bind-Value="booking.SelectedTime" class="form-select" TValue="MassageTime?">
@@ -124,6 +120,7 @@
     private MassageTherapyBooking booking = new();
     private AppointmentService appointmentService= new();
 
+    private static DateOnly Today => DateOnly.FromDateTime(DateTime.Today);
     private static readonly List<MassageTime> AllSlots = Enum.GetValues<MassageTime>().ToList();
     private List<MassageTime> availableSlots = new();
     private List<Appointment> clientList = new();
@@ -183,7 +180,7 @@
     private bool ValidateClientB()
     {
         // clean mistakes
-        ErrorMessageFullName = ErrorMessagePhone = ErrorMessageService = ErrorMessageCategory = ErrorMessageSelectedTime = string.Empty;
+        ErrorMessageFullName = ErrorMessagePhone = ErrorMessageService = ErrorMessageCategory = ErrorMessageSelectedDate = ErrorMessageSelectedTime = string.Empty;
 
         return (clientUser.ClientName, clientUser.ClientPhone, clientUser.TherapyId, clientUser.CategoryId, booking.SelectedTime) switch
         {
@@ -198,6 +195,9 @@
 
             // Category
             (_, _, _, var categoryId, _) when categoryId <= 0 => Fail(() => ErrorMessageCategory = "Оберіть категорію"),
+
+            // Date
+            (_, _, _, _, _) when clientUser.AppointmentDate < Today => Fail(() => ErrorMessageSelectedDate = "Дата не може бути в минулому"),
 
             // Time
             (_, _, _, _, null) => Fail(() => ErrorMessageSelectedTime = "Оберіть час"),
