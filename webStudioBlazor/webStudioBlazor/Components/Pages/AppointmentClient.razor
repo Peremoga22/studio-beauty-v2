@@ -167,6 +167,7 @@
             clientUser.SetHour = selectedTimeOnly;
             clientUser.MasterId = categories.FirstOrDefault(c => c.Id == clientUser.CategoryId)?.MasterId ?? 0;
             clientUser.Price = therapyCards.FirstOrDefault(t => t.Id == clientUser.CategoryId)?.Price ?? 0;
+            clientUser.IsCompleted = true;
             var idClient = _seedService.SaveClient(clientUser);
             appointmentService.AppointmentId = idClient;
             appointmentService.CategoryId = clientUser.CategoryId;
