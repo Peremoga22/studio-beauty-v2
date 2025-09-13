@@ -50,7 +50,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Послуга</label><span class="text-danger">*</span><strong style="color:red">@ErrorMessageCategory</strong>
+                            <label class="form-label">Послуга</label><span class="text-danger">*</span><strong style="color:red">@ErrorMessageService</strong>
                             <InputSelect class="form-select" @bind-Value="clientUser.CategoryId" TValue="int">
                                 <option value="">Оберіть послугу</option>
                                 @foreach (var cat in categories)
@@ -161,7 +161,9 @@
 
     private void HandleValidSubmit()
     {
-        if (booking.SelectedTime.HasValue)
+        var isValid = ValidateClientB();
+        
+        if (isValid)
         {
             var selectedTimeOnly = MassageTimeToTimeOnly(booking.SelectedTime.Value);
             clientUser.SetHour = selectedTimeOnly;
@@ -175,11 +177,39 @@
 
             _seedService.SaveClientService(appointmentService);
             _navigationManager.NavigateTo($"/appointment-confirm/{idClient}");
+        }            
+    }        
+
+    private bool ValidateClientB()
+    {
+        // clean mistakes
+        ErrorMessageFullName = ErrorMessagePhone = ErrorMessageService = ErrorMessageCategory = ErrorMessageSelectedTime = string.Empty;
+
+        return (clientUser.ClientName, clientUser.ClientPhone, clientUser.TherapyId, clientUser.CategoryId, booking.SelectedTime) switch
+        {
+            // Name
+            (var name, _, _, _, _) when string.IsNullOrWhiteSpace(name) => Fail(() => ErrorMessageFullName = "Введіть своє ім'я"),
+
+            // Phone
+            (_, var phone, _, _, _) when string.IsNullOrWhiteSpace(phone) => Fail(() => ErrorMessagePhone = "Введіть свій мобільний"),
+
+            // Therapy
+            (_, _, var therapyId, _, _) when therapyId <= 0 => Fail(() => ErrorMessageService = "Оберіть послугу"),
+
+            // Category
+            (_, _, _, var categoryId, _) when categoryId <= 0 => Fail(() => ErrorMessageCategory = "Оберіть категорію"),
+
+            // Time
+            (_, _, _, _, null) => Fail(() => ErrorMessageSelectedTime = "Оберіть час"),
+                    
+            _ => true
+        };
+
+        bool Fail(Action setError)
+        {
+            setError();
+            return false;
         }
-        else
-        {            
-            ErrorMessageSelectedTime = "Оберіть час";
-        }      
     }
 
     #region Booking state
