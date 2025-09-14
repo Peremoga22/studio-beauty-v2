@@ -1,0 +1,253 @@
+﻿@page "/admin-us-clients"
+
+@inject SeedService _seedService
+@layout AdminLayout
+@attribute [Authorize(Roles = "Admin")]
+@rendermode InteractiveServer
+
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="d-flex flex-wrap gap-2 align-items-end mb-3">
+            <div class="me-auto">
+                <h5 class="m-0">Клієнти</h5>                
+            </div>
+
+            <div class="d-flex flex-wrap gap-3 align-items-end mb-4 p-3 bg-light rounded shadow-sm">
+                <div class="me-auto">
+                    <h4 class="m-0 text-primary fw-bold">
+                        <i class="bi bi-people me-2"></i>Клієнти
+                    </h4>
+                </div>
+
+                <div class="form-floating">
+                    <input type="text" class="form-control" placeholder="Пошук"
+                           @bind="search" @bind:event="oninput">
+                    <label>Пошук (ім’я / телефон)</label>
+                </div>
+
+                <button class="btn btn-primary d-flex align-items-center px-3" @onclick="() => Search(search)">
+                    <i class="bi bi-search me-1"></i> Пошук
+                </button>
+                <button class="btn btn-danger d-flex align-items-center px-3" @onclick="() => Reset()">
+                    <i class="bi bi-search me-1"></i> Скинути
+                </button>
+            </div>
+
+
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light" style="position: sticky; top: 0; z-index: 1;">
+                    <tr>
+                        <th class="text-nowrap"><button class="btn btn-link p-0" @onclick="() => SortBy(nameof(RowVM.Date))">Дата @SortIcon(nameof(RowVM.Date))</button></th>
+                        <th class="text-nowrap"><button class="btn btn-link p-0" @onclick="() => SortBy(nameof(RowVM.Time))">Час @SortIcon(nameof(RowVM.Time))</button></th>
+                        <th><button class="btn btn-link p-0" @onclick="() => SortBy(nameof(RowVM.Name))">Ім’я @SortIcon(nameof(RowVM.Name))</button></th>
+                        <th><button class="btn btn-link p-0" @onclick="() => SortBy(nameof(RowVM.Phone))">Телефон @SortIcon(nameof(RowVM.Phone))</button></th>
+                        <th class="d-none d-md-table-cell"><button class="btn btn-link p-0" @onclick="() => SortBy(nameof(RowVM.Category))">Категорія @SortIcon(nameof(RowVM.Category))</button></th>
+                        <th><button class="btn btn-link p-0" @onclick="() => SortBy(nameof(RowVM.Service))">Послуга @SortIcon(nameof(RowVM.Service))</button></th>
+                        <th class="text-center">Статус</th>
+                        <th class="text-end">Дії</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @if (pagedRows.Count == 0)
+                {
+                    <tr><td colspan="8" class="text-center text-muted py-4">Нічого не знайдено</td></tr>
+                }
+                else
+                {
+                    @foreach (var r in pagedRows)
+                    {
+                        <tr>
+                            <td>@r.Date.ToString("dd.MM.yyyy")</td>
+                            <td>@r.Time.ToString("HH\\:mm")</td>
+                            <td>@r.Name</td>
+                            <td><a href="tel:@r.Phone">@r.Phone</a></td>
+                            <td class="d-none d-md-table-cell">@r.Category</td>
+                            <td>@r.Service</td>                               
+                        </tr>
+                    }
+                }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="d-flex align-items-center justify-content-between mt-2">
+            <small class="text-muted">Показано @pagedRows.Count з @filteredRows.Count записів</small>
+            <div class="btn-group">
+                <button class="btn btn-outline-secondary btn-sm" @onclick="PrevPage" disabled="@IsFirstPage">«</button>
+                <span class="btn btn-outline-secondary btn-sm disabled">Стор.@pagedRows.Count назад @totalPages</span>
+                <button class="btn btn-outline-secondary btn-sm" @onclick="NextPage" disabled="@IsLastPage">»</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    private List<Appointment> allClientList = new();
+    private List<Category> categories = new();
+    private List<TherapyCard> therapyCards = new();
+
+    private readonly CultureInfo ua = new("uk-UA");
+    private string? search;
+    private int? categoryId;
+    private DateOnly? dateFrom, dateTo;
+    private bool onlyConfirmed, onlyCompleted;
+
+    private string sortBy = nameof(RowVM.Date);
+    private bool sortAsc = true;
+    private int page = 1;
+    private int pageSize = 10;
+
+    private List<RowVM> filteredRows = new();
+    private List<RowVM> pagedRows = new();
+    private HashSet<int> deleting = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        allClientList = await _seedService.GetAllClientListAsync();
+        categories   = await _seedService.GetAllCategoryListAsync();
+        therapyCards = await _seedService.GetAllTherapyCardListAsync();
+
+        Rebuild();
+    }
+
+    private void Rebuild()
+    {      
+        var rows = from a in (allClientList ?? Enumerable.Empty<Appointment>())
+                   let cat = categories.FirstOrDefault(c => c.Id == a.CategoryId)
+                   let th  = therapyCards.FirstOrDefault(t => t.Id == a.TherapyId)
+                   select new RowVM(
+                       a.Id,
+                       a.ClientName ?? "",
+                       a.ClientPhone ?? "",
+                       a.AppointmentDate,
+                       a.SetHour,
+                       cat?.NameCategory ?? "—",
+                       th?.TitleCard ?? "—",
+                       a.IsCompleted                     
+                   );
+
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var s = search.Trim().ToLowerInvariant();
+            rows = rows.Where(r =>
+                r.Name.ToLowerInvariant().Contains(s) ||
+                r.Phone.ToLowerInvariant().Contains(s) ||
+                r.Service.ToLowerInvariant().Contains(s));
+        }
+
+        if (categoryId is int cid)
+            rows = rows.Where(r => categories.FirstOrDefault(c => c.Id == cid)?.NameCategory == r.Category);
+
+        if (dateFrom is { } df)
+            rows = rows.Where(r => r.Date >= df);
+
+        if (dateTo is { } dt)
+            rows = rows.Where(r => r.Date <= dt);
+
+
+        if (onlyCompleted)
+            rows = rows.Where(r => r.Completed);
+
+        // Сортування
+        rows = (sortBy, sortAsc) switch
+        {
+            (nameof(RowVM.Time),  true) => rows.OrderBy(r => r.Time).ThenBy(r => r.Date),
+            (nameof(RowVM.Time), false) => rows.OrderByDescending(r => r.Time).ThenByDescending(r => r.Date),
+            (nameof(RowVM.Name),  true) => rows.OrderBy(r => r.Name),
+            (nameof(RowVM.Name), false) => rows.OrderByDescending(r => r.Name),
+            (nameof(RowVM.Phone),  true) => rows.OrderBy(r => r.Phone),
+            (nameof(RowVM.Phone), false) => rows.OrderByDescending(r => r.Phone),
+            (nameof(RowVM.Category),  true) => rows.OrderBy(r => r.Category),
+            (nameof(RowVM.Category), false) => rows.OrderByDescending(r => r.Category),
+            (nameof(RowVM.Service),  true) => rows.OrderBy(r => r.Service),
+            (nameof(RowVM.Service), false) => rows.OrderByDescending(r => r.Service),
+            (nameof(RowVM.Date),  true) => rows.OrderBy(r => r.Date).ThenBy(r => r.Time),
+            (nameof(RowVM.Date), false) => rows.OrderByDescending(r => r.Date).ThenByDescending(r => r.Time),
+            _ => rows.OrderBy(r => r.Date).ThenBy(r => r.Time)
+        };
+
+        filteredRows = rows.ToList();
+
+        // Пагінація
+        totalPages = Math.Max(1, (int)Math.Ceiling(filteredRows.Count / (double)pageSize));
+        page = Math.Clamp(page, 1, totalPages);
+        pagedRows = filteredRows.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+        StateHasChanged();
+    }
+
+    private int totalPages;
+    private bool IsFirstPage => page <= 1;
+    private bool IsLastPage  => page >= totalPages;
+
+    private void PrevPage() { if (!IsFirstPage) { page--; Rebuild(); } }
+    private void NextPage() { if (!IsLastPage)  { page++; Rebuild(); } }
+
+    private RenderFragment SortIcon(string col) => builder =>
+    {
+        if (sortBy != col) return;
+        var icon = sortAsc ? "fa-sort-up" : "fa-sort-down";
+        builder.OpenElement(0, "i");
+        builder.AddAttribute(1, "class", $"fa-solid {icon} ms-1");
+        builder.CloseElement();
+    };
+
+    private void Search( string name)
+    {
+        var rows = from a in (allClientList ?? Enumerable.Empty<Appointment>())
+                   let cat = categories.FirstOrDefault(c => c.Id == a.CategoryId)
+                   let th = therapyCards.FirstOrDefault(t => t.Id == a.TherapyId)
+                   select new RowVM(
+                       a.Id,
+                       a.ClientName ?? "",
+                       a.ClientPhone ?? "",
+                       a.AppointmentDate,
+                       a.SetHour,
+                       cat?.NameCategory ?? "—",
+                       th?.TitleCard ?? "—",
+                       a.IsCompleted
+                   );
+        var s = search.Trim().ToLowerInvariant();
+        rows = rows.Where(r =>
+           r.Name.ToLowerInvariant().Contains(s) ||
+           r.Phone.ToLowerInvariant().Contains(s) ||
+           r.Service.ToLowerInvariant().Contains(s));
+
+        pagedRows = rows.ToList();
+    }
+
+    private async Task Reset()
+    {
+        search = string.Empty;
+        allClientList = await _seedService.GetAllClientListAsync();
+        categories = await _seedService.GetAllCategoryListAsync();
+        therapyCards = await _seedService.GetAllTherapyCardListAsync();
+
+        Rebuild();
+    }
+
+    private void SortBy(string col)
+    {
+        if (sortBy == col) sortAsc = !sortAsc;
+        else { sortBy = col; sortAsc = true; }
+        Rebuild();
+    }     
+       
+
+    private sealed record RowVM(
+        int Id,
+        string Name,
+        string Phone,
+        DateOnly Date,
+        TimeOnly Time,
+        string Category,
+        string Service,      
+        bool Completed
+    );
+}
+
