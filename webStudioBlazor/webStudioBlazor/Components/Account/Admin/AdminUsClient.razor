@@ -41,7 +41,8 @@
                         <th><button class="btn btn-link p-0">Ім’я</button></th>
                         <th><button class="btn btn-link p-0">Телефон</button></th>
                         <th class="d-none d-md-table-cell"><button class="btn btn-link p-0">Категорія</button></th>
-                        <th><button class="btn btn-link p-0">Послуга</button></th>                     
+                        <th><button class="btn btn-link p-0">Послуга</button></th>
+                        <th><button class="btn btn-link p-0">Ціна</button></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -59,8 +60,9 @@
                             <td>@r.Name</td>
                             <td><a href="tel:@r.Phone">@r.Phone</a></td>
                             <td class="d-none d-md-table-cell">@r.Category</td>
-                            <td>@r.Service</td>                               
-                        </tr>
+                            <td>@r.Service</td>
+                            <td>@r.Price</td>
+                            </tr>
                     }
                 }
                 </tbody>
@@ -150,7 +152,8 @@
                        a.SetHour,
                        cat?.NameCategory ?? "—",
                        th?.TitleCard ?? "—",
-                       a.IsCompleted
+                       a.IsCompleted,
+                       a.Price
                    );
 
         if (!string.IsNullOrWhiteSpace(search))
@@ -183,7 +186,8 @@
         TimeOnly Time,
         string Category,
         string Service,      
-        bool Completed
+        bool Completed,
+        decimal Price
     );
 }
 
