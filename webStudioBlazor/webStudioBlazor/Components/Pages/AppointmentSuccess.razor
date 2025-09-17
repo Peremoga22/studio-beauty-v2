@@ -1,10 +1,12 @@
 ﻿@page "/appointment-success"
 @page "/appointment-success/{Id:int}"
+@using webStudioBlazor.BL
 
+@inject AppointmentNotifier _notification
+@inject IConfiguration _сonfig
 @inject SeedService _seedService
 @inject NavigationManager _navigationManager
 @rendermode InteractiveServer
-
 
 <h3 style="padding-top: 5%;"></h3>
 <div class="container py-5">
@@ -18,15 +20,14 @@
                     </span>
                 </div>
                 <h1 class="display-5 mb-3">Дякуємо! Запис створено</h1>
-                <p class="lead">@clientUser.ClientName - ми зв’яжемося з вами для підтвердження деталей найближчим часом.</p>
-
+                <p class="lead">@clientUser.ClientName - ми зв’яжемося з вами для підтвердження деталей найближчим часом.</p>              
                 <div class="d-grid gap-2 d-md-flex justify-content-md-center mt-4">
                     <a href="/" class="btn btn-outline-primary rounded-pill w-100 w-md-auto">
                         На головну
                     </a>
                     <a href="/appointment-user" class="btn btn-primary rounded-pill text-white w-100 w-md-auto">
                         Новий запис
-                    </a>
+                    </a>                   
                 </div>
             </div>
         </div>
@@ -34,13 +35,62 @@
 </div>
 
 
+
 @code {
     [Parameter]
     public int Id { get; set; }
+
     private Appointment clientUser = new();
+    private List<Master> masters = new();
+    private List<Category> categories = new();
+    private List<PageTherapy> pageTherapies = new();
+    private string? DeepLink;      
+    private bool _didRun;  
 
     protected override async Task OnInitializedAsync()
-    {
+   {
         clientUser = await _seedService.GetClientAppointmentId(Id);
+        masters = await _seedService.GetAllMasterListAsync();
+        categories = await _seedService.GetAllCategoryListAsync();
+        pageTherapies = await _seedService.GetAllPageTherapyListAsync();       
+    }
+       
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender || _didRun) return; 
+        _didRun = true;
+
+         await EnsureLinkAndNotifyOnceAsync();
+    }
+
+    private async Task EnsureLinkAndNotifyOnceAsync()
+    {
+        string botUsername = _сonfig["Telegram:BootName"];
+        string baseLink = _сonfig["Telegram:BaseLink"];
+        if (!string.IsNullOrWhiteSpace(botUsername) && !string.IsNullOrWhiteSpace(baseLink))
+        {
+            DeepLink = $"{baseLink.TrimEnd('/')}/{botUsername}?start={Id}";
+           
+            await SendMessageAsync();
+        }
+    }
+
+    private async Task SendMessageAsync()
+    {
+        if (clientUser == null )
+            return;
+
+        categories = await _seedService.GetAllCategoryListAsync();
+        var category = categories.FirstOrDefault(c => c.Id == clientUser.CategoryId);
+        var categoryName = category?.NameCategory;
+        var serviceName = clientUser.ClientName;
+
+        await _notification.NotifyNewAsync(
+            clientName: clientUser.ClientName,
+            phone: clientUser.ClientPhone,
+            serviceName: categoryName,
+            date: clientUser.AppointmentDate,
+            time: clientUser.SetHour
+        );
     }
 }

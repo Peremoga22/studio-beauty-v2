@@ -1,10 +1,15 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
+using Telegram.Bot;
+
+using webStudioBlazor.BL;
 using webStudioBlazor.Components;
 using webStudioBlazor.Components.Account;
 using webStudioBlazor.Data;
+using webStudioBlazor.EntityModels;
 using webStudioBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,6 +23,20 @@ builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 builder.Services.AddTransient<SeedService>();
+builder.Services.AddTransient<AppointmentNotifier>();
+builder.Services.Configure<TelegramOptions>(builder.Configuration.GetSection("Telegram"));
+
+// TelegramBotClient як Singleton
+builder.Services.AddSingleton<ITelegramBotClient>(sp =>
+{
+    var opts = sp.GetRequiredService<IOptions<TelegramOptions>>().Value;
+    return new Telegram.Bot.TelegramBotClient(opts.BotToken);
+});
+
+builder.Services.AddControllers().AddJsonOptions(o =>
+{
+    o.JsonSerializerOptions.PropertyNamingPolicy = null;
+});
 
 builder.Services.AddAuthentication(options =>
     {
@@ -57,6 +76,7 @@ app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 app.UseAntiforgery();
+
 
 app.MapStaticAssets();
 app.MapRazorComponents<App>()

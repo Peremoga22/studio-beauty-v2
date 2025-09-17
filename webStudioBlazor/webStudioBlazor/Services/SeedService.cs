@@ -2,6 +2,7 @@
 
 using System.Diagnostics.Metrics;
 
+using webStudioBlazor.BL;
 using webStudioBlazor.Data;
 using webStudioBlazor.EntityModels;
 
@@ -9,11 +10,11 @@ namespace webStudioBlazor.Services
 {
     public class SeedService
     {
-        private readonly ApplicationDbContext _db;
+        private readonly ApplicationDbContext _db;      
 
         public SeedService(ApplicationDbContext db)
         {
-            _db = db;
+            _db = db;           
         }
 
         public async Task SaveSeedMasterAsync(Master master)
@@ -267,6 +268,6 @@ namespace webStudioBlazor.Services
 
             _db.AppointmentServices.Remove(entity);
             await _db.SaveChangesAsync(ct);
-        }              
+        }               
     }
 }
