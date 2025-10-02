@@ -100,6 +100,15 @@ namespace webStudioBlazor.Services
                     }
                 }
             }
+            else
+            {
+                var therapyCardInDbEntuty = _db.TherapyCards.Find(therapyCard.Id);
+                if (therapyCardInDbEntuty != null)
+                {
+                    _db.TherapyCards.Update(therapyCard);
+                    await _db.SaveChangesAsync();
+                }
+            }
         }
 
         public int SaveClient(Appointment appointmentUser)
@@ -217,7 +226,7 @@ namespace webStudioBlazor.Services
             var result = await _db.Masters.ToListAsync();
             return result;
         }
-        public async Task<List<Category>> GetAllCategoryListAsync()
+        public async Task<List<Category>> GetAllCategoryListAsync()        
         {
             var result = await _db.Categories.ToListAsync();
             return result;

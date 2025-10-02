@@ -45,27 +45,28 @@
     private List<Category> categories = new();
     private List<PageTherapy> pageTherapies = new();
     private string? DeepLink;      
-    private bool _didRun;  
+    private bool _didRun;
+    private bool firstRender;
 
-    protected override async Task OnInitializedAsync()
-   {
+    protected override async Task OnInitializedAsync()    
+    {       
         clientUser = await _seedService.GetClientAppointmentId(Id);
         masters = await _seedService.GetAllMasterListAsync();
         categories = await _seedService.GetAllCategoryListAsync();
-        pageTherapies = await _seedService.GetAllPageTherapyListAsync();       
+        pageTherapies = await _seedService.GetAllPageTherapyListAsync();               
     }
        
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (!firstRender || _didRun) return; 
         _didRun = true;
-
+       
          await EnsureLinkAndNotifyOnceAsync();
     }
 
     private async Task EnsureLinkAndNotifyOnceAsync()
     {
-        string botUsername = _сonfig["Telegram:BootName"];
+        string botUsername = _сonfig["Telegram:BotUsername"];
         string baseLink = _сonfig["Telegram:BaseLink"];
         if (!string.IsNullOrWhiteSpace(botUsername) && !string.IsNullOrWhiteSpace(baseLink))
         {
@@ -76,8 +77,9 @@
     }
 
     private async Task SendMessageAsync()
+    
     {
-        if (clientUser == null )
+        if (clientUser.Id == 0 || !_didRun)
             return;
 
         categories = await _seedService.GetAllCategoryListAsync();
