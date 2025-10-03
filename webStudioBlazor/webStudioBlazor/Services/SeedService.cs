@@ -89,16 +89,7 @@ namespace webStudioBlazor.Services
                 if (result.State == EntityState.Added)
                 {
                     await _db.SaveChangesAsync();
-                }
-                else
-                {
-                    var therapyCardInDbEntuty = _db.TherapyCards.Find(therapyCard.Id);
-                    if (therapyCardInDbEntuty != null)
-                    {
-                        _db.TherapyCards.Update(therapyCard);
-                        await _db.SaveChangesAsync();
-                    }
-                }
+                }              
             }
             else
             {
