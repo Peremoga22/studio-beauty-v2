@@ -24,6 +24,7 @@ builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 builder.Services.AddTransient<SeedService>();
 builder.Services.AddTransient<AppointmentNotifier>();
+builder.Services.AddTransient<AnalyticsService>();
 builder.Services.Configure<TelegramOptions>(builder.Configuration.GetSection("Telegram"));
 
 // TelegramBotClient як Singleton
