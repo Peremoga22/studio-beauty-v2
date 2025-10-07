@@ -93,8 +93,6 @@
     </div>
 </div>
 
-
-
 @code {
     private DateOnly from = DateOnly.FromDateTime(DateTime.Today.AddMonths(-1));
     private DateOnly to = DateOnly.FromDateTime(DateTime.Today);    
@@ -103,16 +101,10 @@
     private bool isLoading;
     private static readonly CultureInfo ua = CultureInfo.GetCultureInfo("uk-UA");
     private string Money(decimal v) => $"{v.ToString("N0", ua)} грн";
+    private object? _mapped;
+    private IJSObjectReference? _mod;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {                     
-            await Load();
-        }
-    }       
-
-    private async Task Load()
+    protected override async Task OnInitializedAsync()
     {
         DateTime? fromArg = (from == default) ? null : from.ToDateTime(TimeOnly.MinValue);
         DateTime? toArg = (to == default) ? null : to.ToDateTime(TimeOnly.MinValue);
@@ -133,9 +125,24 @@
             cosmetologyRevenue = p.CosmetologyRevenue,
             massageRevenue = p.MassageRevenue,
             totalRevenue = p.TotalRevenue
-        });
+        }).ToList();
 
-        await _js.InvokeVoidAsync("GeneralPieChartExpenditure", mapped);
+        _mapped = mapped;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {     
+            _mod = await _js.InvokeAsync<IJSObjectReference>("import", "/js/analytics.js");
+            if (_mapped is not null)
+            await Load();
+        }
+    }       
+
+    private async Task Load()
+    {       
+        await _js.InvokeVoidAsync("GeneralPieChartExpenditure", _mapped);
 
         StateHasChanged();
     }
@@ -145,5 +152,11 @@
         from = DateOnly.FromDateTime(DateTime.Today.AddMonths(-1));
         to = DateOnly.FromDateTime(DateTime.Today);
         _ = Load();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_mod is not null)
+            await _mod.DisposeAsync();
     }
 }
