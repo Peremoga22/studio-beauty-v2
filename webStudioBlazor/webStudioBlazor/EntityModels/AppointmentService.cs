@@ -4,6 +4,7 @@
     {
         public int Id { get; set; }
         public int AppointmentId { get; set; }
+        public decimal Price { get; set; }
         public Appointment Appointment { get; set; } = default!;
 
         public int  CategoryId { get; set; }
