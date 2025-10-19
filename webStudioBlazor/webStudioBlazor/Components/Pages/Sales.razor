@@ -1,0 +1,35 @@
+﻿@page "/sales"
+@inject SeedService _seedService
+@rendermode InteractiveServer
+
+
+<h3 style="padding-top: 7%;"></h3>
+@{
+    var page = pageTherapies.FirstOrDefault(p => p.TitlePage == @selectedStore);
+    <section class="text-center pt-32 pb-12 px-4">
+        <h1 class="text-4xl font-extrabold mb-4" style="color: #f8b7d8;">
+            @(page?.TitlePage ?? "Без сторінки")
+        </h1>
+        <p class="text-gray-700 text-lg max-w-2xl mx-auto">
+            @(page?.DescriptionPage ?? "Без сторінки")
+        </p>
+    </section>
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb bg-white p-2 mb-5 rounded shadow-sm">
+                <li class="breadcrumb-item"><a href="/" style="color: #f8b7d8;">Домашня сторінка</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Наш магазин</li>
+            </ol>
+        </nav>
+    </div>
+}
+
+@code {
+    private string selectedStore = "Наш магазин";
+    private List<PageTherapy> pageTherapies = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        pageTherapies = await _seedService.GetAllPageTherapyListAsync();
+    }
+}
