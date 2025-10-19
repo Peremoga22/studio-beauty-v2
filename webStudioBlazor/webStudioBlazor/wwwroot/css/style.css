@@ -2371,3 +2371,90 @@
     background-color: white; /* Колір лінії */
     margin: 5px 0; /* Відступи зверху і знизу */
 }
+
+.btn-buy {
+    background-color: #C4A240;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 8px 24px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 10px rgba(196, 162, 64, 0.4);
+}
+
+    .btn-buy:hover {
+        background-color: #d4b14a;
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 14px rgba(196, 162, 64, 0.6);
+    }
+
+    .btn-buy:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 6px rgba(196, 162, 64, 0.3);
+    }
+
+
+.navbar-nav .nav-link {
+    color: #333;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+    .navbar-nav .nav-link:hover,
+    .navbar-nav .nav-link.active {
+        color: #C4A240;
+    }
+
+.btn-cart {
+    background-color: transparent;
+    border: none;
+    color: #333;
+    transition: all 0.3s ease;
+}
+
+    .btn-cart:hover {
+        color: #C4A240;
+        transform: scale(1.1);
+    }
+
+.cart-badge {
+    background-color: #dc3545;
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 600;
+    border-radius: 50%;
+    padding: 3px 6px;
+    min-width: 20px;
+    text-align: center;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.25);
+}
+
+.btn-logout {
+    border: none;
+    background: transparent;
+    color: #333;
+    padding: 0;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+    .btn-logout:hover {
+        color: #C4A240;
+    }
+
+.table td, .table th {
+    vertical-align: middle;
+}
+
+@media (max-width: 575.98px) {
+    .list-group-item {
+        padding-left: .5rem;
+        padding-right: .5rem;
+    }
+    .card-footer .fs-5 {
+        margin-top: .25rem;
+    }
+}

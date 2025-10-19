@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -14,6 +14,10 @@ namespace webStudioBlazor.Data
         public DbSet<TherapyCard> TherapyCards => Set<TherapyCard>();
         public DbSet<Appointment> Appointments => Set<Appointment>();
         public DbSet<AppointmentService> AppointmentServices => Set<AppointmentService>();
+        public DbSet<Cart> Carts => Set<Cart>();
+        public DbSet<CartItem> CartItems => Set<CartItem>();
+        public DbSet<Order> Orders => Set<Order>();
+        public DbSet<OrderItem> OrderItems => Set<OrderItem>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -25,6 +29,10 @@ namespace webStudioBlazor.Data
             modelBuilder.ApplyConfiguration(new TherapyCardConfig());
             modelBuilder.ApplyConfiguration(new AppointmentConfig());
             modelBuilder.ApplyConfiguration(new AppointmentServiceConfig());
+            modelBuilder.ApplyConfiguration(new CartConfig());
+            modelBuilder.ApplyConfiguration(new CartItemConfig());
+            modelBuilder.ApplyConfiguration(new OrderConfig());
+            modelBuilder.ApplyConfiguration(new OrderItemConfig());
         }
     }
     
@@ -172,7 +180,7 @@ namespace webStudioBlazor.Data
                 .IsRequired();
 
             b.Property(x => x.Price)
-                .HasColumnType("decimal(10,2)")
+                .HasColumnType("decimal(18,2)")
                 .IsRequired();
 
             b.Property(x => x.IsCompleted)
@@ -235,4 +243,129 @@ namespace webStudioBlazor.Data
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }
+
+    #region Cart
+    public class CartConfig : IEntityTypeConfiguration<Cart>
+    {
+        public void Configure(EntityTypeBuilder<Cart> b)
+        {
+            b.ToTable("Carts");
+
+            b.HasKey(x => x.Id);
+
+            b.Property(x => x.SessionKey)
+             .IsRequired()
+             .HasMaxLength(128);
+
+            b.Property(x => x.CreatedAt)
+             .HasColumnType("datetime2")
+             .HasDefaultValueSql("GETUTCDATE()");
+                        
+            b.Property(x => x.IsActive).IsRequired();                        
+
+            b.HasMany(x => x.Items)
+             .WithOne(i => i.Cart)
+             .HasForeignKey(i => i.CartId)
+             .OnDelete(DeleteBehavior.Cascade);
+                       
+            b.HasIndex(x => x.SessionKey)
+             .HasDatabaseName("IX_Carts_Session_Active")
+             .HasFilter("[IsActive] = 1")   // лишай, якщо лише SQL Server
+             .IsUnique();
+        }
+    }
+
+    public class CartItemConfig : IEntityTypeConfiguration<CartItem>
+    {
+        public void Configure(EntityTypeBuilder<CartItem> b)
+        {
+            b.ToTable("CartItems");
+
+            b.HasKey(x => x.Id);
+
+            b.Property(x => x.Quantity)
+                .HasDefaultValue(1);
+
+            b.Property(x => x.UnitPrice)
+                .HasColumnType("decimal(18,2)");
+                       
+            b.HasIndex(x => new { x.CartId, x.TherapyId })
+                .IsUnique();
+           
+            b.HasOne(x => x.Cart)
+                .WithMany(c => c.Items)
+                .HasForeignKey(x => x.CartId)
+                .OnDelete(DeleteBehavior.Cascade);
+                        
+            b.HasOne(x => x.Therapy)
+                .WithMany() // або .WithMany(t => t.CartItems)
+                .HasForeignKey(x => x.TherapyId)
+                .OnDelete(DeleteBehavior.Restrict);
+                      
+            b.Ignore(x => x.TotalPrice);
+        }
+    }
+    #endregion
+
+    #region Order
+    public class OrderConfig : IEntityTypeConfiguration<Order>
+    {
+        public void Configure(EntityTypeBuilder<Order> b)
+        {
+            b.ToTable("Orders");
+
+            b.HasKey(x => x.Id);
+
+            b.Property(x => x.OrderDate)
+             .HasColumnType("datetime2")
+             .HasDefaultValueSql("GETUTCDATE()");
+
+            b.Property(x => x.TotalAmount).HasColumnType("decimal(18,2)");
+            b.Property(x => x.PaymentStatus).HasMaxLength(32).HasDefaultValue("Pending");
+            b.Property(x => x.OrderStatus).HasMaxLength(32).HasDefaultValue("New");
+
+            b.Property<byte[]>("RowVersion").IsRowVersion();                       
+
+            b.HasMany(x => x.Items)
+             .WithOne(i => i.Order)
+             .HasForeignKey(i => i.OrderId)
+             .OnDelete(DeleteBehavior.Cascade);
+                     
+            b.HasOne(x => x.Appointment)
+             .WithOne() // або .WithOne(a => a.Order) якщо додаси навігацію в Appointment
+             .HasForeignKey<Order>(x => x.AppointmentId)
+             .OnDelete(DeleteBehavior.Restrict);
+        }
+    }
+
+    public class OrderItemConfig : IEntityTypeConfiguration<OrderItem>
+    {
+        public void Configure(EntityTypeBuilder<OrderItem> b)
+        {
+            b.ToTable("OrderItems");
+
+            b.HasKey(x => x.Id);
+
+            b.Property(x => x.UnitPrice)
+                .HasColumnType("decimal(18,2)");
+
+            b.Property(x => x.Quantity)
+                .HasDefaultValue(1);
+                       
+            b.HasIndex(x => new { x.OrderId, x.TherapyId })
+                .IsUnique();
+                       
+            b.HasOne(x => x.Order)
+                .WithMany(o => o.Items)
+                .HasForeignKey(x => x.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
+                       
+            b.HasOne(x => x.Therapy)
+                .WithMany() // або .WithMany(t => t.OrderItems)
+                .HasForeignKey(x => x.TherapyId)
+                .OnDelete(DeleteBehavior.Restrict);
+            b.Ignore(x => x.TotalPrice);
+        }
+    }
+    #endregion
 }

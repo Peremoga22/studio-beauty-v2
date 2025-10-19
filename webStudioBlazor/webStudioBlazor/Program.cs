@@ -10,6 +10,8 @@ using webStudioBlazor.Components;
 using webStudioBlazor.Components.Account;
 using webStudioBlazor.Data;
 using webStudioBlazor.EntityModels;
+using webStudioBlazor.Interfaces.Contract;
+using webStudioBlazor.Interfaces.Implementation;
 using webStudioBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -26,6 +28,9 @@ builder.Services.AddTransient<SeedService>();
 builder.Services.AddTransient<AppointmentNotifier>();
 builder.Services.AddTransient<AnalyticsService>();
 builder.Services.Configure<TelegramOptions>(builder.Configuration.GetSection("Telegram"));
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ISessionService, SessionService>();
+builder.Services.AddScoped<CartService>();
 
 // TelegramBotClient як Singleton
 builder.Services.AddSingleton<ITelegramBotClient>(sp =>
@@ -47,7 +52,7 @@ builder.Services.AddAuthentication(options =>
     .AddIdentityCookies();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
+builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 

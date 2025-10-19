@@ -5,7 +5,7 @@
 
 <h3 style="padding-top: 7%;"></h3>
 @{
-    var page = pageTherapies.FirstOrDefault(p => p.TitlePage == @selectedCosmetology);  @* =============> //ToDo:"add field for table img or video" *@
+    var page = pageTherapies.FirstOrDefault(p => p.TitlePage == @selectedCosmetology);  
     <section class="text-center pt-32 pb-12 px-4">
         <h1 class="text-4xl font-extrabold mb-4" style="color: #f8b7d8;">
             @(page?.TitlePage ?? "Без сторінки")

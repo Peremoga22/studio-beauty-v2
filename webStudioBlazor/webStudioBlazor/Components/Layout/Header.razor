@@ -1,6 +1,6 @@
 ﻿@implements IDisposable
 @inject NavigationManager NavigationManager
-
+@inject CartService _cartService
 <!-- Topbar Start -->
 <div class="container-fluid bg-dark px-5 d-none d-lg-block">
     <div class="row gx-0 align-items-center text-white small" style="height: 45px;">
@@ -48,7 +48,7 @@
 
         <!-- Navigation -->
         <div class="collapse navbar-collapse" id="navbarCollapse">
-            <ul class="navbar-nav ms-auto gap-2">
+            <ul class="navbar-nav ms-auto align-items-center gap-2">
                 <li class="nav-item">
                     <NavLink href="/" class="nav-link" Match="NavLinkMatch.All" activeClass="active">
                         Домашня
@@ -79,47 +79,65 @@
                         Події
                     </NavLink>
                 </li>
-                <li class="nav-item">
-                    <AuthorizeView>
-                        <Authorized>
-                            <NavLink class="nav-link" href="Account/Manage">
-                                <li class="nav-item">
-                                    @* <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span> @context.User.Identity?.Name *@
-                                    <a href="/admin-clients" class="nav-link" aria-haspopup="true" aria-expanded="false">Адмінка</a>
-                                </li>
-                            </NavLink>
-                            <li class="nav-item">
-                                <form action="Account/Logout" method="post">
-                                    <AntiforgeryToken />
-                                    <input type="hidden" name="ReturnUrl" value="@currentUrl" />
-                                    <button type="submit" class="nav-link">
-                                        <span class="bi bi-arrow-bar-left-nav-menu" aria-hidden="true"></span> Вийти
-                                    </button>
-                                </form>
-                            </li>
 
-                        </Authorized>
-                        <NotAuthorized>
-                            <NavLink class="nav-link" href="Account/Login">
-                                <span class="bi bi-person-badge-nav-menu" aria-hidden="true"></span> Логін
+                <AuthorizeView>
+                    <Authorized>
+                        <li class="nav-item">
+                            <NavLink class="nav-link fw-semibold text-primary" href="/admin-clients">
+                                <i class="bi bi-shield-lock me-1"></i> Адмінка
                             </NavLink>
-                        </NotAuthorized>
-                    </AuthorizeView>
+                        </li>
+                        <li class="nav-item">
+                            <form action="Account/Logout" method="post" class="d-inline">
+                                <AntiforgeryToken />
+                                <input type="hidden" name="ReturnUrl" value="@currentUrl" />
+                                <button type="submit" class="nav-link btn-logout">
+                                    <i class="bi bi-box-arrow-right me-1"></i> Вийти
+                                </button>
+                            </form>
+                        </li>
+                    </Authorized>
+
+                    <NotAuthorized>
+                        <li class="nav-item">
+                            <NavLink class="nav-link" href="Account/Login">
+                                <i class="bi bi-person me-1"></i> Логін
+                            </NavLink>
+                        </li>
+                    </NotAuthorized>
+                </AuthorizeView>
+
+                <li class="nav-item">
+                    <a href="/cart" class="btn btn-link position-relative text-decoration-none text-body">
+                        <i class="bi bi-cart3 fs-4"></i>
+
+                        @if (cartCount > 0)
+                        {
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                @cartCount
+                            </span>
+                        }
+                    </a>
                 </li>
             </ul>
-
         </div>
+
     </nav>
 </div>
 
 @code {
 
     private string? currentUrl;
+    private int count;      
+    private int cartCount;
 
     protected override async Task OnInitializedAsync()
     {
         currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
         NavigationManager.LocationChanged += OnLocationChanged;
+        _cartService.CartCountChanged += count => { cartCount = count; InvokeAsync(StateHasChanged);};
+             
+        await _cartService.NotifyCountChangedAsync();   
     }
 
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e)

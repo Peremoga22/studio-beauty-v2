@@ -1,0 +1,262 @@
+﻿@page "/cart"
+@inject CartService _cartService
+@using System.Globalization
+@inject NavigationManager _nav
+@rendermode InteractiveServer
+
+<h3 style="padding-top: 7%;"></h3>
+<h3 class="mb-3 d-flex align-items-center gap-2">
+    <i class="bi bi-cart-check"></i> Корзина
+    @if (items is not null)
+    {
+        <span class="badge text-bg-secondary">@totalCount</span>
+    }
+</h3>
+
+@if (items is null)
+{
+    <div class="card shadow-sm border-0">
+        <div class="card-body py-5 text-center text-body-secondary">
+            <div class="spinner-border mb-3" role="status" aria-hidden="true"></div>
+            <div>Завантаження…</div>
+        </div>
+    </div>
+}
+else if (items.Count == 0)
+{
+    <div class="card shadow-sm border-0">
+        <div class="card-body py-5 text-center">
+            <i class="bi bi-bag-x fs-1 text-body-tertiary d-block mb-3"></i>
+            <h5 class="mb-1">Корзина порожня</h5>
+            <p class="text-body-secondary mb-3">Додайте послуги, щоб оформити замовлення.</p>
+            <a class="btn btn-primary w-100 w-sm-auto" href="/sales">
+                <i class="bi bi-plus-circle me-1"></i> До магазину
+            </a>
+        </div>
+    </div>
+}
+else
+{
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-body d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-bag"></i><span class="fw-semibold">Ваші позиції</span>
+            </div>
+            <small class="text-body-secondary d-none d-sm-inline">Змініть кількість або видаліть позиції</small>
+        </div>
+
+        <!-- Desktop/tablet (sm+) -->
+        <div class="card-body p-0 d-none d-sm-block">
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width:44px;"></th>
+                            <th>Назва</th>
+                            <th class="text-center" style="width:200px">Кількість</th>
+                            <th class="text-end" style="width:140px">Ціна</th>
+                            <th class="text-end" style="width:160px">Сума</th>
+                            <th style="width:56px"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var it in items)
+                        {
+                            <tr>
+                                <td class="text-center">
+                                    @if (!string.IsNullOrWhiteSpace(it.Therapy?.ImagePath))
+                                    {
+                                        <img src="@it.Therapy.ImagePath" alt="" class="rounded" style="width:40px;height:40px;object-fit:cover;">
+                                    }
+                                    else
+                                    {
+                                        <span class="d-inline-flex align-items-center justify-content-center rounded bg-body-secondary" style="width:40px;height:40px;">
+                                            <i class="bi bi-image text-body-tertiary"></i>
+                                        </span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="fw-semibold">@it.Therapy?.TitleCard</div>
+                                    <small class="text-body-secondary">ID: @it.TherapyId</small>
+                                </td>
+                                <td class="text-center">
+                                    <div class="input-group input-group-sm justify-content-center" style="max-width: 200px;">
+                                        <button type="button" class="btn btn-outline-secondary"
+                                                @onclick="() => ChangeQty(it.Id, Math.Max(1, it.Quantity - 1))">
+                                            <i class="bi bi-dash-lg"></i>
+                                        </button>
+                                        <input type="number" class="form-control text-center"
+                                               value="@it.Quantity" min="1"
+                                               @onchange="@(e => ChangeQty(it.Id, int.TryParse(e.Value?.ToString(), out var q) ? Math.Max(1, q) : 1))" />
+                                        <button type="button" class="btn btn-outline-secondary"
+                                                @onclick="() => ChangeQty(it.Id, it.Quantity + 1)">
+                                            <i class="bi bi-plus-lg"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                                <td class="text-end">@it.UnitPrice.ToString("C2", new CultureInfo("uk-UA"))</td>
+                                <td class="text-end">@((it.UnitPrice * it.Quantity).ToString("C2", new CultureInfo("uk-UA")))</td>
+                                <td class="text-end">
+                                    <button class="btn btn-sm btn-outline-danger" title="Видалити"
+                                            @onclick="() => Remove(it.Id)">
+                                        <i class="bi bi-x-lg"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot class="table-light">
+                        <tr>
+                            <td colspan="3"></td>
+                            <td class="text-end fw-semibold">Всього:</td>
+                            <td class="text-end fw-bold">@total.ToString("C2", new CultureInfo("uk-UA"))</td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <!-- Mobile (xs) — картки -->
+        <div class="card-body d-block d-sm-none">
+            <div class="list-group list-group-flush">
+                @foreach (var it in items)
+                {
+                    <div class="list-group-item px-0">
+                        <div class="d-flex align-items-start gap-3">
+                            <div>
+                                @if (!string.IsNullOrWhiteSpace(it.Therapy?.ImagePath))
+                                {
+                                    <img src="@it.Therapy.ImagePath" alt="" class="rounded" style="width:56px;height:56px;object-fit:cover;">
+                                }
+                                else
+                                {
+                                    <span class="d-inline-flex align-items-center justify-content-center rounded bg-body-secondary" style="width:56px;height:56px;">
+                                        <i class="bi bi-image text-body-tertiary"></i>
+                                    </span>
+                                }
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="fw-semibold">@it.Therapy?.TitleCard</div>
+                                <div class="small text-body-secondary mb-2">Ціна: @it.UnitPrice.ToString("C2", new CultureInfo("uk-UA"))</div>
+
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div class="input-group input-group-sm" style="max-width: 180px;">
+                                        <button type="button" class="btn btn-outline-secondary"
+                                                @onclick="() => ChangeQty(it.Id, Math.Max(1, it.Quantity - 1))">
+                                            <i class="bi bi-dash-lg"></i>
+                                        </button>
+                                        <input type="number" class="form-control text-center"
+                                               value="@it.Quantity" min="1"
+                                               @onchange="@(e => ChangeQty(it.Id, int.TryParse(e.Value?.ToString(), out var q) ? Math.Max(1, q) : 1))" />
+                                        <button type="button" class="btn btn-outline-secondary"
+                                                @onclick="() => ChangeQty(it.Id, it.Quantity + 1)">
+                                            <i class="bi bi-plus-lg"></i>
+                                        </button>
+                                    </div>
+
+                                    <div class="text-end">
+                                        <div class="small text-body-secondary">Сума</div>
+                                        <div class="fw-semibold">@((it.UnitPrice * it.Quantity).ToString("C2", new CultureInfo("uk-UA")))</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <button class="btn btn-sm btn-outline-danger" title="Видалити"
+                                        @onclick="() => Remove(it.Id)">
+                                    <i class="bi bi-x-lg"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="card-footer bg-body">
+            <div class="flex-grow-1 text-center text-sm-end">
+                <div class="small text-body-secondary">Всього до сплати</div>
+                <div class="fs-5 fw-semibold">@total.ToString("C2", new CultureInfo("uk-UA"))</div>
+            </div>
+            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-stretch align-items-sm-center gap-3">
+                <button class="btn btn-outline-secondary w-100 w-sm-auto" @onclick="Clear">
+                    <i class="bi bi-trash3 me-1"></i> Очистити
+                </button>                            
+                <a class="btn btn-success w-100 w-sm-auto" href="/checkout">
+                    <i class="bi bi-credit-card me-1"></i> Перейти до оформлення
+                </a>
+            </div>
+        </div>
+    </div>
+}
+
+
+@code {
+    private List<CartItem>? items;
+    private decimal total;
+    private int totalCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Refresh();
+    }
+
+    private async Task ChangeQty(int itemId, int qty)
+    {
+        if (qty < 1) qty = 1;      
+        var item = items?.FirstOrDefault(i => i.Id == itemId);
+
+        if (item is not null)
+        {
+            item.Quantity = qty;
+            RecalcTotals();
+            StateHasChanged();
+        }
+
+        await _cartService.UpdateQuantityAsync(itemId, qty);
+        await Refresh();
+        await InvokeAsync(StateHasChanged);
+        ReloadPage();
+    }
+
+    private async Task Remove(int itemId)
+    {
+        items?.RemoveAll(i => i.Id == itemId);
+        RecalcTotals();
+        StateHasChanged();
+
+        await _cartService.RemoveItemAsync(itemId);
+        await InvokeAsync(StateHasChanged);
+        ReloadPage();
+    }
+
+    private async Task Clear()
+    {
+        items?.Clear();
+        RecalcTotals();
+        StateHasChanged();
+
+        await _cartService.ClearAsync();
+        await InvokeAsync(StateHasChanged);
+        ReloadPage();
+    }
+
+    private async Task Refresh()
+    {
+        var cart = await _cartService.GetOrCreateAsync();
+        items = cart.Items.ToList();
+        RecalcTotals();
+        StateHasChanged();       
+    }
+
+    private void RecalcTotals()
+    {
+        total = items?.Sum(i => i.UnitPrice * i.Quantity) ?? 0m;
+        totalCount = items?.Sum(i => i.Quantity) ?? 0;
+    }
+
+    private void ReloadPage()
+    {
+        _nav.NavigateTo(_nav.Uri, forceLoad: true);
+    }
+}
