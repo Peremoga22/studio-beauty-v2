@@ -31,6 +31,7 @@ builder.Services.Configure<TelegramOptions>(builder.Configuration.GetSection("Te
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ISessionService, SessionService>();
 builder.Services.AddScoped<CartService>();
+builder.Services.AddScoped<OrderService>();
 
 // TelegramBotClient як Singleton
 builder.Services.AddSingleton<ITelegramBotClient>(sp =>

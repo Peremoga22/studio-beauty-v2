@@ -2,6 +2,7 @@
 @inject CartService _cartService
 @using System.Globalization
 @inject NavigationManager _nav
+@inject OrderService _orderService
 @rendermode InteractiveServer
 
 <h3 style="padding-top: 7%;"></h3>
@@ -181,8 +182,8 @@ else
             <div class="d-flex flex-column flex-sm-row justify-content-between align-items-stretch align-items-sm-center gap-3">
                 <button class="btn btn-outline-secondary w-100 w-sm-auto" @onclick="Clear">
                     <i class="bi bi-trash3 me-1"></i> Очистити
-                </button>                            
-                <a class="btn btn-success w-100 w-sm-auto" href="/checkout">
+                </button>
+                <a class="btn btn-success w-100 w-sm-auto" @onclick="PlaceOrder">
                     <i class="bi bi-credit-card me-1"></i> Перейти до оформлення
                 </a>
             </div>
@@ -195,7 +196,7 @@ else
     private List<CartItem>? items;
     private decimal total;
     private int totalCount;
-
+   
     protected override async Task OnInitializedAsync()
     {
         await Refresh();
@@ -205,6 +206,7 @@ else
     {
         if (qty < 1) qty = 1;      
         var item = items?.FirstOrDefault(i => i.Id == itemId);
+      
 
         if (item is not null)
         {
@@ -258,5 +260,12 @@ else
     private void ReloadPage()
     {
         _nav.NavigateTo(_nav.Uri, forceLoad: true);
+    }
+
+   
+    private async Task PlaceOrder()
+    {      
+        var order = await _orderService.CreateFromCartAsync();
+        _nav.NavigateTo($"/orders/{order.Id}");
     }
 }

@@ -1,0 +1,143 @@
+﻿@page "/orders"
+@page "/orders/{Id:int}"
+
+@using System.Globalization
+@inject OrderService _orderService
+@inject NavigationManager _nav
+@rendermode InteractiveServer
+
+<h3 style="padding-top: 7%;"></h3>
+<section class="container py-4">
+    <div class="card shadow-elevated orders-card border-0">
+        <div class="card-header orders-header text-white d-flex align-items-center justify-content-between">
+            <h5 class="mb-0 d-flex align-items-center gap-2">
+                <i class="bi bi-person-lines-fill"></i>
+                Оформлення замовлення
+            </h5>
+            <small class="opacity-75">Shine Cosmetology</small>
+        </div>
+
+        <div class="card-body form-section">
+            <EditForm Model="@Model" OnValidSubmit="HandleSubmit" class="row g-3">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="col-md-6">
+                    <label for="ClientFirstName" class="form-label fw-semibold">Ім’я *</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-person"></i></span>
+                        <InputText id="ClientFirstName" class="form-control" @bind-Value="Model.ClientFirstName" maxlength="64" />
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="ClientLastName" class="form-label fw-semibold">Прізвище *</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-person-badge"></i></span>
+                        <InputText id="ClientLastName" class="form-control" @bind-Value="Model.ClientLastName" maxlength="64" />
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="ClientPhone" class="form-label fw-semibold">Телефон</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-telephone"></i></span>
+                        <InputText id="ClientPhone" class="form-control" @bind-Value="Model.ClientPhone" inputmode="tel" placeholder="+380XXXXXXXXX" />
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="City" class="form-label fw-semibold">Місто *</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+                        <InputText id="City" class="form-control" @bind-Value="Model.City" maxlength="64" />
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="AddressNewPostOffice" class="form-label fw-semibold">Відділення Нової Пошти *</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-truck"></i></span>
+                        <InputText id="AddressNewPostOffice" class="form-control" @bind-Value="Model.AddressNewPostOffice" maxlength="128" />
+                    </div>
+                </div>
+
+                <!-- Дата: лише показ -->
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Дата запису</label>
+                    <div class="d-flex align-items-center gap-2 ps-2">
+                        <i class="bi bi-calendar3" style="color:var(--sales-700)"></i>
+                        <span class="fw-semibold">@Model.AppointmentDate.ToString("dd.MM.yyyy")</span>
+                    </div>
+                </div>
+
+                <!-- Ціна: лише показ -->
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Сума, ₴</label>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge badge-amount fs-6 px-3 py-2">
+                            @Model.Price.ToString("C2", new System.Globalization.CultureInfo("uk-UA"))
+                        </span>
+                    </div>
+                </div>
+
+                <div class="col-12 text-end mt-2 d-flex flex-wrap justify-content-end gap-2 gap-sm-3">
+                    <button type="button"
+                            class="btn btn-sales-ghost flex-fill flex-sm-grow-0"
+                            @onclick="ResetForm">
+                        <i class="bi bi-arrow-counterclockwise"></i>
+                        Очистити
+                    </button>
+
+                    <button type="submit"
+                            class="btn btn-sales flex-fill flex-sm-grow-0 px-4">
+                        <i class="bi bi-check2-circle"></i>
+                        Підтвердити замовлення
+                    </button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</section>
+
+
+@code {
+    [Parameter] public int? Id { get; set; }
+
+    private List<Order>? orders;
+    private Order? order;
+    private ClientOrders Model = new ClientOrders();
+
+    protected override async Task OnInitializedAsync()
+    {
+        order = await _orderService.GetByIdAsync(Id.Value);
+        Model.Price = order.TotalAmount;
+        Model.AppointmentDate = DateOnly.FromDateTime(DateTime.UtcNow.Date);
+        Model.OrderId = order.Id;
+    }
+
+    private async Task HandleSubmit()
+    {
+        await _orderService.SaveClientOrderAsync(Model);
+        _nav.NavigateTo($"/order-confirm-page/{order.Id}");
+    }
+
+    private bool IsValid(string fieldName)
+    {
+        return true;
+    }
+
+    private void ResetForm()
+    {
+        Model = new ClientOrders
+        {           
+            AppointmentDate = DateOnly.FromDateTime(DateTime.UtcNow.Date),
+            Price = order.TotalAmount
+        };
+
+      
+        StateHasChanged();
+    }
+
+    private void GoBack() => _nav.NavigateTo("/cart");
+}

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using webStudioBlazor.Data;
 
@@ -11,9 +12,11 @@ using webStudioBlazor.Data;
 namespace webStudioBlazor.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251020175828_AddSessionKey")]
+    partial class AddSessionKey
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -387,56 +390,6 @@ namespace webStudioBlazor.Migrations
                     b.ToTable("Categories", (string)null);
                 });
 
-            modelBuilder.Entity("webStudioBlazor.EntityModels.ClientOrders", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("AddressNewPostOffice")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
-
-                    b.Property<DateTime>("AppointmentDate")
-                        .HasColumnType("date");
-
-                    b.Property<string>("City")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
-
-                    b.Property<string>("ClientFirstName")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
-
-                    b.Property<string>("ClientLastName")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
-
-                    b.Property<string>("ClientPhone")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<int>("OrderId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OrderId")
-                        .IsUnique();
-
-                    b.ToTable("ClientOrders", (string)null);
-                });
-
             modelBuilder.Entity("webStudioBlazor.EntityModels.Master", b =>
                 {
                     b.Property<int>("Id")
@@ -468,7 +421,7 @@ namespace webStudioBlazor.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ClientId")
+                    b.Property<int>("AppointmentId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("OrderDate")
@@ -503,6 +456,9 @@ namespace webStudioBlazor.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AppointmentId")
+                        .IsUnique();
 
                     b.HasIndex("SessionKey");
 
@@ -741,15 +697,15 @@ namespace webStudioBlazor.Migrations
                     b.Navigation("Masters");
                 });
 
-            modelBuilder.Entity("webStudioBlazor.EntityModels.ClientOrders", b =>
+            modelBuilder.Entity("webStudioBlazor.EntityModels.Order", b =>
                 {
-                    b.HasOne("webStudioBlazor.EntityModels.Order", "Order")
-                        .WithOne("ClientOrder")
-                        .HasForeignKey("webStudioBlazor.EntityModels.ClientOrders", "OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.HasOne("webStudioBlazor.EntityModels.Appointment", "Appointment")
+                        .WithOne()
+                        .HasForeignKey("webStudioBlazor.EntityModels.Order", "AppointmentId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Order");
+                    b.Navigation("Appointment");
                 });
 
             modelBuilder.Entity("webStudioBlazor.EntityModels.OrderItem", b =>
@@ -817,9 +773,6 @@ namespace webStudioBlazor.Migrations
 
             modelBuilder.Entity("webStudioBlazor.EntityModels.Order", b =>
                 {
-                    b.Navigation("ClientOrder")
-                        .IsRequired();
-
                     b.Navigation("Items");
                 });
 #pragma warning restore 612, 618

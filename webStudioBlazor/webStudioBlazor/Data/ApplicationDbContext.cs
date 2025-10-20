@@ -18,6 +18,7 @@ namespace webStudioBlazor.Data
         public DbSet<CartItem> CartItems => Set<CartItem>();
         public DbSet<Order> Orders => Set<Order>();
         public DbSet<OrderItem> OrderItems => Set<OrderItem>();
+        public DbSet<ClientOrders> ClientOrders { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -33,6 +34,7 @@ namespace webStudioBlazor.Data
             modelBuilder.ApplyConfiguration(new CartItemConfig());
             modelBuilder.ApplyConfiguration(new OrderConfig());
             modelBuilder.ApplyConfiguration(new OrderItemConfig());
+            modelBuilder.ApplyConfiguration(new ClientOrdersConfig());
         }
     }
     
@@ -317,24 +319,39 @@ namespace webStudioBlazor.Data
             b.HasKey(x => x.Id);
 
             b.Property(x => x.OrderDate)
-             .HasColumnType("datetime2")
-             .HasDefaultValueSql("GETUTCDATE()");
+                .HasColumnType("datetime2")
+                .HasDefaultValueSql("GETUTCDATE()");
 
-            b.Property(x => x.TotalAmount).HasColumnType("decimal(18,2)");
-            b.Property(x => x.PaymentStatus).HasMaxLength(32).HasDefaultValue("Pending");
-            b.Property(x => x.OrderStatus).HasMaxLength(32).HasDefaultValue("New");
+            b.Property(x => x.TotalAmount)
+                .HasColumnType("decimal(18,2)");
 
-            b.Property<byte[]>("RowVersion").IsRowVersion();                       
+            b.Property(x => x.PaymentStatus)
+                .HasMaxLength(32)
+                .HasDefaultValue("Pending");
 
+            b.Property(x => x.OrderStatus)
+                .HasMaxLength(32)
+                .HasDefaultValue("New");
+
+            // Конкурентний токен
+            b.Property<byte[]>("RowVersion")
+                .IsRowVersion();
+
+            // Order (1) → Items (many)
             b.HasMany(x => x.Items)
-             .WithOne(i => i.Order)
-             .HasForeignKey(i => i.OrderId)
-             .OnDelete(DeleteBehavior.Cascade);
-                     
-            b.HasOne(x => x.Appointment)
-             .WithOne() // або .WithOne(a => a.Order) якщо додаси навігацію в Appointment
-             .HasForeignKey<Order>(x => x.AppointmentId)
-             .OnDelete(DeleteBehavior.Restrict);
+                .WithOne(i => i.Order)
+                .HasForeignKey(i => i.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
+                       
+            b.HasOne(o => o.ClientOrder)
+                .WithOne(co => co.Order)
+                .HasForeignKey<ClientOrders>(co => co.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            b.Property(x => x.SessionKey)
+                .HasMaxLength(128);
+
+            b.HasIndex(x => x.SessionKey);
         }
     }
 
@@ -368,4 +385,50 @@ namespace webStudioBlazor.Data
         }
     }
     #endregion
+    public class ClientOrdersConfig : IEntityTypeConfiguration<ClientOrders>
+    {
+        public void Configure(EntityTypeBuilder<ClientOrders> b)
+        {
+            b.ToTable("ClientOrders");                      
+            b.HasKey(x => x.Id);
+            
+            b.Property(x => x.Price)
+                .HasColumnType("decimal(18,2)");
+
+            b.Property(x => x.ClientFirstName)
+                .HasMaxLength(64)
+                .IsRequired();
+
+            b.Property(x => x.ClientLastName)
+                .HasMaxLength(64)
+                .IsRequired();
+
+            b.Property(x => x.ClientPhone)
+                .HasMaxLength(20)
+                .IsRequired();
+
+            b.Property(x => x.City)
+                .HasMaxLength(64)
+                .IsRequired();
+
+            b.Property(x => x.AddressNewPostOffice)
+                .HasMaxLength(128)
+                .IsRequired();
+
+           
+            b.Property(x => x.AppointmentDate)
+                .HasConversion(
+                    v => v.ToDateTime(TimeOnly.MinValue),
+                    v => DateOnly.FromDateTime(v))
+                .HasColumnType("date");
+
+            b.HasOne(x => x.Order)
+             .WithOne(o => o.ClientOrder) 
+             .HasForeignKey<ClientOrders>(x => x.OrderId)
+             .OnDelete(DeleteBehavior.Cascade);
+                        
+            b.HasIndex(x => x.OrderId).IsUnique();
+                       
+        }
+    }
 }

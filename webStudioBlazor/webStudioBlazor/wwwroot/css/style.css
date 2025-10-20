@@ -2458,3 +2458,93 @@
         margin-top: .25rem;
     }
 }
+
+/*================== ПІДСТАВ СВІЙ КОЛІР зі сторінки Sales ==================================*/
+
+:root {
+    /* ПІДСТАВ СВІЙ КОЛІР зі сторінки Sales */
+    --sales: #C4A240; /* основний акцент (Sales) */
+    --sales-700: color-mix(in oklab, var(--sales), black 18%);
+    --sales-50: color-mix(in oklab, var(--sales), white 88%);
+}
+
+.orders-card {
+    border-radius: 1rem;
+    overflow: hidden;
+}
+
+.orders-header {
+    background: linear-gradient(95deg, var(--sales) 0%, var(--sales-700) 100%);
+}
+
+    .orders-header h5 {
+        letter-spacing: .3px;
+    }
+
+.form-section .input-group-text {
+    border-radius: .75rem 0 0 .75rem;
+}
+
+.form-section .form-control,
+.form-section .input-group-text {
+    padding: .6rem .9rem;
+}
+
+.form-section .form-control {
+    border-radius: 0 .75rem .75rem 0;
+}
+
+    /* Ховер/фокус для інпутів */
+    .form-section .form-control:focus {
+        box-shadow: 0 0 0 .2rem color-mix(in oklab, var(--sales), white 65%);
+        border-color: var(--sales);
+    }
+
+/* Стилі кнопок під Sales */
+.btn-sales {
+    --bs-btn-bg: var(--sales);
+    --bs-btn-border-color: var(--sales);
+    --bs-btn-hover-bg: var(--sales-700);
+    --bs-btn-hover-border-color: var(--sales-700);
+    --bs-btn-active-bg: var(--sales-700);
+    --bs-btn-active-border-color: var(--sales-700);
+    --bs-btn-focus-shadow-rgb: 196,162,64; /* приблизно для ring */
+    color: #1a1a1a;
+    font-weight: 600;
+    border-radius: .75rem;
+}
+
+.btn-sales-ghost {
+    background: transparent;
+    color: var(--sales-700);
+    border: 1px solid var(--sales-700);
+    border-radius: .75rem;
+}
+
+    .btn-sales-ghost:hover {
+        background: var(--sales-50);
+        color: #1a1a1a;
+        border-color: var(--sales);
+    }
+
+/* Дрібні акценти */
+.badge-amount {
+    background: var(--sales-50) !important;
+    color: #1a1a1a;
+    border: 1px dashed var(--sales-700);
+}
+
+/* Карточний вигляд: м’яка тінь */
+.card.shadow-elevated {
+    box-shadow: 0 10px 30px rgba(0,0,0,.08);
+}
+
+@media (max-width: 576px) {
+    .btn-sales,
+    .btn-sales-ghost {
+        width: 100%;
+        text-align: center;
+        font-size: 1rem;
+        padding: 0.7rem 1rem;
+    }
+}

@@ -38,8 +38,7 @@ namespace webStudioBlazor.Services
             }
             return cart;
         }
-
-        // ✅ Додати або збільшити кількість
+               
         public async Task AddOrIncrementAsync(int therapyId, int qty = 1)
         {
             if (qty < 1) qty = 1;
@@ -76,13 +75,11 @@ namespace webStudioBlazor.Services
                 existing.Quantity += qty;
                 db.Entry(existing).State = EntityState.Modified;
             }
-
-            // ✅ Оптимістичне миттєве оновлення бейджа (без очікування SQL)
+                      
             BumpCountLocally(qty);
 
             await db.SaveChangesAsync();
-
-            // А потім підтверджуємо реальним підрахунком із БД (на випадок гонок)
+                       
             await NotifyCountChangedAsync();
         }
 
