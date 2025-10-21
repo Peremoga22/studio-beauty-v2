@@ -2373,7 +2373,7 @@
 }
 
 .btn-buy {
-    background-color: #C4A240;
+    background-color: #ffb6c1;
     color: white;
     border: none;
     border-radius: 50px;
@@ -2385,7 +2385,7 @@
 }
 
     .btn-buy:hover {
-        background-color: #d4b14a;
+        background-color: #ffb6c1;
         color: #fff;
         transform: translateY(-2px);
         box-shadow: 0 6px 14px rgba(196, 162, 64, 0.6);
@@ -2463,7 +2463,7 @@
 
 :root {
     /* ПІДСТАВ СВІЙ КОЛІР зі сторінки Sales */
-    --sales: #C4A240; /* основний акцент (Sales) */
+    --sales: #ffb6c1; /* основний акцент (Sales) */
     --sales-700: color-mix(in oklab, var(--sales), black 18%);
     --sales-50: color-mix(in oklab, var(--sales), white 88%);
 }
@@ -2509,7 +2509,7 @@
     --bs-btn-active-bg: var(--sales-700);
     --bs-btn-active-border-color: var(--sales-700);
     --bs-btn-focus-shadow-rgb: 196,162,64; /* приблизно для ring */
-    color: #1a1a1a;
+    color: #ffb6c1;
     font-weight: 600;
     border-radius: .75rem;
 }
@@ -2523,14 +2523,14 @@
 
     .btn-sales-ghost:hover {
         background: var(--sales-50);
-        color: #1a1a1a;
+        color: #ffb6c1;
         border-color: var(--sales);
     }
 
 /* Дрібні акценти */
 .badge-amount {
     background: var(--sales-50) !important;
-    color: #1a1a1a;
+    color: #ffb6c1;
     border: 1px dashed var(--sales-700);
 }
 
