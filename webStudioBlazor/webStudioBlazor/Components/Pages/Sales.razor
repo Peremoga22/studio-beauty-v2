@@ -6,6 +6,14 @@
 
 
 <h3 style="padding-top: 7%;"></h3>
+@if (_showAlert)
+{
+    <div class="@AlertCss" role="alert" style="z-index:1080;">
+        <i class="bi bi-check-circle-fill me-1"></i>
+        @_alertText
+        <button type="button" class="btn-close ms-2" aria-label="Close" @onclick="HideAlert"></button>
+    </div>
+}
 @{
     var page = pageTherapies.FirstOrDefault(p => p.TitlePage == @selectedStore);
     <section class="text-center pt-32 pb-12 px-4">
@@ -26,7 +34,7 @@
     </div>
 }
 <section class="pt-3">
-    <div class="container">
+    <div class="container">   
         <figure class="figure m-0">
             <div class="row g-3">
                 @foreach (var item in salesTherapyCards.Where(x => x.CategoryId == page.CategoryId))
@@ -61,9 +69,12 @@
     private List<PageTherapy> pageTherapies = new();
     private List<TherapyCard> salesTherapyCards = new();
     private List<Category> categories = new();
-    [Parameter] public int TherapyId { get; set; }   // це має бути Id з TherapyCards
+    [Parameter] public int TherapyId { get; set; } 
     [Parameter] public int Quantity { get; set; } = 1;
-
+    private bool _showAlert;
+    private bool _fadeOut;
+    private string _alertText = "";
+    private string _alertType = "success";
 
     protected override async Task OnInitializedAsync()
     {
@@ -77,11 +88,36 @@
     {
         await _cartService.AddOrIncrementAsync(Id, Quantity);
         _cartService.IncreaseHeaderCount(Quantity);
-        Console.WriteLine($"✅ Додано в корзину: TherapyId={TherapyId}, qty={Quantity}");
+        await ShowAlertAsync("Товар додано", "success");
         await InvokeAsync(StateHasChanged);
         ReloadPage();
     }
 
+    private string AlertCss =>
+      $"alert alert-{_alertType} fade {(_fadeOut ? "" : "show")}" +
+      " position-fixed top-0 end-0 m-3 shadow";
+
+    private async Task ShowAlertAsync(string text, string type = "success")
+    {
+        _alertText = text;
+        _alertType = type;
+        _fadeOut = false;
+        _showAlert = true;
+        StateHasChanged();
+               
+        await Task.Delay(2700);
+        _fadeOut = true;
+        StateHasChanged();
+               
+        await Task.Delay(300);
+        _showAlert = false;
+        StateHasChanged();
+    }
+
+    private void HideAlert()
+    {
+        _showAlert = false;
+    }
     private void ReloadPage()
     {
         _nav.NavigateTo(_nav.Uri, forceLoad: true);
