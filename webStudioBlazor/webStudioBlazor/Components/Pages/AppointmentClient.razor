@@ -1,6 +1,7 @@
 ﻿@page "/appointment-user"
 @page "/appointment-user/{Id:int}"
 @using System.ComponentModel.DataAnnotations
+@using System.Text.RegularExpressions
 
 
 @inject NavigationManager _navigationManager
@@ -159,18 +160,20 @@
     private void HandleValidSubmit()
     {
         var isValid = ValidateClientB();
-        
+
         if (isValid)
         {
             var selectedTimeOnly = MassageTimeToTimeOnly(booking.SelectedTime.Value);
             clientUser.SetHour = selectedTimeOnly;
             clientUser.MasterId = categories.FirstOrDefault(c => c.Id == clientUser.CategoryId)?.MasterId ?? 0;
-            clientUser.Price = therapyCards.FirstOrDefault(t => t.Id == clientUser.CategoryId)?.Price ?? 0;
+            clientUser.Price = therapyCards.FirstOrDefault(t => t.Id == clientUser.TherapyId)?.Price ?? 0;
             clientUser.IsCompleted = true;
             var idClient = _seedService.SaveClient(clientUser);
+
             appointmentService.AppointmentId = idClient;
             appointmentService.CategoryId = clientUser.CategoryId;
             appointmentService.TherapyId = clientUser.TherapyId;
+            appointmentService.Price = clientUser.Price;
 
             _seedService.SaveClientService(appointmentService);
             _navigationManager.NavigateTo($"/appointment-confirm/{idClient}");
@@ -189,6 +192,8 @@
 
             // Phone
             (_, var phone, _, _, _) when string.IsNullOrWhiteSpace(phone) => Fail(() => ErrorMessagePhone = "Введіть свій мобільний"),
+
+            (_, var phone, _, _, _) when !Regex.IsMatch(phone, @"^(\+380|0)\d{9}$")  => Fail(() => ErrorMessagePhone = "Невірний формат мобільного. Приклад: +380971234567"),
 
             // Therapy
             (_, _, var therapyId, _, _) when therapyId <= 0 => Fail(() => ErrorMessageService = "Оберіть послугу"),

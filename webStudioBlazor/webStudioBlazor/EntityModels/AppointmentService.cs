@@ -1,9 +1,13 @@
-﻿namespace webStudioBlazor.EntityModels
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace webStudioBlazor.EntityModels
 {
     public class AppointmentService
     {
         public int Id { get; set; }
         public int AppointmentId { get; set; }
+        [NotMapped]
+        public decimal Price { get; set; }
         public Appointment Appointment { get; set; } = default!;
 
         public int  CategoryId { get; set; }

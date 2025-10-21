@@ -128,7 +128,6 @@ namespace webStudioBlazor.Services
         }
         public void SaveClientService(AppointmentService appointmentUser)
         {
-
             if (appointmentUser.Id == 0)
             {
                 var result = _db.AppointmentServices.Add(appointmentUser);
