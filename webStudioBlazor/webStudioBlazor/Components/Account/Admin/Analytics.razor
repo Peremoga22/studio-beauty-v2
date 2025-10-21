@@ -38,7 +38,7 @@
 
             <div class="col-12 col-md-6">
                 <div class="d-grid d-md-flex justify-content-md-end gap-2">
-                    <button class="btn btn-primary btn-sm" @onclick="Load">
+                    <button class="btn btn-primary btn-sm" @onclick="RefreshAsync">
                         <i class="bi bi-play-circle me-1"></i> Показати
                     </button>
                     <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="ResetFilter">
@@ -101,13 +101,35 @@
     private bool isLoading;
     private static readonly CultureInfo ua = CultureInfo.GetCultureInfo("uk-UA");
     private string Money(decimal v) => $"{v.ToString("N0", ua)} грн";
-    private object? _mapped;
+    private List<object>? _mapped;
     private IJSObjectReference? _mod;
+    private bool _canInvokeJs;
 
     protected override async Task OnInitializedAsync()
+    {       
+        await RefreshAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _canInvokeJs = true;                        
+            _mod = await _js.InvokeAsync<IJSObjectReference>("import", "/js/analytics.js");
+            await LoadChartAsync(); 
+        }
+    }
+
+    private async Task RefreshAsync()
+    {
+        await RefreshDataAsync();     
+        await LoadChartAsync();       
+    }
+
+    private async Task RefreshDataAsync()
     {
         DateTime? fromArg = (from == default) ? null : from.ToDateTime(TimeOnly.MinValue);
-        DateTime? toArg = (to == default) ? null : to.ToDateTime(TimeOnly.MinValue);
+        DateTime? toArg = (to == default) ? null : to.ToDateTime(TimeOnly.MaxValue); // кінець дня
 
         var data = await analytics.GetAsync(fromArg, toArg);
 
@@ -119,44 +141,28 @@
         massageCount = data.Sum(p => p.MassageCount);
         totalCount = cosmoCount + massageCount;
 
-        var mapped = data.Select(p => new
+        _mapped = data.Select(p => new
         {
             date = p.Date.ToString("yyyy-MM-dd"),
             cosmetologyRevenue = p.CosmetologyRevenue,
             massageRevenue = p.MassageRevenue,
             totalRevenue = p.TotalRevenue
-        }).ToList();
-
-        _mapped = mapped;
+        }).ToList<object>();
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    private async Task LoadChartAsync()
     {
-        if (firstRender)
-        {     
-            _mod = await _js.InvokeAsync<IJSObjectReference>("import", "/js/analytics.js");
-            if (_mapped is not null)
-            await Load();
-        }
-    }       
+        if (!_canInvokeJs || _mapped is null) return;
 
-    private async Task Load()
-    {       
+        _mod ??= await _js.InvokeAsync<IJSObjectReference>("import", "/js/analytics.js");
+
         await _js.InvokeVoidAsync("GeneralPieChartExpenditure", _mapped);
-
-        StateHasChanged();
     }
-
-    private void ResetFilter()
+       
+    private async Task ResetFilter()
     {
         from = DateOnly.FromDateTime(DateTime.Today.AddMonths(-1));
         to = DateOnly.FromDateTime(DateTime.Today);
-        _ = Load();
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        if (_mod is not null)
-            await _mod.DisposeAsync();
+        await RefreshAsync();
     }
 }
