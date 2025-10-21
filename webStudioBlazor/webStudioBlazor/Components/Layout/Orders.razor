@@ -7,7 +7,11 @@
 @rendermode InteractiveServer
 
 <h3 style="padding-top: 7%;"></h3>
-<section class="container py-4">
+
+<section class="container py-4 ">
+    <button class="btn btn-sales flex-fill flex-sm-grow-0 px-4" @onclick="GoBackToCart">
+        <i class="bi bi-arrow-left"></i> Повернутися до кошика
+    </button>
     <div class="card shadow-elevated orders-card border-0">
         <div class="card-header orders-header text-white d-flex align-items-center justify-content-between">
             <h5 class="mb-0 d-flex align-items-center gap-2">
@@ -28,6 +32,7 @@
                         <span class="input-group-text"><i class="bi bi-person"></i></span>
                         <InputText id="ClientFirstName" class="form-control" @bind-Value="Model.ClientFirstName" maxlength="64" />
                     </div>
+                    <ValidationMessage For="@(() => Model.ClientFirstName)" />
                 </div>
 
                 <div class="col-md-6">
@@ -36,6 +41,7 @@
                         <span class="input-group-text"><i class="bi bi-person-badge"></i></span>
                         <InputText id="ClientLastName" class="form-control" @bind-Value="Model.ClientLastName" maxlength="64" />
                     </div>
+                    <ValidationMessage For="@(() => Model.ClientLastName)" />
                 </div>
 
                 <div class="col-md-6">
@@ -44,6 +50,7 @@
                         <span class="input-group-text"><i class="bi bi-telephone"></i></span>
                         <InputText id="ClientPhone" class="form-control" @bind-Value="Model.ClientPhone" inputmode="tel" placeholder="+380XXXXXXXXX" />
                     </div>
+                    <ValidationMessage For="@(() => Model.ClientPhone)" />
                 </div>
 
                 <div class="col-md-6">
@@ -52,6 +59,7 @@
                         <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
                         <InputText id="City" class="form-control" @bind-Value="Model.City" maxlength="64" />
                     </div>
+                    <ValidationMessage For="@(() => Model.City)" />
                 </div>
 
                 <div class="col-md-6">
@@ -60,6 +68,7 @@
                         <span class="input-group-text"><i class="bi bi-truck"></i></span>
                         <InputText id="AddressNewPostOffice" class="form-control" @bind-Value="Model.AddressNewPostOffice" maxlength="128" />
                     </div>
+                    <ValidationMessage For="@(() => Model.AddressNewPostOffice)" />
                 </div>
 
                 <!-- Дата: лише показ -->
@@ -110,16 +119,31 @@
 
     protected override async Task OnInitializedAsync()
     {
-        order = await _orderService.GetByIdAsync(Id.Value);
-        Model.Price = order.TotalAmount;
-        Model.AppointmentDate = DateOnly.FromDateTime(DateTime.UtcNow.Date);
-        Model.OrderId = order.Id;
+        if (Id.HasValue)
+        {
+            order = await _orderService.GetByIdAsync(Id.Value);
+            if (order is not null)
+            {
+                Model.Price = order.TotalAmount;
+                Model.AppointmentDate = DateOnly.FromDateTime(DateTime.UtcNow.Date);
+                Model.OrderId = order.Id;
+            }
+            else
+            {                
+                _nav.NavigateTo("/orders", forceLoad: true);
+                return;
+            }
+        }
+        else
+        {            
+            Model.AppointmentDate = DateOnly.FromDateTime(DateTime.UtcNow.Date);
+        }
     }
 
     private async Task HandleSubmit()
     {
         await _orderService.SaveClientOrderAsync(Model);
-        _nav.NavigateTo($"/order-confirm-page/{order.Id}");
+        _nav.NavigateTo($"/order-confirm-page/{order?.Id ?? Model.OrderId}");
     }
 
     private bool IsValid(string fieldName)
@@ -139,5 +163,8 @@
         StateHasChanged();
     }
 
-    private void GoBack() => _nav.NavigateTo("/cart");
+    private void GoBackToCart()
+    {
+        _nav.NavigateTo("/cart");
+    }
 }

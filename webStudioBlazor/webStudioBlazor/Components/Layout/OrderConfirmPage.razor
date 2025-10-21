@@ -1,12 +1,61 @@
-﻿@page "/order-confirm-page"
-@page "/order-confirm-page/{Id:int}"
+﻿@* @page "/order-confirm-page" *@
+@page "/order-confirm-page/{id:int}"
+@inject NavigationManager Nav
+@inject OrderService _orderService
+@rendermode InteractiveServer
 
+<section class="thankyou-section container py-5 text-center">
+    <div class="card shadow-lg border-0 rounded-4 mx-auto" style="max-width: 650px;">
+        <div class="card-body py-5 px-4">
+            <div class="mb-4">
+                <i class="bi bi-check-circle-fill text-success display-4"></i>
+            </div>
 
-<h3 style="padding-top: 7%;"></h3>
+            <h3 class="fw-bold text-success mb-3">
+                Дякуємо за ваше замовлення!
+            </h3>
 
-<h3>OrderConfirmPage</h3>
+            @if (order is not null)
+            {
+                <p class="text-secondary fs-5 mb-4">
+                    Шановний(а) <span class="fw-semibold text-dark">@order.ClientFirstName @order.ClientLastName</span>,<br />
+                    ваше замовлення <span class="fw-semibold text-dark">№@order.Id</span> успішно оформлено.
+                </p>
+
+                <p class="text-muted">
+                    Ми зв’яжемось із вами найближчим часом для підтвердження та уточнення деталей.
+                </p>
+            }
+            else
+            {
+                <p class="text-muted fs-5 mb-4">Завантаження інформації про замовлення...</p>
+            }
+
+            <div class="d-flex justify-content-center gap-3 flex-wrap mt-4">
+                <button class="btn btn-sales-ghost flex-fill flex-sm-grow-0"
+                        @onclick="GoBackToCart">
+                    <i class="bi bi-arrow-left"></i> Повернутися до кошика
+                </button>
+
+                <button class="btn btn-sales-ghost flex-fill flex-sm-grow-0"
+                        @onclick="GoToHome">
+                    <i class="bi bi-house"></i> На головну
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
 
 @code {
-    [Parameter]
+    [Parameter] 
     public int Id { get; set; }
+    private ClientOrders? order;
+
+    protected override async Task OnInitializedAsync()
+    {       
+        order = await _orderService.GetClientOrderByIdAsync(Id);
+    }
+
+    private void GoBackToCart() => Nav.NavigateTo("/cart");
+    private void GoToHome() => Nav.NavigateTo("/");
 }

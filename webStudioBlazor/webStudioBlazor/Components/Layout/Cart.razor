@@ -30,7 +30,7 @@ else if (items.Count == 0)
             <i class="bi bi-bag-x fs-1 text-body-tertiary d-block mb-3"></i>
             <h5 class="mb-1">Корзина порожня</h5>
             <p class="text-body-secondary mb-3">Додайте послуги, щоб оформити замовлення.</p>
-            <a class="btn btn-primary w-100 w-sm-auto" href="/sales">
+            <a class="btn btn-sales-ghost flex-fill flex-sm-grow-0" href="/sales">
                 <i class="bi bi-plus-circle me-1"></i> До магазину
             </a>
         </div>
@@ -179,14 +179,18 @@ else
                 <div class="small text-body-secondary">Всього до сплати</div>
                 <div class="fs-5 fw-semibold">@total.ToString("C2", new CultureInfo("uk-UA"))</div>
             </div>
-            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-stretch align-items-sm-center gap-3">
-                <button class="btn btn-outline-secondary w-100 w-sm-auto" @onclick="Clear">
+            <div class="d-flex flex-column flex-sm-row justify-content-center align-items-stretch gap-3 mt-4">
+                <button class="btn btn-sales-ghost flex-fill flex-sm-grow-0 px-4 py-2"
+                        @onclick="Clear">
                     <i class="bi bi-trash3 me-1"></i> Очистити
                 </button>
-                <a class="btn btn-success w-100 w-sm-auto" @onclick="PlaceOrder">
+
+                <button class="btn btn-sales flex-fill flex-sm-grow-0 px-4 py-2"
+                        @onclick="PlaceOrder">
                     <i class="bi bi-credit-card me-1"></i> Перейти до оформлення
-                </a>
+                </button>
             </div>
+
         </div>
     </div>
 }

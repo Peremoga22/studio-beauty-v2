@@ -2,6 +2,7 @@
 
 using Telegram.Bot.Types;
 
+using webStudioBlazor.Components.Layout;
 using webStudioBlazor.Data;
 using webStudioBlazor.EntityModels;
 using webStudioBlazor.Interfaces.Contract;
@@ -64,8 +65,8 @@ namespace webStudioBlazor.Services
                 };                                               
 
                 db.Orders.Add(order);                              
-                cart.IsActive = false;               
-                db.CartItems.RemoveRange(cart.Items);
+                // cart.IsActive = false;               
+                //db.CartItems.RemoveRange(cart.Items);
 
                 await db.SaveChangesAsync();
                 await tx.CommitAsync();
@@ -82,13 +83,19 @@ namespace webStudioBlazor.Services
         public async Task<ClientOrders> SaveClientOrderAsync(ClientOrders clientOrders)
         {
             await using var db = await _dbFactory.CreateDbContextAsync();
+            await using var tx = await db.Database.BeginTransactionAsync();
+                      
+            var sessionKey = _session.GetSessionKey();
+            var cart = await db.Carts
+                .Include(c => c.Items)
+                .SingleOrDefaultAsync(c => c.SessionKey == sessionKey && c.IsActive);
                         
             var entity = await db.ClientOrders
                 .AsTracking()
                 .SingleOrDefaultAsync(x => x.Id == clientOrders.Id);
 
             if (entity is null)
-            {               
+            {
                 entity = new ClientOrders
                 {
                     ClientFirstName = clientOrders.ClientFirstName?.Trim() ?? string.Empty,
@@ -105,25 +112,40 @@ namespace webStudioBlazor.Services
 
                 db.ClientOrders.Add(entity);
             }
-            //else
-            //{                
-            //    entity.ClientFirstName = clientOrders.ClientFirstName?.Trim() ?? entity.ClientFirstName;
-            //    entity.ClientLastName = clientOrders.ClientLastName?.Trim() ?? entity.ClientLastName;
-            //    entity.ClientPhone = clientOrders.ClientPhone?.Trim() ?? entity.ClientPhone;
-            //    entity.AppointmentDate = clientOrders.AppointmentDate != default
-            //        ? clientOrders.AppointmentDate
-            //        : entity.AppointmentDate;
-            //    entity.City = clientOrders.City?.Trim() ?? entity.City;
-            //    entity.AddressNewPostOffice = clientOrders.AddressNewPostOffice?.Trim() ?? entity.AddressNewPostOffice;
-            //    entity.Price = clientOrders.Price != default ? clientOrders.Price : entity.Price;
-            //    entity.OrderId = clientOrders.OrderId != default ? clientOrders.OrderId : entity.OrderId;
+            else
+            {
+                // За потреби оновлюємо поля
+                entity.ClientFirstName = clientOrders.ClientFirstName?.Trim() ?? entity.ClientFirstName;
+                entity.ClientLastName = clientOrders.ClientLastName?.Trim() ?? entity.ClientLastName;
+                entity.ClientPhone = clientOrders.ClientPhone?.Trim() ?? entity.ClientPhone;
+                entity.City = clientOrders.City?.Trim() ?? entity.City;
+                entity.AddressNewPostOffice = clientOrders.AddressNewPostOffice?.Trim() ?? entity.AddressNewPostOffice;
 
-            //    db.ClientOrders.Update(entity);
-            //}
+                if (clientOrders.AppointmentDate != default)
+                    entity.AppointmentDate = clientOrders.AppointmentDate;
+
+                if (clientOrders.Price > 0)
+                    entity.Price = clientOrders.Price;
+
+                if (clientOrders.OrderId != 0)
+                    entity.OrderId = clientOrders.OrderId;
+            }
+                       
+            if (cart is not null)
+            {
+                if (cart.Items?.Count > 0)
+                    db.CartItems.RemoveRange(cart.Items);
+
+                cart.IsActive = false;               
+                 db.Carts.Remove(cart);
+            }
 
             await db.SaveChangesAsync();
+            await tx.CommitAsync();
+
             return entity;
         }
+
 
 
         public async Task<List<Order>> GetAllAsync()
@@ -142,6 +164,13 @@ namespace webStudioBlazor.Services
                 .Include(o => o.ClientOrder)
                 .Include(o => o.Items).ThenInclude(i => i.Therapy)
                 .SingleOrDefaultAsync(o => o.Id == id);
+        }
+
+        public async Task<ClientOrders?> GetClientOrderByIdAsync(int orderId)
+        {
+            await using var db = await _dbFactory.CreateDbContextAsync();
+            return await db.ClientOrders.AsNoTracking()
+                .FirstOrDefaultAsync(x => x.OrderId == orderId);
         }
     }
 }
