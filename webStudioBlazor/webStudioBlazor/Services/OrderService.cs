@@ -200,16 +200,13 @@ namespace webStudioBlazor.Services
                     NewPostOffice = i.Order.ClientOrder != null ? i.Order.ClientOrder.AddressNewPostOffice : string.Empty,
 
                     ItemName = i.Therapy != null ? (i.Therapy.TitleCard ?? string.Empty) : string.Empty,
-
-                    // 🔽 кількість + ціна
+                                       
                     Quantity = (i.Quantity == null ? 1 : i.Quantity),
                     UnitPrice = i.UnitPrice,
                     LineTotal = i.UnitPrice * (decimal)(i.Quantity == null ? 1 : i.Quantity),
-
-                    // 🔽 інші позиції замовлення
+                                       
                     MoreItemsCount = Math.Max(0, i.Order.Items.Count - 1),
-
-                    // 🔽 загальна сума замовлення
+                
                     OrderTotal = i.Order.Items
                         .Select(x => x.UnitPrice * (decimal)(x.Quantity == null ? 1 : x.Quantity))
                         .Sum()
@@ -230,5 +227,14 @@ namespace webStudioBlazor.Services
                 await db.SaveChangesAsync();
             }
         }
+
+        //public async Task<Order?> LoadOrderWithIncludesAsync(int orderId, CancellationToken ct = default)
+        //{
+        //    await using var db = await _dbFactory.CreateDbContextAsync();
+        //    return await db.Orders
+        //        .Include(o => o.Items).ThenInclude(i => i.Therapy)
+        //        .Include(o => o.ClientOrder)
+        //        .FirstOrDefaultAsync(o => o.Id == orderId, ct);
+        //}
     }
 }
