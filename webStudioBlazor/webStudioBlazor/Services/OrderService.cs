@@ -6,6 +6,9 @@ using webStudioBlazor.Components.Layout;
 using webStudioBlazor.Data;
 using webStudioBlazor.EntityModels;
 using webStudioBlazor.Interfaces.Contract;
+using webStudioBlazor.ModelDTOs;
+
+using static webStudioBlazor.Components.Account.Admin.AdminOrderClients;
 
 namespace webStudioBlazor.Services
 {
@@ -171,6 +174,61 @@ namespace webStudioBlazor.Services
             await using var db = await _dbFactory.CreateDbContextAsync();
             return await db.ClientOrders.AsNoTracking()
                 .FirstOrDefaultAsync(x => x.OrderId == orderId);
+        }
+
+        public async Task<List<OrderRow>> ListCardsAsync()
+        {
+            await using var db = await _dbFactory.CreateDbContextAsync();
+
+            var list = await db.OrderItems
+                .AsNoTracking()
+                .Include(i => i.Order)
+                    .ThenInclude(o => o.ClientOrder)
+                .Include(i => i.Therapy)
+                .OrderByDescending(i => i.Order.OrderDate)
+                .Select(i => new OrderRow
+                {
+                    OrderItemId = i.Id,
+                    OrderId = i.OrderId,
+                    OrderDate = i.Order.OrderDate,
+
+                    FirstName = i.Order.ClientOrder != null ? i.Order.ClientOrder.ClientFirstName : string.Empty,
+                    LastName = i.Order.ClientOrder != null ? i.Order.ClientOrder.ClientLastName : string.Empty,
+                    Phone = i.Order.ClientOrder != null ? i.Order.ClientOrder.ClientPhone : string.Empty,
+
+                    City = i.Order.ClientOrder != null ? i.Order.ClientOrder.City : string.Empty,
+                    NewPostOffice = i.Order.ClientOrder != null ? i.Order.ClientOrder.AddressNewPostOffice : string.Empty,
+
+                    ItemName = i.Therapy != null ? (i.Therapy.TitleCard ?? string.Empty) : string.Empty,
+
+                    // 🔽 кількість + ціна
+                    Quantity = (i.Quantity == null ? 1 : i.Quantity),
+                    UnitPrice = i.UnitPrice,
+                    LineTotal = i.UnitPrice * (decimal)(i.Quantity == null ? 1 : i.Quantity),
+
+                    // 🔽 інші позиції замовлення
+                    MoreItemsCount = Math.Max(0, i.Order.Items.Count - 1),
+
+                    // 🔽 загальна сума замовлення
+                    OrderTotal = i.Order.Items
+                        .Select(x => x.UnitPrice * (decimal)(x.Quantity == null ? 1 : x.Quantity))
+                        .Sum()
+                })
+                .ToListAsync();
+
+            return list;
+        }
+
+        public async Task DeleteOrderAsync(int orderItemId)
+        {
+            await using var db = await _dbFactory.CreateDbContextAsync();
+
+            var item = await db.OrderItems.FindAsync(orderItemId);
+            if (item != null)
+            {
+                db.OrderItems.Remove(item);
+                await db.SaveChangesAsync();
+            }
         }
     }
 }

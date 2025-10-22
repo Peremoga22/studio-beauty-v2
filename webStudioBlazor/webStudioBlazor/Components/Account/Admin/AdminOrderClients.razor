@@ -1,15 +1,144 @@
 ﻿@page "/admin-order-clients"
 
+
 @inject SeedService _seedService
 @inject NavigationManager _navigationManager
+@inject OrderService _orderService
 @layout AdminLayout
 @attribute [Authorize(Roles = "Admin")]
 @rendermode InteractiveServer
 
 
 
-<h3>AdminOrderClients</h3>
+<main class="container py-4">
+    <section class="card shadow-lg border-0 rounded-4">
+        <header class="card-header bg-white border-0 pb-0">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="fs-3 fw-bold text-pink mb-0">Список замовлень</h1>
+            </div>
+        </header>
+
+        <div class="divider my-2 border-bottom"></div>
+
+        <section aria-label="Список замовлень" class="cards p-3">
+            @if (rows.Count == 0)
+            {
+                <div class="text-muted text-center py-4 fs-5">Немає замовлень</div>
+            }
+            else
+            {
+                @foreach (var r in rows)
+                {
+                    <article class="order-card bg-light border-0 rounded-4 shadow-sm p-4 mb-4">
+                        <div class="row g-3 align-items-start">
+                            <!-- Ліва колонка: клієнт, доставка, позиція -->
+                            <div class="col-12 col-md-8">
+                                <div class="mb-2">
+                                    <span class="time text-muted small d-inline-flex align-items-center gap-1">
+                                        <i class="bi bi-calendar3"></i>
+                                        @r.OrderDate.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
+                                    </span>
+                                </div>
+
+                                <div class="client fw-semibold fs-5 d-flex align-items-center gap-2 mb-1">
+                                    <i class="bi bi-person-circle text-pink"></i>
+                                    <span>@r.FirstName @r.LastName</span>
+                                </div>
+
+                                <div class="mb-2">
+                                    @if (!string.IsNullOrWhiteSpace(r.Phone))
+                                    {
+                                        <a href="tel:@r.Phone" class="text-decoration-none text-dark d-inline-flex align-items-center gap-2">
+                                            <i class="bi bi-telephone text-pink"></i><span>@r.Phone</span>
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Телефон не вказано</span>
+                                    }
+                                </div>
+
+                                <div class="mb-2">
+                                    @if (!string.IsNullOrWhiteSpace(r.ItemName))
+                                    {
+                                        <span class="fw-semibold">@r.ItemName</span>
+                                        @if (r.MoreItemsCount > 0)
+                                        {
+                                            <span class="text-muted"> • ще @r.MoreItemsCount</span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Товар не знайдено</span>
+                                    }
+                                </div>
+
+                                <div class="meta small text-muted d-grid gap-1">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="bi bi-geo-alt-fill text-pink"></i><span>@r.City</span>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="bi bi-box-seam text-pink"></i><span>@r.NewPostOffice</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Права колонка: ціни/підсумки (ліве вирівнювання зберігаємо) -->
+                            <div class="col-12 col-md-4">
+                                <div class="price d-flex flex-column gap-1">
+                                    <div class="fw-semibold">
+                                        @r.Quantity × @r.UnitPrice.ToString("C0", new CultureInfo("uk-UA"))
+                                    </div>
+                                    <div class="fs-5 fw-bold">
+                                        = @r.LineTotal.ToString("C0", new CultureInfo("uk-UA"))
+                                    </div>
+                                    <div class="order-total text-muted small">
+                                        Разом по замовленню: @r.OrderTotal.ToString("C0", new CultureInfo("uk-UA"))
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Footer картки: кнопка по центру на всіх розмірах -->
+                            <div class="col-12">
+                                <div class="card-actions text-center pt-2">
+                                    <button class="btn btn-outline-pink btn-md px-4 py-2 rounded-3"
+                                            @onclick="() => DeleteOrder(r.OrderItemId)">
+                                        <i class="bi bi-trash"></i> Видалити
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                }
+            }
+        </section>
+    </section>
+</main>
+
+
+
 
 @code {
+    private List<OrderRow> rows = new();
+    private HashSet<int> deleting = new();
+       
+    private string? filterDateStr;
+    private DateOnly? FilterDate => DateOnly.TryParse(filterDateStr, out var d) ? d : null;
 
+    protected override async Task OnInitializedAsync()
+    {
+        rows = await _orderService.ListCardsAsync();
+    }
+          
+    static class OrderPage
+    {
+        public static readonly CultureInfo ua = new("uk-UA");
+    }
+
+    private async Task DeleteOrder(int id)
+    {      
+        await _orderService.DeleteOrderAsync(id);
+        rows.RemoveAll(r => r.OrderItemId == id);
+    }   
 }
+

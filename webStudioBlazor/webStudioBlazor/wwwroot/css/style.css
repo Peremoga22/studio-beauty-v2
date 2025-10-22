@@ -2571,3 +2571,45 @@
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     transition: all 0.2s ease-in-out;
 }
+
+.text-pink {
+    color: #ff69b4 !important;
+}
+
+.btn-outline-pink {
+    color: #ff69b4;
+    border-color: #ff69b4;
+}
+
+    .btn-outline-pink:hover,
+    .btn-outline-pink:focus {
+        background-color: #ff69b4 !important;
+        color: #fff !important;
+        border-color: #ff69b4 !important;
+        transition: all 0.2s ease-in-out;
+    }
+
+.order-card {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+    .order-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+    }
+
+/* дрібні покращення читабельності */
+.price .fw-semibold {
+    line-height: 1.2;
+}
+
+.price .fs-5 {
+    line-height: 1.25;
+}
+
+/* на зовсім малих екранах трохи збільшуємо відступи для натисканності */
+@media (max-width: 375px) {
+    .btn-outline-pink {
+        padding: 0.65rem 1.25rem;
+    }
+}
