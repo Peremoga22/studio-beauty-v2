@@ -35,6 +35,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ISessionService, SessionService>();
 builder.Services.AddScoped<CartService>();
 builder.Services.AddScoped<OrderService>();
+builder.Services.AddScoped<AdminCustomerOrdersService>();
 
 // TelegramBotClient як Singleton
 builder.Services.AddSingleton<ITelegramBotClient>(sp =>

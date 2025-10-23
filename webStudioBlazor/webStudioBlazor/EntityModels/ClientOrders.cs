@@ -4,7 +4,7 @@ namespace webStudioBlazor.EntityModels
 {
     public class ClientOrders
     {
-        public int Id { get; set; }
+        public int Id { get; set; }      
 
         [Required(ErrorMessage = "Вкажіть ім’я")]
         [StringLength(64, ErrorMessage = "Ім’я має містити не більше 64 символів")]

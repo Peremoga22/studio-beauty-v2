@@ -81,25 +81,27 @@ namespace webStudioBlazor.Services
             }
         }
 
-        public async Task<Order> SaveClientOrderAsync(ClientOrders model)
+       public async Task<Order> SaveClientOrderAsync(ClientOrders model)
         {
             await using var db = await _dbFactory.CreateDbContextAsync();
             await using var tx = await db.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
 
-            var sessionKey = _session.GetSessionKey();                       
+            var sessionKey = _session.GetSessionKey();
+
             var stagedItems = await db.OrderItems
                 .Where(oi => oi.OrderId == null && oi.SessionKey == sessionKey)
                 .ToListAsync();
-                        
+
             var order = new Order
             {
                 OrderDate = DateTime.UtcNow,
                 PaymentStatus = "Pending",
                 OrderStatus = "New",
-                TotalAmount = 0m
+                TotalAmount = 0m,
+                SessionKey = sessionKey,
             };
             db.Orders.Add(order);
-            await db.SaveChangesAsync(); 
+            await db.SaveChangesAsync();
                        
             var client = new ClientOrders
             {
@@ -115,12 +117,12 @@ namespace webStudioBlazor.Services
                 Price = 0m
             };
             db.ClientOrders.Add(client);
-                       
+
             order.ClientOrder = client;
             await db.SaveChangesAsync();
-                       
+                      
             if (stagedItems.Count > 0)
-            {               
+            {
                 var byTherapy = stagedItems
                     .GroupBy(i => i.TherapyId)
                     .Select(g => new
@@ -134,9 +136,9 @@ namespace webStudioBlazor.Services
                     var item = g.First;
                     item.OrderId = order.Id;
                     item.Quantity = g.Quantity;
-                    item.SessionKey = null;              
+                    item.SessionKey = null;
                 }
-                               
+
                 var duplicates = stagedItems
                     .GroupBy(i => i.TherapyId)
                     .SelectMany(g => g.Skip(1))
@@ -148,7 +150,7 @@ namespace webStudioBlazor.Services
                 await db.SaveChangesAsync();
             }
             else
-            {               
+            {
                 var cart = await db.Carts
                     .Include(c => c.Items)
                     .SingleOrDefaultAsync(c => c.SessionKey == sessionKey && c.IsActive);
@@ -158,8 +160,8 @@ namespace webStudioBlazor.Services
                     .Select(g => new
                     {
                         TherapyId = g.Key,
-                        Quantity = g.Sum(x => Math.Max(1, x.Quantity)),                        
-                        UnitPrice = g.OrderByDescending(x => x.TotalPrice).First().UnitPrice                        
+                        Quantity = g.Sum(x => Math.Max(1, x.Quantity)),
+                        UnitPrice = g.OrderByDescending(x => x.TotalPrice).First().UnitPrice
                     })
                     .ToList();
 
@@ -176,20 +178,20 @@ namespace webStudioBlazor.Services
                     });
                 }
                 await db.SaveChangesAsync();
-                               
+
                 if (cart.Items.Count > 0) db.CartItems.RemoveRange(cart.Items);
                 cart.IsActive = false;
                 db.Carts.Remove(cart);
                 await db.SaveChangesAsync();
             }
-                        
+
             order.TotalAmount = await db.OrderItems
                 .Where(i => i.OrderId == order.Id)
                 .SumAsync(i => i.UnitPrice * i.Quantity);
 
-            client.Price = order.TotalAmount; 
+            client.Price = order.TotalAmount;
             await db.SaveChangesAsync();
-            
+
             var leftoverCart = await db.Carts
                 .Include(c => c.Items)
                 .SingleOrDefaultAsync(c => c.SessionKey == sessionKey && c.IsActive);
@@ -203,16 +205,17 @@ namespace webStudioBlazor.Services
                 db.Carts.Remove(leftoverCart);
                 await db.SaveChangesAsync();
             }
-                        
+
             var result = await db.Orders
                 .Include(o => o.Items)
-                    .ThenInclude(i => i.Therapy) 
+                    .ThenInclude(i => i.Therapy)
                 .Include(o => o.ClientOrder)
                 .FirstAsync(o => o.Id == order.Id);
 
             await tx.CommitAsync();
             return result;
         }
+
 
 
         public async Task<List<Order>> GetAllAsync()

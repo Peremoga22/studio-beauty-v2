@@ -11,7 +11,6 @@
             // Контейнер
             const el = document.getElementById("chartdiv");
             if (!el) { console.error("#chartdiv not found in DOM"); return; }
-            // Fallback-висота для мобільних (якщо CSS не спрацював)
             if (el.clientHeight === 0) {
                 const w = el.clientWidth || window.innerWidth || 360;
                 const isNarrow = w < 576;
@@ -24,24 +23,27 @@
                 .forEach(r => r.dispose());
 
             // Агрегація сум
-            let totalCosmo = 0, totalMassage = 0;
+            let totalCosmo = 0, totalMassage = 0, totalSales = 0;
             for (const p of (analyticsData || [])) {
                 totalCosmo += Number(p.cosmetologyRevenue ?? 0);
                 totalMassage += Number(p.massageRevenue ?? 0);
+                totalSales += Number(p.salesRevenue ?? 0); // 🛒 нове поле
             }
+
             const pieData = [
                 { category: "Косметологія", value: totalCosmo },
-                { category: "Масаж", value: totalMassage }
-            ];
+                { category: "Масаж", value: totalMassage },
+                { category: "Продажі", value: totalSales } // 🛒 додано
+            ].filter(x => x.value > 0); // прибрати нульові сегменти, щоб не захаращувати
 
             // Створюємо root
             const root = am5.Root.new("chartdiv");
             root.setThemes([am5themes_Animated.new(root)]);
-            // Формат чисел: укр. локаль, без десяткових
             root.numberFormatter.setAll({ numberFormat: "#,###", intlLocales: "uk-UA" });
 
-            // Якщо даних немає — показати повідомлення і вийти
-            if ((totalCosmo + totalMassage) <= 0) {
+            // Якщо даних немає — повідомлення і вихід
+            const grandTotal = totalCosmo + totalMassage + totalSales;
+            if (grandTotal <= 0 || pieData.length === 0) {
                 root.container.children.push(
                     am5.Label.new(root, {
                         text: "Немає даних за обраний період",
@@ -52,9 +54,9 @@
                 return;
             }
 
-            // Pie chart
+            // Pie (можеш зробити пончик, додавши innerRadius)
             const chart = root.container.children.push(am5percent.PieChart.new(root, {
-                // повне коло; для donut: innerRadius: am5.percent(55)
+                // innerRadius: am5.percent(55)
             }));
 
             const series = chart.series.push(am5percent.PieSeries.new(root, {
@@ -62,13 +64,12 @@
                 categoryField: "category"
             }));
 
-            // Підписи та підказки без .00 і з "грн"
+            // Підписи/підказки
             series.slices.template.setAll({
                 tooltipText: "{category}: {value.formatNumber('#,###')}\u00A0грн ({valuePercentTotal.formatNumber('#,##0')}%)"
             });
             series.labels.template.setAll({
                 text: "{category}: {value.formatNumber('#,###')}\u00A0грн",
-                // краще для довгих підписів:
                 oversizedBehavior: "wrap",
                 textType: "circular"
             });

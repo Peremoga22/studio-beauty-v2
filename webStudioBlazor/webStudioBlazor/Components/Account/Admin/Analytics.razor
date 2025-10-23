@@ -46,14 +46,16 @@
                     </button>
                 </div>
             </div>
-        </div>              
-        <div class="row row-cols-1 row-cols-md-3 g-3 mt-3 kpis">
+        </div>
+        <div class="row row-cols-1 row-cols-md-4 g-3 mt-3 kpis justify-content-center text-center">
+
+            <!-- Загальний дохід -->
             <div class="col">
                 <div class="card border-0 shadow-sm kpi kpi-total h-100">
                     <div class="card-body py-3">
-                        <div class="d-flex justify-content-between align-items-center mb-1">
-                            <span class="text-body-secondary small">Загальний дохід</span>
-                            <i class="bi bi-cash-stack"></i>
+                        <div class="d-flex justify-content-center align-items-center gap-2 mb-1">
+                            <i class="bi bi-cash-stack text-success fs-5"></i>
+                            <span class="text-body-secondary small text-uppercase">Загальний дохід</span>
                         </div>
                         <div class="fs-4 fw-semibold">@Money(totalRevenue)</div>
                         <div class="small text-body-secondary">Замовлень: @totalCount</div>
@@ -61,12 +63,13 @@
                 </div>
             </div>
 
+            <!-- Косметологія -->
             <div class="col">
                 <div class="card border-0 shadow-sm kpi kpi-cosmo h-100">
                     <div class="card-body py-3">
-                        <div class="d-flex justify-content-between align-items-center mb-1">
-                            <span class="text-body-secondary small">Косметологія</span>
-                            <i class="bi bi-heart"></i>
+                        <div class="d-flex justify-content-center align-items-center gap-2 mb-1">
+                            <i class="bi bi-heart text-pink fs-5"></i>
+                            <span class="text-body-secondary small text-uppercase">Косметологія</span>
                         </div>
                         <div class="fs-5 fw-semibold">@Money(cosmoRevenue)</div>
                         <div class="small text-body-secondary">Візитів: @cosmoCount</div>
@@ -74,31 +77,36 @@
                 </div>
             </div>
 
+            <!-- Масаж -->
             <div class="col">
                 <div class="card border-0 shadow-sm kpi kpi-massage h-100">
                     <div class="card-body py-3">
-                        <div class="d-flex justify-content-between align-items-center mb-1">
-                            <span class="text-body-secondary small">Масаж</span>
-                            <i class="bi bi-hand-index-thumb"></i>
+                        <div class="d-flex justify-content-center align-items-center gap-2 mb-1">
+                            <i class="bi bi-hand-index-thumb text-primary fs-5"></i>
+                            <span class="text-body-secondary small text-uppercase">Масаж</span>
                         </div>
                         <div class="fs-5 fw-semibold">@Money(massageRevenue)</div>
                         <div class="small text-body-secondary">Візитів: @massageCount</div>
                     </div>
                 </div>
             </div>
+
+            <!-- Продажі -->
             <div class="col">
-                <div class="card border-0 shadow-sm kpi kpi-massage h-100">
+                <div class="card border-0 shadow-sm kpi kpi-sales h-100">
                     <div class="card-body py-3">
-                        <div class="d-flex justify-content-between align-items-center mb-1">
-                            <span class="text-body-secondary small">Продажі</span>
-                            <i class="bi bi-hand-index-thumb"></i>
+                        <div class="d-flex justify-content-center align-items-center gap-2 mb-1">
+                            <i class="bi bi-bag-check text-warning fs-5"></i>
+                            <span class="text-body-secondary small text-uppercase">Продажі</span>
                         </div>
-                        <div class="fs-5 fw-semibold">@Money(massageRevenue)</div>
-                        <div class="small text-body-secondary">Візитів: @massageCount</div>
+                        <div class="fs-5 fw-semibold">@Money(salesRevenue)</div>
+                        <div class="small text-body-secondary">Замовлень: @ordersCount</div>
                     </div>
                 </div>
             </div>
+
         </div>
+
         <div class="chart-wrap position-relative mt-3">
             <div id="chartdiv" class="rounded-3 border" style="width:100%; min-height: 480px;"></div>
         </div>               
@@ -108,8 +116,8 @@
 @code {
     private DateOnly from = DateOnly.FromDateTime(DateTime.Today.AddMonths(-1));
     private DateOnly to = DateOnly.FromDateTime(DateTime.Today);    
-    private decimal totalRevenue, cosmoRevenue, massageRevenue;
-    private int totalCount, cosmoCount, massageCount;
+    private decimal totalRevenue, cosmoRevenue, massageRevenue, salesRevenue;
+    private int totalCount, cosmoCount, massageCount, ordersCount;
     private bool isLoading;
     private static readonly CultureInfo ua = CultureInfo.GetCultureInfo("uk-UA");
     private string Money(decimal v) => $"{v.ToString("N0", ua)} грн";
@@ -141,26 +149,34 @@
     private async Task RefreshDataAsync()
     {
         DateTime? fromArg = (from == default) ? null : from.ToDateTime(TimeOnly.MinValue);
-        DateTime? toArg = (to == default) ? null : to.ToDateTime(TimeOnly.MaxValue); // кінець дня
+        DateTime? toArg = (to == default) ? null : to.ToDateTime(TimeOnly.MaxValue); 
 
         var data = await analytics.GetAsync(fromArg, toArg);
 
+        // --- Підрахунок доходів ---
         cosmoRevenue = data.Sum(p => p.CosmetologyRevenue);
         massageRevenue = data.Sum(p => p.MassageRevenue);
-        totalRevenue = cosmoRevenue + massageRevenue;
+        salesRevenue = data.Sum(p => p.SalesRevenue);   
+        totalRevenue = cosmoRevenue + massageRevenue + salesRevenue;
 
+        // --- Підрахунок кількості ---
         cosmoCount = data.Sum(p => p.CosmetologyCount);
         massageCount = data.Sum(p => p.MassageCount);
-        totalCount = cosmoCount + massageCount;
+        ordersCount = data.Sum(p => p.OrdersCount);      
+        totalCount = cosmoCount + massageCount + ordersCount;
 
+        // --- Підготовка даних для графіка ---
         _mapped = data.Select(p => new
         {
             date = p.Date.ToString("yyyy-MM-dd"),
             cosmetologyRevenue = p.CosmetologyRevenue,
             massageRevenue = p.MassageRevenue,
+            salesRevenue = p.SalesRevenue,             
             totalRevenue = p.TotalRevenue
         }).ToList<object>();
     }
+
+
 
     private async Task LoadChartAsync()
     {
