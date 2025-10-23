@@ -1,7 +1,7 @@
 ﻿@page "/orders"
-@page "/orders/{Id:int}"
+@page "/orders/{totalCount:int}"
 
-@using System.Globalization
+@inject AppointmentNotifier _notification
 @inject OrderService _orderService
 @inject NavigationManager _nav
 @rendermode InteractiveServer
@@ -49,7 +49,7 @@
                 </div>
 
                 <div class="col-md-6">
-                    <label for="ClientPhone" class="form-label fw-semibold">Телефон</label>
+                    <label for="ClientPhone" class="form-label fw-semibold">Телефон *</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-telephone"></i></span>
                         <InputText id="ClientPhone" class="form-control" @bind-Value="Model.ClientPhone" inputmode="tel" placeholder="+380XXXXXXXXX" />
@@ -115,55 +115,43 @@
 
 
 @code {
-    [Parameter] public int? Id { get; set; }
+    [Parameter] public int? totalCount { get; set; }
 
-    private List<Order>? orders;
-    private Order? order;
+    private List<Order>? orders = new();
+    private Order? order = new();
     private ClientOrders Model = new ClientOrders();
+    private bool _isSubmitting;
 
     protected override async Task OnInitializedAsync()
-    {
-        if (Id.HasValue)
-        {
-            order = await _orderService.GetByIdAsync(Id.Value);
-            if (order is not null)
-            {
-                Model.Price = order.TotalAmount;
-                Model.AppointmentDate = DateOnly.FromDateTime(DateTime.UtcNow.Date);
-                Model.OrderId = order.Id;
-            }
-            else
-            {                
-                _nav.NavigateTo("/orders", forceLoad: true);
-                return;
-            }
-        }
-        else
-        {            
-            Model.AppointmentDate = DateOnly.FromDateTime(DateTime.UtcNow.Date);
-        }
+    {        
+        Model.Price = totalCount.HasValue ? (decimal)totalCount.Value : 0m;
+        Model.AppointmentDate = DateOnly.FromDateTime(DateTime.UtcNow.Date);
     }
 
     private async Task HandleSubmit()
     {
-        await _orderService.SaveClientOrderAsync(Model);
-        _nav.NavigateTo($"/order-confirm-page/{order?.Id ?? Model.OrderId}");
+        if (_isSubmitting) return;
+        _isSubmitting = true;
+        try
+        {
+            order = await _orderService.SaveClientOrderAsync(Model);
+            await _notification.NotifyNewOrderAsync(order);
+            _nav.NavigateTo($"/order-confirm-page/{order.Id}");
+        }
+        finally
+        {
+            _isSubmitting = false;
+        }
     }
-
-    private bool IsValid(string fieldName)
-    {
-        return true;
-    }
-
+  
     private void ResetForm()
     {
         Model = new ClientOrders
         {           
             AppointmentDate = DateOnly.FromDateTime(DateTime.UtcNow.Date),
-            Price = order.TotalAmount
+            Price = totalCount.HasValue ? (decimal)totalCount.Value : 0m
         };
-
-      
+              
         StateHasChanged();
     }
 

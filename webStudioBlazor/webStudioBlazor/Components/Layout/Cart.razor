@@ -269,7 +269,8 @@ else
    
     private async Task PlaceOrder()
     {      
-        var order = await _orderService.CreateFromCartAsync();
-        _nav.NavigateTo($"/orders/{order.Id}");
+        // var order = await _orderService.CreateFromCartAsync();
+        totalCount = (int)(items?.Sum(x => x.UnitPrice * x.Quantity) ?? 0m);
+        _nav.NavigateTo($"/orders/{totalCount}");
     }
 }

@@ -67,10 +67,8 @@ namespace webStudioBlazor.Services
                     }).ToList()
                 };                                               
 
-                db.Orders.Add(order);                              
-                // cart.IsActive = false;               
-                //db.CartItems.RemoveRange(cart.Items);
-
+                db.Orders.Add(order);                            
+               
                 await db.SaveChangesAsync();
                 await tx.CommitAsync();
 
@@ -83,72 +81,138 @@ namespace webStudioBlazor.Services
             }
         }
 
-        public async Task<ClientOrders> SaveClientOrderAsync(ClientOrders clientOrders)
+        public async Task<Order> SaveClientOrderAsync(ClientOrders model)
         {
             await using var db = await _dbFactory.CreateDbContextAsync();
-            await using var tx = await db.Database.BeginTransactionAsync();
-                      
-            var sessionKey = _session.GetSessionKey();
-            var cart = await db.Carts
-                .Include(c => c.Items)
-                .SingleOrDefaultAsync(c => c.SessionKey == sessionKey && c.IsActive);
+            await using var tx = await db.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
+
+            var sessionKey = _session.GetSessionKey();                       
+            var stagedItems = await db.OrderItems
+                .Where(oi => oi.OrderId == null && oi.SessionKey == sessionKey)
+                .ToListAsync();
                         
-            var entity = await db.ClientOrders
-                .AsTracking()
-                .SingleOrDefaultAsync(x => x.Id == clientOrders.Id);
-
-            if (entity is null)
+            var order = new Order
             {
-                entity = new ClientOrders
-                {
-                    ClientFirstName = clientOrders.ClientFirstName?.Trim() ?? string.Empty,
-                    ClientLastName = clientOrders.ClientLastName?.Trim() ?? string.Empty,
-                    ClientPhone = clientOrders.ClientPhone?.Trim() ?? string.Empty,
-                    AppointmentDate = clientOrders.AppointmentDate != default
-                        ? clientOrders.AppointmentDate
-                        : DateOnly.FromDateTime(DateTime.UtcNow.Date),
-                    City = clientOrders.City?.Trim() ?? string.Empty,
-                    AddressNewPostOffice = clientOrders.AddressNewPostOffice?.Trim() ?? string.Empty,
-                    Price = clientOrders.Price,
-                    OrderId = clientOrders.OrderId
-                };
+                OrderDate = DateTime.UtcNow,
+                PaymentStatus = "Pending",
+                OrderStatus = "New",
+                TotalAmount = 0m
+            };
+            db.Orders.Add(order);
+            await db.SaveChangesAsync(); 
+                       
+            var client = new ClientOrders
+            {
+                OrderId = order.Id,
+                ClientFirstName = (model.ClientFirstName ?? string.Empty).Trim(),
+                ClientLastName = (model.ClientLastName ?? string.Empty).Trim(),
+                ClientPhone = (model.ClientPhone ?? string.Empty).Trim(),
+                City = (model.City ?? string.Empty).Trim(),
+                AddressNewPostOffice = (model.AddressNewPostOffice ?? string.Empty).Trim(),
+                AppointmentDate = model.AppointmentDate != default
+                                    ? model.AppointmentDate
+                                    : DateOnly.FromDateTime(DateTime.UtcNow.Date),
+                Price = 0m
+            };
+            db.ClientOrders.Add(client);
+                       
+            order.ClientOrder = client;
+            await db.SaveChangesAsync();
+                       
+            if (stagedItems.Count > 0)
+            {               
+                var byTherapy = stagedItems
+                    .GroupBy(i => i.TherapyId)
+                    .Select(g => new
+                    {
+                        First = g.First(),
+                        Quantity = g.Sum(x => Math.Max(1, x.Quantity))
+                    });
 
-                db.ClientOrders.Add(entity);
+                foreach (var g in byTherapy)
+                {
+                    var item = g.First;
+                    item.OrderId = order.Id;
+                    item.Quantity = g.Quantity;
+                    item.SessionKey = null;              
+                }
+                               
+                var duplicates = stagedItems
+                    .GroupBy(i => i.TherapyId)
+                    .SelectMany(g => g.Skip(1))
+                    .ToList();
+
+                if (duplicates.Count > 0)
+                    db.OrderItems.RemoveRange(duplicates);
+
+                await db.SaveChangesAsync();
             }
             else
-            {
-                // За потреби оновлюємо поля
-                entity.ClientFirstName = clientOrders.ClientFirstName?.Trim() ?? entity.ClientFirstName;
-                entity.ClientLastName = clientOrders.ClientLastName?.Trim() ?? entity.ClientLastName;
-                entity.ClientPhone = clientOrders.ClientPhone?.Trim() ?? entity.ClientPhone;
-                entity.City = clientOrders.City?.Trim() ?? entity.City;
-                entity.AddressNewPostOffice = clientOrders.AddressNewPostOffice?.Trim() ?? entity.AddressNewPostOffice;
+            {               
+                var cart = await db.Carts
+                    .Include(c => c.Items)
+                    .SingleOrDefaultAsync(c => c.SessionKey == sessionKey && c.IsActive);
 
-                if (clientOrders.AppointmentDate != default)
-                    entity.AppointmentDate = clientOrders.AppointmentDate;
+                var grouped = cart.Items
+                    .GroupBy(ci => ci.TherapyId)
+                    .Select(g => new
+                    {
+                        TherapyId = g.Key,
+                        Quantity = g.Sum(x => Math.Max(1, x.Quantity)),                        
+                        UnitPrice = g.OrderByDescending(x => x.TotalPrice).First().UnitPrice                        
+                    })
+                    .ToList();
 
-                if (clientOrders.Price > 0)
-                    entity.Price = clientOrders.Price;
+                foreach (var g in grouped)
+                {
+                    if (g.TherapyId == 0) continue;
 
-                if (clientOrders.OrderId != 0)
-                    entity.OrderId = clientOrders.OrderId;
+                    db.OrderItems.Add(new OrderItem
+                    {
+                        OrderId = order.Id,
+                        TherapyId = g.TherapyId,
+                        UnitPrice = g.UnitPrice,
+                        Quantity = g.Quantity
+                    });
+                }
+                await db.SaveChangesAsync();
+                               
+                if (cart.Items.Count > 0) db.CartItems.RemoveRange(cart.Items);
+                cart.IsActive = false;
+                db.Carts.Remove(cart);
+                await db.SaveChangesAsync();
             }
-                       
-            if (cart is not null)
-            {
-                if (cart.Items?.Count > 0)
-                    db.CartItems.RemoveRange(cart.Items);
+                        
+            order.TotalAmount = await db.OrderItems
+                .Where(i => i.OrderId == order.Id)
+                .SumAsync(i => i.UnitPrice * i.Quantity);
 
-                cart.IsActive = false;               
-                 db.Carts.Remove(cart);
-            }
-
+            client.Price = order.TotalAmount; 
             await db.SaveChangesAsync();
+            
+            var leftoverCart = await db.Carts
+                .Include(c => c.Items)
+                .SingleOrDefaultAsync(c => c.SessionKey == sessionKey && c.IsActive);
+
+            if (leftoverCart is not null)
+            {
+                if (leftoverCart.Items?.Count > 0)
+                    db.CartItems.RemoveRange(leftoverCart.Items);
+
+                leftoverCart.IsActive = false;
+                db.Carts.Remove(leftoverCart);
+                await db.SaveChangesAsync();
+            }
+                        
+            var result = await db.Orders
+                .Include(o => o.Items)
+                    .ThenInclude(i => i.Therapy) 
+                .Include(o => o.ClientOrder)
+                .FirstAsync(o => o.Id == order.Id);
+
             await tx.CommitAsync();
-
-            return entity;
+            return result;
         }
-
 
 
         public async Task<List<Order>> GetAllAsync()
@@ -226,15 +290,6 @@ namespace webStudioBlazor.Services
                 db.OrderItems.Remove(item);
                 await db.SaveChangesAsync();
             }
-        }
-
-        //public async Task<Order?> LoadOrderWithIncludesAsync(int orderId, CancellationToken ct = default)
-        //{
-        //    await using var db = await _dbFactory.CreateDbContextAsync();
-        //    return await db.Orders
-        //        .Include(o => o.Items).ThenInclude(i => i.Therapy)
-        //        .Include(o => o.ClientOrder)
-        //        .FirstOrDefaultAsync(o => o.Id == orderId, ct);
-        //}
+        }      
     }
 }
