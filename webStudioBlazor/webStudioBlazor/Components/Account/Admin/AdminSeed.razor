@@ -218,11 +218,5 @@
         masters = await _seedService.GetAllMasterListAsync();
         categories = await _seedService.GetAllCategoryListAsync();
         pageTherapies = await _seedService.GetAllPageTherapyListAsync();
-    }
-
-    public async Task Delete(int id)
-    {
-      
-        StateHasChanged();
-    }
+    }        
 }

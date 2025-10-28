@@ -120,10 +120,6 @@
 
 @code {
     private List<OrderRow> rows = new();
-    private HashSet<int> deleting = new();
-       
-    private string? filterDateStr;
-    private DateOnly? FilterDate => DateOnly.TryParse(filterDateStr, out var d) ? d : null;
 
     protected override async Task OnInitializedAsync()
     {

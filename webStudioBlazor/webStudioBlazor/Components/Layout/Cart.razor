@@ -258,7 +258,7 @@ else
         totalCount = items?.Sum(i => i.Quantity) ?? 0;
     }       
    
-    private async Task PlaceOrder()
+    private void PlaceOrder()
     {     
         totalCount = (int)(items?.Sum(x => x.UnitPrice * x.Quantity) ?? 0m);
         _nav.NavigateTo($"/orders/{totalCount}");

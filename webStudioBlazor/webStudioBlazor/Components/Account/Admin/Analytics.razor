@@ -118,7 +118,7 @@
     private DateOnly to = DateOnly.FromDateTime(DateTime.Today);    
     private decimal totalRevenue, cosmoRevenue, massageRevenue, salesRevenue;
     private int totalCount, cosmoCount, massageCount, ordersCount;
-    private bool isLoading;
+    
     private static readonly CultureInfo ua = CultureInfo.GetCultureInfo("uk-UA");
     private string Money(decimal v) => $"{v.ToString("N0", ua)} грн";
     private List<object>? _mapped;
