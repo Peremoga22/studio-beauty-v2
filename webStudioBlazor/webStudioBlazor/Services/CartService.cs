@@ -74,13 +74,9 @@ namespace webStudioBlazor.Services
             {
                 existing.Quantity += qty;
                 db.Entry(existing).State = EntityState.Modified;
-            }
-                      
-            BumpCountLocally(qty);
-
-            await db.SaveChangesAsync();
-                       
-            await NotifyCountChangedAsync();
+            }                     
+           
+            await db.SaveChangesAsync();                  
         }
 
         public async Task UpdateQuantityAsync(int itemId, int qty)
@@ -90,12 +86,10 @@ namespace webStudioBlazor.Services
 
             var item = await db.CartItems.FindAsync(itemId);
             if (item is null) return;
-
-            // різниця, щоб коректно підбити бейдж оптимістично
+                        
             var delta = qty - item.Quantity;
             item.Quantity = qty;
-
-            // миттєве локальне оновлення
+                        
             if (delta != 0) BumpCountLocally(delta);
 
             await db.SaveChangesAsync();
@@ -107,8 +101,7 @@ namespace webStudioBlazor.Services
             await using var db = await _dbFactory.CreateDbContextAsync();
             var item = await db.CartItems.FindAsync(itemId);
             if (item is null) return;
-
-            // зменшуємо бейдж на кількість елемента
+                       
             BumpCountLocally(-item.Quantity);
 
             db.CartItems.Remove(item);
@@ -144,8 +137,7 @@ namespace webStudioBlazor.Services
         }
 
         public async Task NotifyCountChangedAsync()
-        {
-            // Debounce/guard від паралельних підрахунків
+        {            
             if (Interlocked.Exchange(ref _notifyInFlight, 1) == 1) return;
             try
             {

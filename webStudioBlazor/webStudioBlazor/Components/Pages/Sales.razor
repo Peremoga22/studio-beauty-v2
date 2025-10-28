@@ -89,8 +89,7 @@
         await _cartService.AddOrIncrementAsync(Id, Quantity);
         _cartService.IncreaseHeaderCount(Quantity);
         await ShowAlertAsync("Товар додано", "success");
-        await InvokeAsync(StateHasChanged);
-        ReloadPage();
+        await InvokeAsync(StateHasChanged);      
     }
 
     private string AlertCss =>

@@ -1,6 +1,8 @@
 ﻿@implements IDisposable
-@inject NavigationManager NavigationManager
+@inject NavigationManager _navigationManager
 @inject CartService _cartService
+@rendermode InteractiveServer
+
 <!-- Topbar Start -->
 <div class="container-fluid bg-dark px-5 d-none d-lg-block">
     <div class="row gx-0 align-items-center text-white small" style="height: 45px;">
@@ -110,7 +112,7 @@
                 <li class="nav-item">
                     <a href="/cart" class="btn btn-link position-relative text-decoration-none text-body">
                         <i class="bi bi-cart3 fs-4"></i>
-
+                      @*   <p>Кількість товарів: @_count</p> *@
                         @if (cartCount > 0)
                         {
                             <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
@@ -127,27 +129,26 @@
 
 @code {
 
-    private string? currentUrl;
-    private int count;      
+    private string? currentUrl;      
     private int cartCount;
+   
 
     protected override async Task OnInitializedAsync()
     {
-        currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
-        NavigationManager.LocationChanged += OnLocationChanged;
-        _cartService.CartCountChanged += count => { cartCount = count; InvokeAsync(StateHasChanged);};
-             
+        currentUrl = _navigationManager.ToBaseRelativePath(_navigationManager.Uri);
+        _navigationManager.LocationChanged += OnLocationChanged;
+        _cartService.CartCountChanged += count => { cartCount = count; InvokeAsync(StateHasChanged);};             
         await _cartService.NotifyCountChangedAsync();   
-    }
+    }        
 
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
     {
-        currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
+        currentUrl = _navigationManager.ToBaseRelativePath(e.Location);
         StateHasChanged();
     }
 
     public void Dispose()
     {
-        NavigationManager.LocationChanged -= OnLocationChanged;
+        _navigationManager.LocationChanged -= OnLocationChanged;
     }
 }

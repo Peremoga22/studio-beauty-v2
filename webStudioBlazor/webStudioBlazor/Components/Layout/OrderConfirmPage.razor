@@ -2,6 +2,7 @@
 @page "/order-confirm-page/{id:int}"
 @inject NavigationManager Nav
 @inject OrderService _orderService
+@inject CartService _cartService
 @rendermode InteractiveServer
 
 <section class="thankyou-section container py-5 text-center">
@@ -49,13 +50,15 @@
 @code {
     [Parameter] 
     public int Id { get; set; }
-    private ClientOrders? order;
+    private ClientOrders? order;     
 
     protected override async Task OnInitializedAsync()
     {       
-        order = await _orderService.GetClientOrderByIdAsync(Id);
+        order = await _orderService.GetClientOrderByIdAsync(Id);      
+        await _cartService.ClearAsync();
+        await InvokeAsync(StateHasChanged);       
     }
-
+      
     private void GoBackToCart() => Nav.NavigateTo("/cart");
     private void GoToHome() => Nav.NavigateTo("/");
 }

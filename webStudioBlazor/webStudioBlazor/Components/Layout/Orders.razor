@@ -121,7 +121,7 @@
     private Order? order = new();
     private ClientOrders Model = new ClientOrders();
     private bool _isSubmitting;
-
+  
     protected override async Task OnInitializedAsync()
     {        
         Model.Price = totalCount.HasValue ? (decimal)totalCount.Value : 0m;
@@ -135,7 +135,8 @@
         try
         {
             order = await _orderService.SaveClientOrderAsync(Model);
-            await _notification.NotifyNewOrderAsync(order);
+            await _notification.NotifyNewOrderAsync(order);          
+            await InvokeAsync(StateHasChanged);
             _nav.NavigateTo($"/order-confirm-page/{order.Id}");
         }
         finally
@@ -158,5 +159,5 @@
     private void GoBackToCart()
     {
         _nav.NavigateTo("/cart");
-    }
+    }       
 }

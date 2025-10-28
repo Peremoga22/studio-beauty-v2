@@ -221,8 +221,7 @@ else
 
         await _cartService.UpdateQuantityAsync(itemId, qty);
         await Refresh();
-        await InvokeAsync(StateHasChanged);
-        ReloadPage();
+        await InvokeAsync(StateHasChanged);        
     }
 
     private async Task Remove(int itemId)
@@ -232,8 +231,7 @@ else
         StateHasChanged();
 
         await _cartService.RemoveItemAsync(itemId);
-        await InvokeAsync(StateHasChanged);
-        ReloadPage();
+        await InvokeAsync(StateHasChanged);     
     }
 
     private async Task Clear()
@@ -243,8 +241,7 @@ else
         StateHasChanged();
 
         await _cartService.ClearAsync();
-        await InvokeAsync(StateHasChanged);
-        ReloadPage();
+        await InvokeAsync(StateHasChanged);       
     }
 
     private async Task Refresh()
@@ -259,17 +256,10 @@ else
     {
         total = items?.Sum(i => i.UnitPrice * i.Quantity) ?? 0m;
         totalCount = items?.Sum(i => i.Quantity) ?? 0;
-    }
-
-    private void ReloadPage()
-    {
-        _nav.NavigateTo(_nav.Uri, forceLoad: true);
-    }
-
+    }       
    
     private async Task PlaceOrder()
-    {      
-        // var order = await _orderService.CreateFromCartAsync();
+    {     
         totalCount = (int)(items?.Sum(x => x.UnitPrice * x.Quantity) ?? 0m);
         _nav.NavigateTo($"/orders/{totalCount}");
     }
