@@ -72,6 +72,41 @@
     <span class="dismiss">🗙</span>
 </div>
 
+<script>
+    (function () {
+      const COLLAPSE_ID = 'navbarCollapse';
+
+      function hideNavbar() {
+        const el = document.getElementById(COLLAPSE_ID);
+        if (!el) return;
+               
+        if (window.bootstrap && bootstrap.Collapse) {
+          const inst = bootstrap.Collapse.getOrCreateInstance(el, { toggle: false });
+          inst.hide();
+        } else {          
+          el.classList.remove('show');
+        }
+      }
+           
+      document.addEventListener('click', function (e) {
+        const selector = [
+          '#'+COLLAPSE_ID+' a.nav-link',
+          '#'+COLLAPSE_ID+' a[href]',         
+          '#'+COLLAPSE_ID+' button.nav-link',
+          '#'+COLLAPSE_ID+' .btn-logout',
+          '#'+COLLAPSE_ID+' form button'
+        ].join(',');
+
+        if (e.target.closest(selector)) {
+          hideNavbar();
+        }
+      }, true); 
+           
+      window.addEventListener('popstate', hideNavbar);
+      window.addEventListener('hashchange', hideNavbar);
+    })();
+</script>
+
 @code {
 
 }

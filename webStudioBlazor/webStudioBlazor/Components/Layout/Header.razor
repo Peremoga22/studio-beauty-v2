@@ -111,8 +111,7 @@
 
                 <li class="nav-item">
                     <a href="/cart" class="btn btn-link position-relative text-decoration-none text-body">
-                        <i class="bi bi-cart3 fs-4"></i>
-                      @*   <p>Кількість товарів: @_count</p> *@
+                        <i class="bi bi-cart3 fs-4"></i>                     
                         @if (cartCount > 0)
                         {
                             <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
@@ -127,6 +126,7 @@
     </nav>
 </div>
 
+
 @code {
 
     private string? currentUrl;      
@@ -135,10 +135,10 @@
 
     protected override async Task OnInitializedAsync()
     {
-        currentUrl = _navigationManager.ToBaseRelativePath(_navigationManager.Uri);
-        _navigationManager.LocationChanged += OnLocationChanged;
         _cartService.CartCountChanged += count => { cartCount = count; InvokeAsync(StateHasChanged);};             
         await _cartService.NotifyCountChangedAsync();   
+        currentUrl = _navigationManager.ToBaseRelativePath(_navigationManager.Uri);
+        _navigationManager.LocationChanged += OnLocationChanged;
     }        
 
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
