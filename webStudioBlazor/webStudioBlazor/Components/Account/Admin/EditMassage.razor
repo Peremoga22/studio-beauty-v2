@@ -224,7 +224,7 @@
             return;
         }
 
-        await _seedService.SaveCosmetologyTherapyCard(therapyCard);
+        await _seedService.SaveCosmetologyTherapyCardAsync(therapyCard);
         therapyCards = await _seedService.GetAllTherapyCardListAsync();
         therapyCard = new();
         StateHasChanged();

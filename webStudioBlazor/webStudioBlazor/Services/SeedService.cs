@@ -8,249 +8,261 @@ using webStudioBlazor.EntityModels;
 
 namespace webStudioBlazor.Services
 {
+    using Microsoft.EntityFrameworkCore;
+
     public class SeedService
     {
-        private readonly ApplicationDbContext _db;      
+        private readonly IDbContextFactory<ApplicationDbContext> _dbFactory;
 
-        public SeedService(ApplicationDbContext db)
+        public SeedService(IDbContextFactory<ApplicationDbContext> dbFactory)
         {
-            _db = db;           
+            _dbFactory = dbFactory;
         }
 
-        public async Task SaveSeedMasterAsync(Master master)
+        // ===== CREATE / UPDATE =====
+
+        public async Task SaveSeedMasterAsync(Master master, CancellationToken ct = default)
         {
+            await using var db = await _dbFactory.CreateDbContextAsync(ct);
+
             if (master.Id == 0)
             {
-                var result = _db.Masters.Add(master);
-                if (result.State == EntityState.Added)
-                {
-                    await _db.SaveChangesAsync();
-                }
+                await db.Masters.AddAsync(master, ct);
             }
             else
-            {
-                var masterInDbEntuty = _db.Masters.Find(master.Id);
-                if (masterInDbEntuty != null)
-                {
-                    _db.Masters.Update(master);
-                    await _db.SaveChangesAsync();
-                }                               
+            {                
+                db.Masters.Update(master);
+                               
+                // var entity = await db.Masters.FindAsync(new object[] { master.Id }, ct);
+                // if (entity is null) return;
+                // entity.Name = master.Name;
             }
+
+            await db.SaveChangesAsync(ct);
         }
 
-        public async Task SaveSeedCategoryAsync(Category category)
+        public async Task SaveSeedCategoryAsync(Category category, CancellationToken ct = default)
         {
+            await using var db = await _dbFactory.CreateDbContextAsync(ct);
+
             if (category.Id == 0)
-            {               
-                var result = _db.Categories.Add(category);
-                if (result.State == EntityState.Added)
-                {
-                    await _db.SaveChangesAsync();
-                }
+            {
+                await db.Categories.AddAsync(category, ct);
             }
             else
             {
-                var categoryInDbEntuty = _db.Categories.Find(category.Id);
-                if (categoryInDbEntuty != null)
-                {
-                    _db.Categories.Update(category);
-                    await _db.SaveChangesAsync();
-                }                               
+                db.Categories.Update(category);
             }
+
+            await db.SaveChangesAsync(ct);
         }
 
-
-        public async Task SaveSeedPageTherapyAsync(PageTherapy pageTherapy)
-        { 
-            if (pageTherapy.Id == 0)
-            {               
-                var result = _db.PageTherapyies.Add(pageTherapy);
-                if (result.State == EntityState.Added)
-                {
-                    await _db.SaveChangesAsync();
-                }
-            }
-            else
-            {
-                var pageTherapyInDbEntuty = _db.PageTherapyies.Find(pageTherapy.Id);
-                if (pageTherapyInDbEntuty != null)
-                {
-                    _db.PageTherapyies.Update(pageTherapy);
-                    await _db.SaveChangesAsync();
-                }                               
-            }
-        }
-
-        public async Task SaveCosmetologyTherapyCard(TherapyCard therapyCard)
+        public async Task SaveSeedPageTherapyAsync(PageTherapy pageTherapy, CancellationToken ct = default)
         {
+            await using var db = await _dbFactory.CreateDbContextAsync(ct);
+
+            if (pageTherapy.Id == 0)
+            {
+                await db.PageTherapyies.AddAsync(pageTherapy, ct);
+            }
+            else
+            {
+                db.PageTherapyies.Update(pageTherapy);
+            }
+
+            await db.SaveChangesAsync(ct);
+        }
+
+        public async Task SaveCosmetologyTherapyCardAsync(TherapyCard therapyCard, CancellationToken ct = default)
+        {
+            await using var db = await _dbFactory.CreateDbContextAsync(ct);
+
             if (therapyCard.Id == 0)
             {
-                var result = _db.TherapyCards.Add(therapyCard);
-                if (result.State == EntityState.Added)
-                {
-                    await _db.SaveChangesAsync();
-                }              
+                await db.TherapyCards.AddAsync(therapyCard, ct);
             }
             else
             {
-                var therapyCardInDbEntuty = _db.TherapyCards.Find(therapyCard.Id);
-                if (therapyCardInDbEntuty != null)
-                {
-                    _db.TherapyCards.Update(therapyCard);
-                    await _db.SaveChangesAsync();
-                }
+                db.TherapyCards.Update(therapyCard);
             }
+
+            await db.SaveChangesAsync(ct);
         }
 
-        public int SaveClient(Appointment appointmentUser)
+        public async Task<int> SaveClientAsync(Appointment appointmentUser, CancellationToken ct = default)
         {
+            await using var db = await _dbFactory.CreateDbContextAsync(ct);
 
             if (appointmentUser.Id == 0)
             {
-                var result = _db.Appointments.Add(appointmentUser);
-                if (result.State == EntityState.Added)
-                {
-                    _db.Appointments.Add(appointmentUser);
-                    _db.SaveChanges();
-                }
+                await db.Appointments.AddAsync(appointmentUser, ct);
             }
             else
             {
-                var categoryInDbEntuty = _db.Appointments.Find(appointmentUser.Id);
-                if (categoryInDbEntuty != null)
-                {
-                    _db.Appointments.Update(appointmentUser);
-                    _db.SaveChanges();
-                }
+                db.Appointments.Update(appointmentUser);
             }
 
+            await db.SaveChangesAsync(ct);
             return appointmentUser.Id;
         }
-        public void SaveClientService(AppointmentService appointmentUser)
+
+        public async Task SaveClientServiceAsync(AppointmentService appointmentUser, CancellationToken ct = default)
         {
+            await using var db = await _dbFactory.CreateDbContextAsync(ct);
+
             if (appointmentUser.Id == 0)
             {
-                var result = _db.AppointmentServices.Add(appointmentUser);
-                if (result.State == EntityState.Added)
-                {
-                    _db.AppointmentServices.Add(appointmentUser);
-                    _db.SaveChanges();
-                }
+                await db.AppointmentServices.AddAsync(appointmentUser, ct);
             }
             else
             {
-                var categoryInDbEntuty = _db.AppointmentServices.Find(appointmentUser.Id);
-                if (categoryInDbEntuty != null)
-                {
-                    _db.AppointmentServices.Update(appointmentUser);
-                    _db.SaveChanges();
-                }
-            }                      
-        }
-        public async Task<Master> EditMaster(int masterId)
-        {
-            var result = await _db.Masters.FirstOrDefaultAsync(c => c.Id == masterId);
-            return result;
-        }
-        public async Task<Category> EditCategory(int categoryId)
-        {
-            var result = await _db.Categories.FirstOrDefaultAsync(c => c.Id == categoryId);
-            return result;
-        }
-        public async Task<PageTherapy> EditPageTherapy(int pageTherapyId)
-        {
-            var result = await _db.PageTherapyies.FirstOrDefaultAsync(c => c.Id == pageTherapyId);
-            return result;
-        }
-        public async Task<TherapyCard> EditTherapyCard(int therapyCardId)
-        {
-            var result = _db.TherapyCards.FirstOrDefault(e => e.Id == therapyCardId);
-            return await Task.FromResult(result);
-        }
-        public async Task DeleteMasterAsync(int masterId)
-        {
-            var result = await _db.Masters.SingleOrDefaultAsync(c => c.Id == masterId);
-            if (result == null)
-            {
-                return;
+                db.AppointmentServices.Update(appointmentUser);
             }
 
-            _db.Masters.Remove(result);
-            await _db.SaveChangesAsync();
+            await db.SaveChangesAsync(ct);
         }
-        public async Task DeleteCategoryAsync(int categoryId)
-        {
-            var result = await _db.Categories.SingleOrDefaultAsync(c => c.Id == categoryId);
-            if (result == null)
-            {
-                return;
-            }
 
-            _db.Categories.Remove(result);
-            await _db.SaveChangesAsync();
-        }
-        public async Task DeletePageTherapyAsync(int pageTherapyId)
-        {
-            var result = await _db.PageTherapyies.SingleOrDefaultAsync(c => c.Id == pageTherapyId);
-            if (result == null)
-            {
-                return;
-            }
+        // ===== EDIT (READ SINGLE) =====
 
-            _db.PageTherapyies.Remove(result);
-            await _db.SaveChangesAsync();
-        }
-        public async Task DeleteTherapyCardAsync(int cardId)
+        public async Task<Master?> EditMaster(int masterId, CancellationToken ct = default)
         {
-            var result = await _db.TherapyCards.SingleOrDefaultAsync(e => e.Id == cardId);
-            if (result == null)
-            {
-                return;
-            }
+            await using var db = await _dbFactory.CreateDbContextAsync(ct);
+            return await db.Masters
+                .AsNoTracking()
+                .FirstOrDefaultAsync(c => c.Id == masterId, ct);
+        }
 
-            _db.TherapyCards.Remove(result);
-            await _db.SaveChangesAsync();
-        }
-        public async Task<List<Master>> GetAllMasterListAsync()
+        public async Task<Category?> EditCategory(int categoryId, CancellationToken ct = default)
         {
-            var result = await _db.Masters.ToListAsync();
-            return result;
+            await using var db = await _dbFactory.CreateDbContextAsync(ct);
+            return await db.Categories
+                .AsNoTracking()
+                .FirstOrDefaultAsync(c => c.Id == categoryId, ct);
         }
-        public async Task<List<Category>> GetAllCategoryListAsync()        
+
+        public async Task<PageTherapy?> EditPageTherapy(int pageTherapyId, CancellationToken ct = default)
         {
-            var result = await _db.Categories.ToListAsync();
-            return result;
+            await using var db = await _dbFactory.CreateDbContextAsync(ct);
+            return await db.PageTherapyies
+                .AsNoTracking()
+                .FirstOrDefaultAsync(c => c.Id == pageTherapyId, ct);
         }
-        public async Task<List<PageTherapy>> GetAllPageTherapyListAsync()
+
+        public async Task<TherapyCard?> EditTherapyCard(int therapyCardId, CancellationToken ct = default)
         {
-            var result = await _db.PageTherapyies.ToListAsync();
-            return result;
+            await using var db = await _dbFactory.CreateDbContextAsync(ct);
+            return await db.TherapyCards
+                .AsNoTracking()
+                .FirstOrDefaultAsync(e => e.Id == therapyCardId, ct);
         }
-        public async Task<List<TherapyCard>> GetAllTherapyCardListAsync()
+
+        // ===== DELETE =====
+
+        public async Task DeleteMasterAsync(int masterId, CancellationToken ct = default)
         {
-            var result = await _db.TherapyCards.ToListAsync();
-            return result;
+            await using var db = await _dbFactory.CreateDbContextAsync(ct);
+            var entity = await db.Masters.SingleOrDefaultAsync(c => c.Id == masterId, ct);
+            if (entity is null) return;
+            db.Masters.Remove(entity);
+            await db.SaveChangesAsync(ct);
         }
-        public async Task<List<Appointment>> GetAllClientListAsync()
+
+        public async Task DeleteCategoryAsync(int categoryId, CancellationToken ct = default)
         {
-            var result = await _db.Appointments.ToListAsync();
-            return result;
+            await using var db = await _dbFactory.CreateDbContextAsync(ct);
+            var entity = await db.Categories.SingleOrDefaultAsync(c => c.Id == categoryId, ct);
+            if (entity is null) return;
+            db.Categories.Remove(entity);
+            await db.SaveChangesAsync(ct);
         }
-        public async Task<Appointment> GetClientAppointmentId(int clientId)
+
+        public async Task DeletePageTherapyAsync(int pageTherapyId, CancellationToken ct = default)
         {
-            var result = await _db.Appointments.FirstOrDefaultAsync(c => c.Id == clientId);
-            return result;
+            await using var db = await _dbFactory.CreateDbContextAsync(ct);
+            var entity = await db.PageTherapyies.SingleOrDefaultAsync(c => c.Id == pageTherapyId, ct);
+            if (entity is null) return;
+            db.PageTherapyies.Remove(entity);
+            await db.SaveChangesAsync(ct);
         }
-        public async Task<List<AppointmentService>> ListForCalendarAsync(       
-        bool onlyCompleted = false,
-        CancellationToken ct = default)
+
+        public async Task DeleteTherapyCardAsync(int cardId, CancellationToken ct = default)
         {
-            var q = _db.AppointmentServices
+            await using var db = await _dbFactory.CreateDbContextAsync(ct);
+            var entity = await db.TherapyCards.SingleOrDefaultAsync(e => e.Id == cardId, ct);
+            if (entity is null) return;
+            db.TherapyCards.Remove(entity);
+            await db.SaveChangesAsync(ct);
+        }
+
+        // ===== LISTS =====
+
+        public async Task<List<Master>> GetAllMasterListAsync(CancellationToken ct = default)
+        {
+            await using var db = await _dbFactory.CreateDbContextAsync(ct);
+            return await db.Masters
+                .AsNoTracking()
+                .OrderBy(x => x.Id)
+                .ToListAsync(ct);
+        }
+
+        public async Task<List<Category>> GetAllCategoryListAsync(CancellationToken ct = default)
+        {
+            await using var db = await _dbFactory.CreateDbContextAsync(ct);
+            return await db.Categories
+                .AsNoTracking()
+                .Include(c => c.Masters)
+                .OrderBy(x => x.Id)
+                .ToListAsync(ct);
+        }
+
+        public async Task<List<PageTherapy>> GetAllPageTherapyListAsync(CancellationToken ct = default)
+        {
+            await using var db = await _dbFactory.CreateDbContextAsync(ct);
+            return await db.PageTherapyies
+                .AsNoTracking()
+                .OrderBy(x => x.Id)
+                .ToListAsync(ct);
+        }
+
+        public async Task<List<TherapyCard>> GetAllTherapyCardListAsync(CancellationToken ct = default)
+        {
+            await using var db = await _dbFactory.CreateDbContextAsync(ct);
+            return await db.TherapyCards
+                .AsNoTracking()
+                .OrderBy(x => x.Id)
+                .ToListAsync(ct);
+        }
+
+        public async Task<List<Appointment>> GetAllClientListAsync(CancellationToken ct = default)
+        {
+            await using var db = await _dbFactory.CreateDbContextAsync(ct);
+            return await db.Appointments
+                .AsNoTracking()
+                .OrderByDescending(x => x.AppointmentDate)
+                .ToListAsync(ct);
+        }
+
+        public async Task<Appointment?> GetClientAppointmentId(int clientId, CancellationToken ct = default)
+        {
+            await using var db = await _dbFactory.CreateDbContextAsync(ct);
+            return await db.Appointments
+                .AsNoTracking()
+                .FirstOrDefaultAsync(c => c.Id == clientId, ct);
+        }
+
+        public async Task<List<AppointmentService>> ListForCalendarAsync(
+            bool onlyCompleted = false,
+            CancellationToken ct = default)
+        {
+            await using var db = await _dbFactory.CreateDbContextAsync(ct);
+
+            var q = db.AppointmentServices
+                .AsNoTracking()
                 .Include(x => x.Appointment)
                 .Include(x => x.Category)
                 .Include(x => x.TherapyCard)
                 .AsQueryable();
-                       
+
             if (onlyCompleted) q = q.Where(x => x.Appointment.IsCompleted);
 
             return await q
@@ -258,15 +270,19 @@ namespace webStudioBlazor.Services
                 .ThenBy(x => x.Appointment.SetHour)
                 .ToListAsync(ct);
         }
+
         public async Task DeleteAdminClientCardAsync(int appointmentServiceId, CancellationToken ct = default)
         {
-            var entity = await _db.AppointmentServices
+            await using var db = await _dbFactory.CreateDbContextAsync(ct);
+
+            var entity = await db.AppointmentServices
                 .FirstOrDefaultAsync(x => x.Id == appointmentServiceId, ct);
 
             if (entity is null) return;
 
-            _db.AppointmentServices.Remove(entity);
-            await _db.SaveChangesAsync(ct);
-        }               
+            db.AppointmentServices.Remove(entity);
+            await db.SaveChangesAsync(ct);
+        }
     }
+
 }

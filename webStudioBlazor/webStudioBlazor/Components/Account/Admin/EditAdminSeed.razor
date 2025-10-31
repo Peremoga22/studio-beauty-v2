@@ -391,7 +391,7 @@
 
     private async Task SaveTherapyCardAsync()
     {       
-        await _seedService.SaveCosmetologyTherapyCard(therapyCard);      
+        await _seedService.SaveCosmetologyTherapyCardAsync(therapyCard);
         therapyCard = new();
         StateHasChanged();
     }

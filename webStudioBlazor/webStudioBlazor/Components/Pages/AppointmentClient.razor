@@ -158,7 +158,7 @@
         }
     }          
 
-    private void HandleValidSubmit()
+    private async Task HandleValidSubmit()
     {
         var isValid = ValidateClientB();
 
@@ -169,14 +169,14 @@
             clientUser.MasterId = categories.FirstOrDefault(c => c.Id == clientUser.CategoryId)?.MasterId ?? 0;
             clientUser.Price = therapyCards.FirstOrDefault(t => t.Id == clientUser.TherapyId)?.Price ?? 0;
             clientUser.IsCompleted = true;
-            var idClient = _seedService.SaveClient(clientUser);
+            var idClient = await _seedService.SaveClientAsync(clientUser);
 
             appointmentService.AppointmentId = idClient;
             appointmentService.CategoryId = clientUser.CategoryId;
             appointmentService.TherapyId = clientUser.TherapyId;
             appointmentService.Price = clientUser.Price;
 
-            _seedService.SaveClientService(appointmentService);
+            await _seedService.SaveClientServiceAsync(appointmentService);
             _navigationManager.NavigateTo($"/appointment-confirm/{idClient}");
         }            
     }        
