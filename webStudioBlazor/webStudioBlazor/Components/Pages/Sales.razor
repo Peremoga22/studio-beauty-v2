@@ -62,7 +62,20 @@
         </figure>
     </div>
 </section>
+<a href="/cart"
+   class="btn text-white position-fixed rounded-circle shadow-sm cart-fab"
+   style="background-color:#f8b7d8;">
+    <i class="bi bi-cart3 fs-4"></i>
 
+    @if (cartCount > 0)
+    {
+        <span class="position-absolute top-0 start-100 translate-middle
+                         badge rounded-pill bg-danger small shadow-sm"
+              style="font-size:0.75rem; min-width:22px;">
+            @cartCount
+        </span>
+    }
+</a>
 
 @code {
     private string selectedStore = "Наш магазин";
@@ -75,6 +88,8 @@
     private bool _fadeOut;
     private string _alertText = "";
     private string _alertType = "success";
+    private int cartCount;
+    private string? currentUrl;
 
     protected override async Task OnInitializedAsync()
     {
@@ -82,6 +97,11 @@
         salesTherapyCards = await _seedService.GetAllTherapyCardListAsync();
         categories = await _seedService.GetAllCategoryListAsync();
         pageTherapies = await _seedService.GetAllPageTherapyListAsync();
+
+        _cartService.CartCountChanged += count => { cartCount = count; InvokeAsync(StateHasChanged); };
+        await _cartService.NotifyCountChangedAsync();
+        currentUrl = _nav.ToBaseRelativePath(_nav.Uri);
+        _nav.LocationChanged += OnLocationChanged;
     }
 
     private async Task AddToCart(int Id)
@@ -117,8 +137,15 @@
     {
         _showAlert = false;
     }
-    private void ReloadPage()
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
     {
-        _nav.NavigateTo(_nav.Uri, forceLoad: true);
+        currentUrl = _nav.ToBaseRelativePath(e.Location);
+        StateHasChanged();
     }
+
+    public void Dispose()
+    {
+        _nav.LocationChanged -= OnLocationChanged;
+    }   
 }

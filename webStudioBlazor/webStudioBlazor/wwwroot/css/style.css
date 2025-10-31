@@ -2646,7 +2646,49 @@
     color: #e83e8c;
 }
 
+.cart-fab {
+    bottom: 70px;
+    right: 25px;
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1055; /* вище navbar і модалок */
+    transition: all 0.3s ease;
+}
 
+/* Трохи зменшуємо і піднімаємо для мобільних */
+@media (max-width: 576px) {
+    .cart-fab {
+        bottom: 80px;
+        right: 15px;
+        width: 52px;
+        height: 52px;
+    }
+
+        .cart-fab i {
+            font-size: 1.3rem;
+        }
+}
+
+/* Додай невеликий ефект при наведенні */
+.cart-fab:hover {
+    transform: scale(1.07);
+    box-shadow: 0 8px 18px rgba(0,0,0,0.25);
+}
+
+.btn-sales {
+    background-color: #f8b7d8;
+    color: #fff;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+    .btn-sales:hover {
+        background-color: #f2a4ca;
+        color: #fff;
+    }
 
 
 
