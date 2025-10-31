@@ -50,7 +50,7 @@
                             <label class="form-label">Послуга</label><span class="text-danger">*</span><strong style="color:red">@ErrorMessageService</strong>
                             <InputSelect class="form-select" @bind-Value="clientUser.CategoryId" TValue="int">
                                 <option value="">Оберіть послугу</option>
-                                @foreach (var cat in categories)
+                                @foreach (var cat in categories.Where(a => a.NameCategory != DontChowPageName))
                                 {
                                     <option value="@cat.Id">@cat.NameCategory</option>
                                 }
@@ -62,7 +62,7 @@
                             <label class="form-label">Категорія</label><span class="text-danger">*</span><strong style="color:red">@ErrorMessageService</strong>
                             <InputSelect class="form-select" @bind-Value="clientUser.TherapyId" TValue="int">
                                 <option value="">Оберіть послугу</option>
-                                @foreach (var srv in therapyCards.Where(c =>c.CategoryId == clientUser.CategoryId).ToList())
+                                @foreach (var srv in therapyCards.Where(c => c.CategoryId == clientUser.CategoryId).ToList())
                                 {
                                     <option value="@srv.Id">@srv.TitleCard</option>
                                 }
@@ -135,6 +135,7 @@
     private string ErrorMessagePhone = string.Empty;
     private string ErrorMessageService = string.Empty;
     private string ErrorMessageCategory = string.Empty;
+    private string DontChowPageName = "Продажі";
 
     protected override async Task OnInitializedAsync()
     {
