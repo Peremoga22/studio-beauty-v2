@@ -71,7 +71,14 @@ namespace webStudioBlazor.BL
                 .AppendLine("🚚 Доставка: *Нова Пошта*")
                 .ToString();
 
-            await _bot.SendMessage(chatId, text, parseMode: ParseMode.Markdown, cancellationToken: ct);
+            try { 
+                await _bot.SendMessage(chatId, text, parseMode: ParseMode.Markdown, cancellationToken: ct);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it as needed
+                Console.WriteLine($"Error sending order notification: {ex.Message}");
+            }           
         }
 
         public async Task NotifyNewAsync(string clientName, string phone, string serviceName,
@@ -90,7 +97,14 @@ namespace webStudioBlazor.BL
                 .AppendLine(!string.IsNullOrWhiteSpace(notes) ? $"📝 Примітки: {Esc(notes!)}" : "")
                 .ToString();
 
-            await _bot.SendMessage(chatId, text, parseMode: ParseMode.Markdown, cancellationToken: ct);
+            try { 
+                await _bot.SendMessage(chatId, text, parseMode: ParseMode.Markdown, cancellationToken: ct);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it as needed
+                Console.WriteLine($"Error sending appointment notification: {ex.Message}");
+            }            
         }
 
         private static string Esc(string s) => s
