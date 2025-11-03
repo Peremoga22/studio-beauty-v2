@@ -382,6 +382,9 @@ namespace webStudioBlazor.Data
                 .HasForeignKey(x => x.TherapyId)
                 .OnDelete(DeleteBehavior.Restrict);
             b.Ignore(x => x.TotalPrice);
+
+            b.Property(x => x.IsShownInOrder)
+          .HasDefaultValue(true);
         }
     }
     #endregion

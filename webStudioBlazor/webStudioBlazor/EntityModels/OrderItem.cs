@@ -20,5 +20,6 @@ namespace webStudioBlazor.EntityModels
         public decimal TotalPrice => UnitPrice * Quantity;
 
         public string? SessionKey { get; set; }
+        public bool IsShownInOrder { get; set; }
     }
 }

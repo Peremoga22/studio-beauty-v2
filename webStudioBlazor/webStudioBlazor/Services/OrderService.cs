@@ -89,7 +89,7 @@ namespace webStudioBlazor.Services
             var sessionKey = _session.GetSessionKey();
 
             var stagedItems = await db.OrderItems
-                .Where(oi => oi.OrderId == null && oi.SessionKey == sessionKey)
+                .Where(oi => oi.OrderId == 0 && oi.SessionKey == sessionKey)
                 .ToListAsync();
 
             var order = new Order
@@ -136,7 +136,7 @@ namespace webStudioBlazor.Services
                     var item = g.First;
                     item.OrderId = order.Id;
                     item.Quantity = g.Quantity;
-                    item.SessionKey = null;
+                    item.IsShownInOrder = true;
                 }
 
                 var duplicates = stagedItems
@@ -174,7 +174,8 @@ namespace webStudioBlazor.Services
                         OrderId = order.Id,
                         TherapyId = g.TherapyId,
                         UnitPrice = g.UnitPrice,
-                        Quantity = g.Quantity
+                        Quantity = g.Quantity,
+                        IsShownInOrder = true
                     });
                 }
                 await db.SaveChangesAsync();
@@ -216,25 +217,23 @@ namespace webStudioBlazor.Services
             return result;
         }
 
+        //public async Task<List<Order>> GetAllAsync()
+        //{
+        //    await using var db = await _dbFactory.CreateDbContextAsync();
+        //    return await db.Orders
+        //        .Include(o => o.ClientOrder)
+        //        .OrderByDescending(o => o.OrderDate)
+        //        .ToListAsync();
+        //}
 
-
-        public async Task<List<Order>> GetAllAsync()
-        {
-            await using var db = await _dbFactory.CreateDbContextAsync();
-            return await db.Orders
-                .Include(o => o.ClientOrder)
-                .OrderByDescending(o => o.OrderDate)
-                .ToListAsync();
-        }
-
-        public async Task<Order?> GetByIdAsync(int id)
-        {
-            await using var db = await _dbFactory.CreateDbContextAsync();
-            return await db.Orders
-                .Include(o => o.ClientOrder)
-                .Include(o => o.Items).ThenInclude(i => i.Therapy)
-                .SingleOrDefaultAsync(o => o.Id == id);
-        }
+        //public async Task<Order?> GetByIdAsync(int id)
+        //{
+        //    await using var db = await _dbFactory.CreateDbContextAsync();
+        //    return await db.Orders
+        //        .Include(o => o.ClientOrder)
+        //        .Include(o => o.Items).ThenInclude(i => i.Therapy)
+        //        .SingleOrDefaultAsync(o => o.Id == id);
+        //}
 
         public async Task<ClientOrders?> GetClientOrderByIdAsync(int orderId)
         {
@@ -268,14 +267,14 @@ namespace webStudioBlazor.Services
 
                     ItemName = i.Therapy != null ? (i.Therapy.TitleCard ?? string.Empty) : string.Empty,
                                        
-                    Quantity = (i.Quantity == null ? 1 : i.Quantity),
+                    Quantity = (i.Quantity == 0 ? 1 : i.Quantity),
                     UnitPrice = i.UnitPrice,
-                    LineTotal = i.UnitPrice * (decimal)(i.Quantity == null ? 1 : i.Quantity),
+                    LineTotal = i.UnitPrice * (decimal)(i.Quantity == 0 ? 1 : i.Quantity),
                                        
                     MoreItemsCount = Math.Max(0, i.Order.Items.Count - 1),
-                
+                    IsShownInOrder = i.IsShownInOrder,
                     OrderTotal = i.Order.Items
-                        .Select(x => x.UnitPrice * (decimal)(x.Quantity == null ? 1 : x.Quantity))
+                        .Select(x => x.UnitPrice * (decimal)(x.Quantity == 0 ? 1 : x.Quantity))
                         .Sum()
                 })
                 .ToListAsync();
@@ -290,7 +289,9 @@ namespace webStudioBlazor.Services
             var item = await db.OrderItems.FindAsync(orderItemId);
             if (item != null)
             {
-                db.OrderItems.Remove(item);
+                item.IsShownInOrder = false;
+                db.OrderItems.Update(item);
+               
                 await db.SaveChangesAsync();
             }
         }      

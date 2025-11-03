@@ -14,11 +14,13 @@
         public string NewPostOffice { get; set; } = string.Empty;
 
         public string ItemName { get; set; } = string.Empty;
-        public int Quantity { get; set; }          // 🔸 кількість
-        public decimal UnitPrice { get; set; }     // 🔸 ціна за одиницю
-        public decimal LineTotal { get; set; }     // 🔸 UnitPrice * Quantity
+        public int Quantity { get; set; }          
+        public decimal UnitPrice { get; set; }     
+        public decimal LineTotal { get; set; }     
 
-        public int MoreItemsCount { get; set; }    // інші позиції в цьому ж замовленні
-        public decimal OrderTotal { get; set; }    // 🔸 сума всього замовлення
+        public int MoreItemsCount { get; set; }    
+        public decimal OrderTotal { get; set; }  
+        
+        public bool IsShownInOrder { get; set; }
     }
 }
