@@ -1,4 +1,5 @@
 ﻿@page "/admin-customer-orders"
+@inject NavigationManager _navigationManager
 @using System.Globalization
 @inject AdminCustomerOrdersService OrdersService
 @layout AdminLayout
@@ -64,6 +65,7 @@
                         <th class="text-end">Ціна</th>
                         <th class="text-end">Сума позиції</th>
                         <th class="text-end">Всього</th>
+                        <th class="text-center">Дії</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -81,6 +83,11 @@
                             <td class="text-end">@Money(r.UnitPrice)</td>
                             <td class="text-end">@Money(r.LineTotal)</td>
                             <td class="text-end">@Money(r.OrderTotal)</td>
+                            <td class="text-center">
+                                <button class="btn btn-sm btn-outline-primary me-1" @onclick="() => EditRow(r.OrderId)">
+                                    <i class="bi bi-pencil-square"></i>
+                                </button>
+                            </td>
                         </tr>
                     }
                 </tbody>
@@ -126,6 +133,11 @@
         from = null;
         to = null;
         await Reload();
+    }
+
+    private void EditRow(int id)
+    {
+        _navigationManager.NavigateTo($"/edit-customer-order/{id}");
     }
 
     private static string Money(decimal v) =>

@@ -1,7 +1,8 @@
 ﻿namespace webStudioBlazor.ModelDTOs
 {
     public sealed class CustomerOrderRowDto
-    {        
+    {
+        public int Id { get; set; }
         public int OrderId { get; set; }
         public DateOnly OrderDate { get; set; }
         public decimal OrderTotal { get; set; }

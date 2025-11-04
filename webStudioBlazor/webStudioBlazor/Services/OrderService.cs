@@ -294,6 +294,39 @@ namespace webStudioBlazor.Services
                
                 await db.SaveChangesAsync();
             }
-        }      
+        }
+
+        public async Task DeleteClientOrderAsync(int orderId, CancellationToken ct = default)
+        {
+            await using var db = await _dbFactory.CreateDbContextAsync(ct);
+            await using var tx = await db.Database.BeginTransactionAsync(ct);
+                       
+            var co = await db.ClientOrders
+                .FirstOrDefaultAsync(x => x.OrderId == orderId, ct);
+                       
+            if (co is null)
+            {
+                await tx.RollbackAsync(ct);
+                return;
+            }
+
+            var items = await db.OrderItems
+                .Where(x => x.OrderId == orderId)
+                .ToListAsync(ct);
+
+            if (items.Count > 0)
+                db.OrderItems.RemoveRange(items);
+                        
+            var order = await db.Orders
+                .FirstOrDefaultAsync(x => x.Id == orderId, ct);
+                      
+            db.ClientOrders.Remove(co);
+                       
+            if (order is not null)
+                db.Orders.Remove(order);
+                     
+            await db.SaveChangesAsync(ct);
+            await tx.CommitAsync(ct);
+        }               
     }
 }

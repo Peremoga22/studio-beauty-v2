@@ -86,5 +86,55 @@ namespace webStudioBlazor.Services
 
             return rows;
         }
+
+        public async Task<CustomerOrderRowDto?> GetCustomerOrderByIdAsync(int orderId, CancellationToken ct = default)
+        {
+            await using var db = await _dbFactory.CreateDbContextAsync(ct);
+
+            var q =
+                from oi in db.OrderItems.AsNoTracking()
+                join o in db.Orders.AsNoTracking() on oi.OrderId equals o.Id
+                join co in db.ClientOrders.AsNoTracking() on o.Id equals co.OrderId
+                join t in db.TherapyCards.AsNoTracking() on oi.TherapyId equals t.Id into tj
+                from t in tj.DefaultIfEmpty()
+                where o.Id == orderId
+                select new
+                {
+                    co.Id,                    
+                    o.OrderDate,
+                    o.TotalAmount,
+                    co.ClientFirstName,
+                    co.ClientLastName,
+                    co.ClientPhone,
+                    co.City,
+                    co.AddressNewPostOffice,
+                    ItemName = t != null ? t.TitleCard : "—",
+                    oi.Quantity,
+                    oi.UnitPrice
+                };
+
+            var x = await q.FirstOrDefaultAsync(ct);
+            if (x is null)
+                return null;
+
+            return new CustomerOrderRowDto
+            {
+                Id = x.Id,
+                OrderId = x.Id,
+                OrderDate = DateOnly.FromDateTime(x.OrderDate.Date),
+                OrderTotal = x.TotalAmount,
+
+                ClientFullName = x.ClientFirstName,               
+                ClientPhone = x.ClientPhone,
+                City = x.City ?? "",
+                AddressNewPostOffice = x.AddressNewPostOffice ?? "",
+
+                ItemName = x.ItemName,
+                Quantity = Math.Max(1, x.Quantity),
+                UnitPrice = x.UnitPrice                
+            };
+        }
+
+
     }
 }

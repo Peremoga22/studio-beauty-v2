@@ -1,0 +1,154 @@
+﻿@page "/edit-customer-order/{Id:int}"
+
+@inject OrderService _ordersService
+@inject AdminCustomerOrdersService _adminCustomerOrdersService
+@inject NavigationManager _navigationManager
+@layout AdminLayout
+@rendermode InteractiveServer
+@attribute [Authorize(Roles = "Admin")]
+
+<div class="container my-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="bg-white shadow-sm rounded px-3 py-3 mb-4">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item">
+                <a class="link-brand" href="/admin-customer-orders">Повернутися до наповнення</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+                @(Id == 0 ? "Додавання даних" : "Редагування покупця")
+            </li>
+        </ol>
+    </nav>
+      
+    @if (_loading)
+    {
+        <div class="text-muted">Завантаження…</div>
+    }
+    else if (!string.IsNullOrWhiteSpace(_error))
+    {
+        <div class="alert alert-danger">@_error</div>
+    }
+    else if (customerOrderRow is null)
+    {
+        <div class="alert alert-warning">Запис не знайдено.</div>
+    }
+    else
+    {
+        <EditForm Model="customerOrderRow" >
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="row gy-3">
+                <div class="col-md-6">
+                    <label class="form-label">Ім’я</label>
+                    <InputText class="form-control" @bind-Value="customerOrderRow.ClientFullName" />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Прізвище</label>
+                    <InputText class="form-control" @bind-Value="customerOrderRow.ItemName" />
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Телефон</label>
+                    <InputText class="form-control" @bind-Value="customerOrderRow.ClientPhone" />
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Дата замовлення</label>
+                    <input class="form-control" type="date"
+                           value="@customerOrderRow.OrderDate.ToString("yyyy-MM-dd")"
+                           @onchange="OnDateChanged" />
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Місто</label>
+                    <InputText class="form-control" @bind-Value="customerOrderRow.City" />
+                </div>
+
+                <div class="col-md-8">
+                    <label class="form-label">Відділення Нової пошти</label>
+                    <InputText class="form-control" @bind-Value="customerOrderRow.AddressNewPostOffice" />
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Ціна одного товару</label>
+                    <InputNumber class="form-control" @bind-Value="customerOrderRow.UnitPrice" />
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Загальна ціна</label>
+                    <InputNumber class="form-control" @bind-Value="customerOrderRow.OrderTotal" />
+                </div>                               
+
+                <div class="col-md-4">
+                    <label class="form-label">Кількість продукції (шт.)</label>
+                    <InputNumber class="form-control" @bind-Value="customerOrderRow.Quantity" />
+                </div>
+            </div>
+
+            <div class="d-flex gap-2 mt-4">
+             
+                <button type="button" class="btn btn-outline-secondary" @onclick="GoBack">
+                    <i class="bi bi-arrow-left me-1"></i> Назад
+                </button>
+
+                <div class="ms-auto"></div>
+
+                @if (customerOrderRow.OrderId != 0)
+                {
+                    <button type="button" class="btn btn-outline-danger" @onclick="DeleteAsync">
+                        <i class="bi bi-trash me-1"></i> Видалити
+                    </button>
+                }
+            </div>
+        </EditForm>
+    }
+</div>
+
+@code {
+    [Parameter] public int Id { get; set; }
+
+    private bool _loading = true;
+    private string? _error;
+    private decimal totalOrdersAmount;
+    private CustomerOrderRowDto? customerOrderRow;
+
+    protected override async Task OnInitializedAsync() => await Reload();
+
+    private async Task Reload()
+    {
+        _loading = true;
+        StateHasChanged();
+        customerOrderRow = await _adminCustomerOrdersService.GetCustomerOrderByIdAsync(Id);
+       _loading = false;
+    }       
+
+    private async Task DeleteAsync()
+    {       
+        try
+        {
+            await _ordersService.DeleteClientOrderAsync(Id);
+            _navigationManager.NavigateTo("/admin-customer-orders");
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+    }
+
+    private void GoBack() => _navigationManager.NavigateTo("/admin-customer-orders");
+
+    private void OnDateChanged(ChangeEventArgs e)
+    {
+        if (customerOrderRow is null) return;
+        if (DateOnly.TryParseExact(Convert.ToString(e.Value),
+                                   "yyyy-MM-dd",
+                                   CultureInfo.InvariantCulture,
+                                   DateTimeStyles.None,
+                                   out var d))
+        {
+            customerOrderRow.OrderDate = d;
+        }
+    }
+           
+}
