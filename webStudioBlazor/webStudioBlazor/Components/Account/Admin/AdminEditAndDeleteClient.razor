@@ -100,15 +100,14 @@
     private bool _loading = true;
     private string? _error;
     private List<TherapyCard> therapyCards = new();
-    private List<Category> categories = new();
-        
+    private List<Category> categories = new();        
     private Appointment appointment = new Appointment();
 
     protected override async Task OnInitializedAsync()
-    {       
-       categories = await _seedService.GetAllCategoryListAsync();
-       therapyCards = await _seedService.GetAllTherapyCardListAsync();
-       appointment = await _seedService.GetClientAppointmentId(Id) ?? new Appointment();                  
+    {    
+        categories = await _seedService.GetAllCategoryListAsync() ?? new List<Category>();
+        therapyCards = await _seedService.GetAllTherapyCardListAsync() ?? new List<TherapyCard>();
+        appointment = await _seedService.GetClientAppointmentId(Id) ?? new Appointment();                  
     }
 
     private async Task SaveAsync()
