@@ -1,5 +1,6 @@
 ﻿@page "/admin-us-clients"
 
+@inject NavigationManager _navigationManager
 @inject SeedService _seedService
 @layout AdminLayout
 @attribute [Authorize(Roles = "Admin")]
@@ -43,6 +44,7 @@
                         <th class="d-none d-md-table-cell"><button class="btn btn-link p-0">Категорія</button></th>
                         <th><button class="btn btn-link p-0">Послуга</button></th>
                         <th><button class="btn btn-link p-0">Ціна</button></th>
+                        <th class="text-center">Дії</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -54,14 +56,19 @@
                 {
                     @foreach (var r in pagedRows)
                     {
-                        <tr>
-                            <td>@r.Date.ToString("dd.MM.yyyy")</td>
-                            <td>@r.Time.ToString("HH\\:mm")</td>
-                            <td>@r.Name</td>
-                            <td><a href="tel:@r.Phone">@r.Phone</a></td>
-                            <td class="d-none d-md-table-cell">@r.Category</td>
-                            <td>@r.Service</td>
-                            <td>@r.Price</td>
+                            <tr>
+                                <td>@r.Date.ToString("dd.MM.yyyy")</td>
+                                <td>@r.Time.ToString("HH\\:mm")</td>
+                                <td>@r.Name</td>
+                                <td><a href="tel:@r.Phone">@r.Phone</a></td>
+                                <td class="d-none d-md-table-cell">@r.Category</td>
+                                <td>@r.Service</td>
+                                <td>@r.Price</td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-outline-primary me-1" @onclick="() => EditRow(r.Id)">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </button>                                   
+                                </td>
                             </tr>
                     }
                 }
@@ -86,7 +93,7 @@
 
     private readonly CultureInfo ua = new("uk-UA");
     private string? search;
-    
+
     private string sortBy = nameof(RowVM.Date);
     private bool sortAsc = true;
     private int page = 1;
@@ -177,8 +184,13 @@
         therapyCards = await _seedService.GetAllTherapyCardListAsync();
 
         Rebuild();
-    }           
+    }   
 
+    private void EditRow(int id)
+    {
+        _navigationManager.NavigateTo($"/edit-client/{id}");
+    }
+   
     private sealed record RowVM(
         int Id,
         string Name,

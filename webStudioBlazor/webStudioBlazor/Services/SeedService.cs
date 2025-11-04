@@ -283,6 +283,19 @@ namespace webStudioBlazor.Services
             db.AppointmentServices.Remove(entity);
             await db.SaveChangesAsync(ct);
         }
-    }
 
+        public async Task DeleteAppointmentAsync(int appointmentId, CancellationToken ct = default)
+        {
+            await using var db = await _dbFactory.CreateDbContextAsync(ct);
+                        
+            var appointment = await db.Appointments              
+                .FirstOrDefaultAsync(a => a.Id == appointmentId, ct);
+
+            if (appointment is null)
+                return;                      
+           
+            db.Appointments.Remove(appointment);
+            await db.SaveChangesAsync(ct);
+        }
+    }
 }

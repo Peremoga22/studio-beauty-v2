@@ -1,0 +1,162 @@
+﻿@page "/edit-client/{Id:int}"
+
+@inject SeedService _seedService
+@inject NavigationManager _navigationManager
+@inject IJSRuntime JS
+@layout AdminLayout
+@rendermode InteractiveServer
+@attribute [Authorize(Roles = "Admin")]
+
+<div class="container my-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="bg-white shadow-sm rounded px-3 py-3 mb-4">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item">
+                <a class="link-brand" href="/admin-us-clients">Повернутися до наповнення</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+                @(Id == 0 ? "Додавання даних" : "Редагування кліента")
+            </li>
+        </ol>
+    </nav>
+    <h3 class="mb-3">Редагування запису</h3>
+       
+        <EditForm Model="appointment" OnValidSubmit="SaveAsync">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="row gy-3">
+                <div class="col-md-6">
+                    <label class="form-label">Ім’я</label>
+                    <InputText class="form-control" @bind-Value="appointment.ClientName" />
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Телефон</label>
+                    <InputText class="form-control" @bind-Value="appointment.ClientPhone" />
+                </div>
+
+                <div class="col-6 col-md-3">
+                    <label class="form-label">Дата</label>
+                    <input class="form-control" type="date"
+                           value="@appointment.AppointmentDate.ToString("yyyy-MM-dd")"
+                           @onchange="OnDateChanged" />
+                </div>
+
+                <div class="col-6 col-md-3">
+                    <label class="form-label">Час</label>
+                    <input class="form-control" type="time" step="60"
+                           value="@appointment.SetHour.ToString("HH\\:mm")"
+                           @onchange="OnTimeChanged" />
+                </div>
+
+            <div class="mb-3">
+                <label class="form-label">Послуга</label>
+                <InputSelect class="form-select" @bind-Value="appointment.CategoryId" TValue="int">
+                    <option value="">Оберіть послугу</option>
+                    @foreach (var cat in categories.Where(c => c.Id == appointment.CategoryId))
+                    {
+                        <option value="@cat.Id">@cat.NameCategory</option>
+                    }
+                </InputSelect>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Категорія</label>
+                <InputSelect class="form-select" @bind-Value="appointment.TherapyId" TValue="int">
+                    <option value="">Оберіть послугу</option>
+                    @foreach (var srv in therapyCards.Where(c => c.CategoryId == appointment.CategoryId).ToList())
+                    {
+                        <option value="@srv.Id">@srv.TitleCard</option>
+                    }
+                </InputSelect>               
+            </div>                     
+
+                <div class="col-md-4">
+                    <label class="form-label">Ціна</label>
+                    <InputNumber class="form-control" @bind-Value="appointment.Price" />
+                </div>                               
+            </div>
+
+            <div class="d-flex gap-2 mt-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-check2 me-1"></i> Зберегти
+                </button>
+                <button type="button" class="btn btn-outline-secondary" @onclick="GoBack">
+                    <i class="bi bi-arrow-left me-1"></i> Назад
+                </button>
+                <div class="ms-auto"></div>
+                <button type="button" class="btn btn-outline-danger" @onclick="DeleteAsync">
+                    <i class="bi bi-trash me-1"></i> Видалити
+                </button>
+            </div>
+        </EditForm>   
+</div>
+
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    private bool _loading = true;
+    private string? _error;
+    private List<TherapyCard> therapyCards = new();
+    private List<Category> categories = new();
+        
+    private Appointment appointment = new Appointment();
+
+    protected override async Task OnInitializedAsync()
+    {       
+       categories = await _seedService.GetAllCategoryListAsync();
+       therapyCards = await _seedService.GetAllTherapyCardListAsync();
+       appointment = await _seedService.GetClientAppointmentId(Id) ?? new Appointment();                  
+    }
+
+    private async Task SaveAsync()
+    {
+       if(appointment is null) 
+            return;
+        await _seedService.SaveClientAsync(appointment);
+        _navigationManager.NavigateTo("/admin-us-clients");
+    }
+
+    private async Task DeleteAsync()
+    {     
+      try
+        {
+            await _seedService.DeleteAppointmentAsync(Id);
+            _navigationManager.NavigateTo("/admin-us-clients");
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+    }
+
+    private void GoBack() => _navigationManager.NavigateTo("/admin-us-clients");
+
+    private void OnDateChanged(ChangeEventArgs e)
+    {
+        if (appointment is null) return;
+        if (DateOnly.TryParseExact(Convert.ToString(e.Value),
+                                   "yyyy-MM-dd",
+                                   CultureInfo.InvariantCulture,
+                                   DateTimeStyles.None,
+                                   out var d))
+        {
+            appointment.AppointmentDate = d;
+        }
+    }
+
+    private void OnTimeChanged(ChangeEventArgs e)
+    {
+        if (appointment is null) return;
+        if (TimeOnly.TryParseExact(Convert.ToString(e.Value),
+                                   "HH\\:mm",
+                                   CultureInfo.InvariantCulture,
+                                   DateTimeStyles.None,
+                                   out var t))
+        {
+            appointment.SetHour = t;
+        }
+    }      
+}
