@@ -76,12 +76,8 @@
         }
     }
 
-    private async Task SendMessageAsync()
-    
-    {
-        if (clientUser.Id == 0 || !_didRun)
-            return;
-
+    private async Task SendMessageAsync()    
+    {       
         categories = await _seedService.GetAllCategoryListAsync();
         var category = categories.FirstOrDefault(c => c.Id == clientUser.CategoryId);
         var categoryName = category?.NameCategory;
