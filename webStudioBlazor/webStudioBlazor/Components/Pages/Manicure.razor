@@ -3,8 +3,63 @@
 
 <h3 style="padding-top: 7%;"></h3>
 
-<h3>Manicure</h3>
+@{
+    var page = pageTherapies.FirstOrDefault(p => p.TitlePage == @selectedManicure);
+    <section class="text-center pt-32 pb-12 px-4">
+        <h1 class="text-4xl font-extrabold mb-4" style="color: #f8b7d8;">
+            @(page?.TitlePage ?? "Без сторінки")
+        </h1>
+        <p class="text-gray-700 text-lg max-w-2xl mx-auto">
+            @(page?.DescriptionPage ?? "Без сторінки")
+        </p>
+    </section>
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb bg-white p-2 mb-5 rounded shadow-sm">
+                <li class="breadcrumb-item"><a href="/" style="color: #f8b7d8;">Домашня сторінка</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Косметологія</li>
+            </ol>
+        </nav>
+    </div>
+}
+<section class="pt-3">
+    <div class="container">
+        <figure class="figure m-0">
+            <div class="row g-3">
+                @foreach (var item in manicureCards.Where(x => x.CategoryId == page.CategoryId))
+                {
+                    <div class="col-12 col-sm-6 col-lg-4">
+                        <div class="card h-100 shadow-sm">
+                            <img src="@item.ImagePath" class="card-img-top" alt="@item.TitleCard" loading="lazy" decoding="async">
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title fw-bold" style="color: #f8b7d8;">
+                                    @item.TitleCard
+                                </h5>
+                                <p class="card-text">@item.DescriptionCard</p>
+                                <div class="card-footer bg-transparent border-0 text-center mt-auto">
+                                    <i class="bi bi-cash-stack me-1"></i>
+                                    @item.Price.ToString("C0", new System.Globalization.CultureInfo("uk-UA"))
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </figure>
+    </div>
+</section>
+
 
 @code {
+    private List<TherapyCard> manicureCards = new();
+    private List<Category> categories = new();
+    private List<PageTherapy> pageTherapies = new();
+    private string selectedManicure = "Манікюр";
 
+    protected override async Task OnInitializedAsync()
+    {
+        manicureCards = await _seedService.GetAllTherapyCardListAsync();
+        categories = await _seedService.GetAllCategoryListAsync();
+        pageTherapies = await _seedService.GetAllPageTherapyListAsync();
+    }
 }
