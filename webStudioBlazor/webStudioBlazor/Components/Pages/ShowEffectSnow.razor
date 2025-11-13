@@ -1,0 +1,55 @@
+﻿@inject IJSRuntime JSRuntime
+@inject NavigationManager Navigation
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await InitializeSnow();
+        }
+        else
+        {
+            // Перевіряємо сніг при кожному рендері (включаючи навігацію)
+            await EnsureSnowRunning();
+        }
+    }
+
+    private async Task InitializeSnow()
+    {
+        try
+        {
+            // Ініціалізація ефекту снігу (JS файл вже завантажений через script tag)
+            await Task.Delay(100); // Невелика затримка для завантаження скрипта
+            await JSRuntime.InvokeVoidAsync("eval",
+                "if (typeof snowEffect !== 'undefined') { snowEffect.init(); }");
+        }
+        catch (Exception ex)
+        {
+            // Обробка помилок
+            Console.WriteLine($"Помилка ініціалізації ефекту снігу: {ex.Message}");
+        }
+    }
+
+    private async Task EnsureSnowRunning()
+    {
+        try
+        {
+            // Використовуємо нову функцію ensure для перевірки та відновлення снігу
+            await JSRuntime.InvokeVoidAsync("eval",
+                @"if (typeof snowEffect !== 'undefined' && typeof snowEffect.ensure === 'function') {
+                    snowEffect.ensure();
+                } else if (typeof snowEffect !== 'undefined') {
+                    var container = document.getElementById('snow-container');
+                    if (!container) {
+                        snowEffect.init();
+                    }
+                }");
+        }
+        catch
+        {
+
+        }
+    }
+}
+
