@@ -135,7 +135,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseAntiforgery();
 
-app.MapControllers();
+//app.MapControllers();
 app.MapStaticAssets();
 
 app.MapRazorComponents<App>()
