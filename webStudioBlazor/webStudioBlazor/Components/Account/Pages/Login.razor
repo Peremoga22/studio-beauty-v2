@@ -3,6 +3,7 @@
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Identity
+@using webStudioBlazor.Components.Account.Admin
 @using webStudioBlazor.Data
 
 @inject SignInManager<ApplicationUser> SignInManager
@@ -11,6 +12,8 @@
 @inject IdentityRedirectManager RedirectManager
 @inject UserManager<ApplicationUser> UserManager
 @inject IConfiguration Configuration
+@inject IJSRuntime _jsRuntime
+
 
 <h3 style="padding-top: 7%;"></h3>
 <PageTitle>Log in</PageTitle>
@@ -68,19 +71,11 @@
                             </a>
                             <a class="d-block" href="Account/ResendEmailConfirmation">Resend email confirmation</a>
                         </div> *@
-                    </EditForm>
-                </div>
+                    </EditForm>    
+                    <ExternalLoginPicker />                                                                       
+                 </div>
             </div>
-        </div>
-
-        @*  <div class="col-md-5 col-lg-4 mt-4 mt-md-0">
-            <div class="card shadow-sm border-0 rounded-3">
-                <div class="card-body p-4">
-                    <h4 class="mb-3 text-center">Or sign in with</h4>
-                    <ExternalLoginPicker />
-                </div>
-            </div>
-        </div> *@
+        </div>              
     </div>
 </div>
 
@@ -97,6 +92,9 @@
     private string? ReturnUrl { get; set; }
 
     private string? adminEmail;
+    private IList<AuthenticationScheme>? ExternalLogins { get; set; }
+    private string SafeReturnUrl => GetSafeReturnUrl(ReturnUrl);
+
     protected override async Task OnInitializedAsync()
     {
         adminEmail = Configuration.GetValue<string>("Admin:Login");
@@ -105,6 +103,25 @@
             // Clear the existing external cookie to ensure a clean login process
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
         }
+
+        ExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync())?.ToList();
+    }
+
+    private void LoginWithGoogle()
+    {       
+        var returnUrl = "/";
+        NavigationManager.NavigateTo($"/auth/login-google?returnUrl={Uri.EscapeDataString(returnUrl)}", forceLoad: true);
+    }
+
+    private async Task Logout()
+    {        
+        await _jsRuntime.InvokeVoidAsync("fetch", "/auth/logout", new
+        {
+            method = "POST",
+            headers = new Dictionary<string, object> { { "X-Requested-With", "XMLHttpRequest" } }
+        });
+
+        NavigationManager.NavigateTo("/", true);
     }
 
     public async Task LoginUser()
@@ -142,6 +159,21 @@
         {
             errorMessage = "Error: Invalid login attempt.";
         }
+    }
+
+    private string GetSafeReturnUrl(string? candidate)
+    {        
+        const string fallback = "/";
+        return IsLocalUrl(NavigationManager, candidate) ? candidate! : fallback;
+    }
+
+    private static bool IsLocalUrl(NavigationManager nav, string? url)
+    {
+        if (string.IsNullOrWhiteSpace(url)) return false;
+       
+        var isAbsolute = Uri.TryCreate(url, UriKind.Absolute, out var abs);
+        if (isAbsolute) return false;     
+        return true;
     }
 
     private sealed class InputModel

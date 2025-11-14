@@ -69,6 +69,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+       
         if (RemoteError is not null)
         {
             RedirectManager.RedirectToWithStatus("Account/Login", $"Error from external provider: {RemoteError}", HttpContext);
@@ -89,9 +90,7 @@
                 await OnLoginCallbackAsync();
                 return;
             }
-
-            // We should only reach this page via the login callback, so redirect back to
-            // the login page if we get here some other way.
+                      
             RedirectManager.RedirectTo("Account/Login");
         }
     }
