@@ -42,7 +42,7 @@
                             </label>
                             <InputText @bind-Value="clientUser.ClientPhone" id="InputCategory_Name"
                                        class="form-control form-control-sm"
-                                       placeholder="+380..." />
+                                       placeholder="+380..."  oninput="this.value = this.value.replace(/\s+/g, '')"/>
                            
                         </div>
 
