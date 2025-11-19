@@ -15,14 +15,15 @@
         <div class="sub-style">
             <h4 class="sub-title px-3 mb-0">Запис онлайн</h4>
         </div>
-        <h1 class="display-5 mb-3">Залиште заявку на прийом</h1>
-        <p>Заповніть форму, і ми з вами зв'яжемося для підтвердження запису.</p>
+        <h1 class="display-5 mb-1">Залиште заявку на прийом</h1>
+        <p>Заповніть форму, і ми з вами зв'яжемося для підтвердження запису.</p> 
+         <p style="color: #f8b7d8;">Авторизуйтеся, щоб переглядати та зберігати історію ваших записів.</p>
     </div>
 
     <div class="row justify-content-center">
         <div class="col-lg-6">
             <div class="card shadow rounded">
-                <div class="card-body p-4">
+                <div class="card-body p-4">                  
                     <EditForm Model="@clientUser" method="post" OnSubmit="HandleValidSubmit"
                               FormName="AppointmentClientRead"
                               class="card shadow-sm border rounded-3 p-4 bg-white"

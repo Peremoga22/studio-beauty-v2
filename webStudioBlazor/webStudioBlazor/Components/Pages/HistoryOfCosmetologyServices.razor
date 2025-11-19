@@ -1,0 +1,93 @@
+﻿@page "/history-of-cosmetology-services/{CurrentUserId}"
+@inject SeedService _seedService
+
+<h3 style="padding-top: 7%;"></h3>
+<section class="container py-5">
+
+    <h1 class="text-center fw-bold mb-4" style="color:#f8b7d8;">
+        Історія ваших косметологічних процедур
+    </h1>
+
+    <p class="text-center text-muted mb-5">
+        Тут відображаються всі процедури, які ви проходили у нашій студії.
+    </p>
+
+    @if (IsLoading)
+    {
+        <div class="text-center mt-5">
+            <div class="spinner-border" style="color:#f8b7d8;" role="status"></div>
+        </div>
+    }
+    else if (History == null || !History.Any())
+    {
+        <div class="text-center mt-5">
+            <p class="text-muted">Записів поки немає.</p>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var item in History)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="card shadow-sm border-0 h-100">
+                        <img src="@item.ImageUrl"
+                             class="card-img-top"
+                             alt="@item.ServiceName"
+                             style="height: 180px; object-fit: cover;">
+
+                        <div class="card-body text-center">
+                            <h5 class="fw-bold" style="color:#f8b7d8;">@item.ServiceName</h5>
+
+                            <p class="text-muted small mb-1">
+                                Дата: @item.AppointmentDate.ToString("dd.MM.yyyy")
+                            </p>
+
+                            <p class="text-muted small mb-2">
+                                Майстер: @item.Master
+                            </p>
+
+                            <p class="text-dark small">@item.Description</p>
+
+                            <a href="/service/@item.ServiceId"
+                               class="btn text-white px-3 mt-2"
+                               style="background-color:#f8b7d8; border-radius:50px;">
+                                Переглянути →
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</section>
+
+@code {
+    [Parameter] public string CurrentUserId { get; set; }
+
+    private bool IsLoading = true;
+
+    // Список історії (DTO)
+    private List<UserCosmetologyHistoryDto> History { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsLoading = true;
+
+        // Тут ти підставляєш свій сервіс
+       // History = await _seedService.GetClientAppointmentId(CurrentUserId);
+
+        IsLoading = false;
+    }
+
+    public class UserCosmetologyHistoryDto
+    {
+        public int ServiceId { get; set; }
+        public string ServiceName { get; set; }
+        public string ImageUrl { get; set; }
+        public DateTime AppointmentDate { get; set; }
+        public string Master { get; set; }
+        public string Description { get; set; }
+    }
+
+}
