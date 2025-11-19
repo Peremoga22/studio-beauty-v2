@@ -1,6 +1,8 @@
-﻿@implements IDisposable
+﻿@using System.Security.Claims
+@implements IDisposable
 @inject NavigationManager _navigationManager
 @inject CartService _cartService
+@inject IJSRuntime _jsRuntime
 @rendermode InteractiveServer
 
 <!-- Topbar Start -->
@@ -72,6 +74,11 @@
                     </NavLink>
                 </li>
                 <li class="nav-item">
+                    <NavLink href="/manicure" class="nav-link" activeClass="active">
+                        Манікюр
+                    </NavLink>
+                </li>
+                <li class="nav-item">
                     <NavLink href="/sales" class="nav-link" activeClass="active">
                         Наш магазин
                     </NavLink>
@@ -81,14 +88,25 @@
                         Події
                     </NavLink>
                 </li>
-
+                @if(isAuthenticated)
+                {
+                    <li class="nav-item">
+                        <NavLink href="/personal-account" class="nav-link" activeClass="active">
+                            Особистий кабінет
+                        </NavLink>
+                    </li>
+                }
+              
                 <AuthorizeView>
                     <Authorized>
-                        <li class="nav-item">
-                            <NavLink class="nav-link fw-semibold text-primary" href="/admin-clients">
-                                <i class="bi bi-shield-lock me-1"></i> Адмінка
-                            </NavLink>
-                        </li>
+                        @if (userName == "admin@outlook.com")
+                        {
+                            <li class="nav-item">
+                                <NavLink class="nav-link fw-semibold text-primary" href="/admin-clients">
+                                    <i class="bi bi-shield-lock me-1"></i> Адмінка
+                                </NavLink>
+                            </li>
+                        }                      
                         <li class="nav-item">
                             <form action="Account/Logout" method="post" class="d-inline">
                                 <AntiforgeryToken />
@@ -128,18 +146,49 @@
 
 
 @code {
-
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateUser { get; set; }
     private string? currentUrl;      
     private int cartCount;
-   
+    private bool isAuthenticated = false;
+    private string userName = string.Empty;
 
     protected override async Task OnInitializedAsync()
-    {
-        _cartService.CartCountChanged += count => { cartCount = count; InvokeAsync(StateHasChanged);};             
-        await _cartService.NotifyCountChangedAsync();   
+    {      
+        var authState = await authenticationStateUser;
+        var user = authState.User;
+                
+        isAuthenticated = user.Identity?.IsAuthenticated ?? false;
+
+        if (isAuthenticated)
+        {           
+            var email =
+                user.FindFirst(ClaimTypes.Email)?.Value ??
+                user.FindFirst("email")?.Value ??         
+                user.Identity?.Name ?? string.Empty;      
+
+            userName = email;
+        }
+        else
+        {
+            userName = string.Empty;           
+        }
+               
+        _cartService.CartCountChanged += OnCartCountChanged;
+
+        await _cartService.NotifyCountChangedAsync();
+              
         currentUrl = _navigationManager.ToBaseRelativePath(_navigationManager.Uri);
+              
         _navigationManager.LocationChanged += OnLocationChanged;
-    }        
+    }
+
+    private void OnCartCountChanged(int count)
+    {
+        cartCount = count;
+        InvokeAsync(StateHasChanged);
+    }
+
 
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
     {
@@ -149,6 +198,7 @@
 
     public void Dispose()
     {
+        _cartService.CartCountChanged -= OnCartCountChanged;
         _navigationManager.LocationChanged -= OnLocationChanged;
     }
 }
