@@ -10,6 +10,8 @@ namespace webStudioBlazor.Services
 {
     using Microsoft.EntityFrameworkCore;
 
+    using webStudioBlazor.ModelDTOs;
+
     public class SeedService
     {
         private readonly IDbContextFactory<ApplicationDbContext> _dbFactory;
@@ -296,6 +298,34 @@ namespace webStudioBlazor.Services
            
             db.Appointments.Remove(appointment);
             await db.SaveChangesAsync(ct);
+        }
+
+        public async Task<List<AppointmentWithDetailsDto>> GetAppointmentsByUserIdAsync(string aspUserId,CancellationToken ct = default)
+        {
+            await using var db = await _dbFactory.CreateDbContextAsync(ct);
+
+            return await db.Appointments
+                .AsNoTracking()
+                .Where(a => a.UserId == aspUserId)
+                .Include(a => a.TherapyCard)
+                .Include(a => a.Master) 
+                .OrderByDescending(a => a.AppointmentDate)
+                .Select(a => new AppointmentWithDetailsDto
+                {
+                    Id = a.Id,
+                    AppointmentDate = a.AppointmentDate,
+                    MasterId = a.MasterId,
+                    CategoryId = a.CategoryId,
+                    TherapyId = a.TherapyId,
+
+                    ImageUrl = a.TherapyCard.ImagePath,
+                    ServiceName = a.TherapyCard.TitleCard,
+                    Description = a.TherapyCard.DescriptionCard,
+                                        
+                    MasterFullName = a.Master.FullName,
+                    IsVideo = a.CategoryId == 2
+                }).ToListAsync(ct);
+
         }
     }
 }

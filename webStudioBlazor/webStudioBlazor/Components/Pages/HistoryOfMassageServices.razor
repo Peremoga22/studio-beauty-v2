@@ -1,11 +1,11 @@
-﻿@page "/history-of-cosmetology-services/{CurrentUserId}"
+﻿@page "/history-of-massage-services/{CurrentUserId}"
 @inject SeedService _seedService
 
 <h3 style="padding-top: 4%;"></h3>
 <section class="container">
 
     <h1 class="text-center fw-bold mb-4" style="color:#f8b7d8;">
-        Історія ваших косметологічних процедур
+        Історія ваших масажних процедур
     </h1>
 
     <p class="text-center text-muted mb-5">
@@ -15,7 +15,7 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb bg-white p-2 mb-5 rounded shadow-sm">
                 <li class="breadcrumb-item"><a href="/personal-account" style="color: #f8b7d8;">Особистий кабінет</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Косметологія мої записи</li>
+                <li class="breadcrumb-item active" aria-current="page">Масажна терапія мої записи</li>
             </ol>
         </nav>
     </div>
@@ -34,16 +34,16 @@
     else
     {
         <div class="row g-4">
-            @foreach (var item in сosmetologyHistories.Where(a => a.CategoryId != 2))
-            {           
+            @foreach (var item in сosmetologyHistories.Where(a=>a.CategoryId ==2))
+            {
                 <div class="col-12 col-sm-6 col-lg-4">
                     <div class="card appointment-card border-0 shadow-sm h-100">
 
-                        <!-- IMAGE -->
-                        <div class="position-relative">                                                                                      
-                            <img src="@item.ImageUrl"
-                                 class="card-img-top appointment-img"
-                                 alt="@item.ServiceName"/>
+                        <!-- Video -->
+                        <div class="position-relative">
+                            <div class="ratio ratio-16x9">
+                                <lite-youtube class="card-img-top object-fit-cover" videoid="@item.ImageUrl" style="width: 100%; height: auto;" title="@item.ImageUrl"></lite-youtube>
+                            </div>                                                        
                         </div>
 
                         <!-- CONTENT -->
@@ -63,7 +63,7 @@
                             <p class="text-muted small description">
                                 @item.Description
                             </p>
-                                                       
+
                         </div>
                     </div>
                 </div>
@@ -75,7 +75,7 @@
 @code {
     [Parameter] public string CurrentUserId { get; set; }
 
-    private bool IsLoading = true;   
+    private bool IsLoading = true;
 
     // Список історії (DTO)
     private List<AppointmentWithDetailsDto> сosmetologyHistories { get; set; } = new();
@@ -84,8 +84,8 @@
     {
 
         сosmetologyHistories = await _seedService.GetAppointmentsByUserIdAsync(CurrentUserId);
-     
+
         IsLoading = false;
-    }      
+    }
 
 }

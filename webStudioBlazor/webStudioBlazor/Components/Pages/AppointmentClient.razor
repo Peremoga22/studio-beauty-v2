@@ -2,8 +2,10 @@
 @page "/appointment-user/{Id:int}"
 @using System.ComponentModel.DataAnnotations
 @using System.Text.RegularExpressions
+@using Microsoft.AspNetCore.Identity
+@using webStudioBlazor.Data
 
-
+@inject UserManager<ApplicationUser> _userManager
 @inject NavigationManager _navigationManager
 @rendermode InteractiveServer
 @inject SeedService _seedService
@@ -117,6 +119,11 @@
 @code {
     [Parameter]
     public int Id { get; set; }
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthenticationStateUser { get; set; }
+
+    private bool IsAuthenticated { get; set; } = false;
+    private string UserId { get; set; } = string.Empty;
 
     private Appointment clientUser = new();
     private MassageTherapyBooking booking = new();
@@ -145,6 +152,11 @@
         therapyCards = await _seedService.GetAllTherapyCardListAsync();
         clientList = await _seedService.GetAllClientListAsync();
 
+        var authState = await AuthenticationStateUser;
+        var user = authState.User;
+        IsAuthenticated = user.Identity?.IsAuthenticated ?? false;
+        UserId = _userManager.GetUserId(user)!;
+       
         if (Id > 0)
         {
             clientUser = await _seedService.GetClientAppointmentId(Id);
@@ -170,12 +182,14 @@
             clientUser.MasterId = categories.FirstOrDefault(c => c.Id == clientUser.CategoryId)?.MasterId ?? 0;
             clientUser.Price = therapyCards.FirstOrDefault(t => t.Id == clientUser.TherapyId)?.Price ?? 0;
             clientUser.IsCompleted = true;
+            clientUser.UserId = UserId;
             var idClient = await _seedService.SaveClientAsync(clientUser);
 
             appointmentService.AppointmentId = idClient;
             appointmentService.CategoryId = clientUser.CategoryId;
             appointmentService.TherapyId = clientUser.TherapyId;
             appointmentService.Price = clientUser.Price;
+            
 
             await _seedService.SaveClientServiceAsync(appointmentService);
             _navigationManager.NavigateTo($"/appointment-confirm/{idClient}");

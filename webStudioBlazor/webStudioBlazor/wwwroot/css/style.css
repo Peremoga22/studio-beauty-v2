@@ -2691,4 +2691,50 @@
     }
 
 
+   /* =====================*/
+   .appointment-card {
+    border-radius: 18px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
 
+.appointment-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
+}
+
+.appointment-img {
+    height: 220px;
+    object-fit: cover;
+}
+
+.service-title {
+    color: #f8b7d8;
+    font-size: 1.1rem;
+}
+
+.description {
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.appointment-date {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: #f8b7d8;
+    color: #fff;
+    font-size: 0.8rem;
+    padding: 6px 10px;
+    border-radius: 20px;
+}
+
+.btn-outline-primary {
+    border-color: #f8b7d8;
+    color: #f8b7d8;
+}
+
+.btn-outline-primary:hover {
+    background: #f8b7d8;
+    color: #fff;
+}
