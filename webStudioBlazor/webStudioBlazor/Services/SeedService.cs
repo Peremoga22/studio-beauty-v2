@@ -10,6 +10,8 @@ namespace webStudioBlazor.Services
 {
     using Microsoft.EntityFrameworkCore;
 
+    using Telegram.Bot.Types;
+
     using webStudioBlazor.ModelDTOs;
 
     public class SeedService
@@ -325,7 +327,39 @@ namespace webStudioBlazor.Services
                     MasterFullName = a.Master.FullName,
                     IsVideo = a.CategoryId == 2
                 }).ToListAsync(ct);
+        }
 
+        public async Task<List<ClientOrderWithDetailsDto>> GetClientOrdersByUserIdAsync(string aspUserId, CancellationToken ct = default)
+        {
+            await using var db = await _dbFactory.CreateDbContextAsync(ct);
+
+            return await db.ClientOrders
+                 .AsNoTracking()
+                 .Where(co => co.UserId == aspUserId)
+                 .Include(co => co.Order)
+                     .ThenInclude(o => o.Items)
+                         .ThenInclude(oi => oi.Therapy)
+                 .OrderByDescending(co => co.AppointmentDate)
+                 .Select(co => new ClientOrderWithDetailsDto
+                 {
+                     Id = co.Id,
+                     AppointmentDate = co.AppointmentDate,
+                     FullName = co.ClientFirstName + " " + co.ClientLastName,
+                     Phone = co.ClientPhone,
+                     City = co.City,
+                     Address = co.AddressNewPostOffice,
+                     Price = co.Price,
+
+                     ServiceName = co.Order.Items.Count > 0 && co.Order.Items.FirstOrDefault() != null && co.Order.Items.FirstOrDefault().Therapy != null
+                         ? co.Order.Items.FirstOrDefault().Therapy.TitleCard
+                         : string.Empty,
+                     ImageUrl = co.Order.Items.Count > 0 && co.Order.Items.FirstOrDefault() != null && co.Order.Items.FirstOrDefault().Therapy != null
+                         ? co.Order.Items.FirstOrDefault().Therapy.ImagePath
+                         : string.Empty,
+                     ServiceDescription = co.Order.Items.Count > 0 && co.Order.Items.FirstOrDefault() != null && co.Order.Items.FirstOrDefault().Therapy != null
+                         ? co.Order.Items.FirstOrDefault().Therapy.DescriptionCard : string.Empty,
+                 })
+                 .ToListAsync(ct);
         }
     }
 }

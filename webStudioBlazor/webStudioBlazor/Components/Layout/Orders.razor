@@ -4,6 +4,7 @@
 @inject AppointmentNotifier _notification
 @inject OrderService _orderService
 @inject NavigationManager _nav
+@inject UserManager<ApplicationUser> _userManager
 @rendermode InteractiveServer
 
 <h3 style="padding-top: 7%;"></h3>
@@ -116,7 +117,11 @@
 
 @code {
     [Parameter] public int? totalCount { get; set; }
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthenticationStateUser { get; set; }
 
+    private bool IsAuthenticated { get; set; } = false;
+    private string UserId { get; set; } = string.Empty;
     private List<Order>? orders = new();
     private Order? order = new();
     private ClientOrders Model = new ClientOrders();
@@ -126,6 +131,10 @@
     {        
         Model.Price = totalCount.HasValue ? (decimal)totalCount.Value : 0m;
         Model.AppointmentDate = DateOnly.FromDateTime(DateTime.UtcNow.Date);
+        var authState = await AuthenticationStateUser;
+        var user = authState.User;
+        IsAuthenticated = user.Identity?.IsAuthenticated ?? false;
+        UserId = _userManager.GetUserId(user)!;
     }
 
     private async Task HandleSubmit()
@@ -134,6 +143,7 @@
         _isSubmitting = true;
         try
         {
+            Model.UserId = UserId;
             order = await _orderService.SaveClientOrderAsync(Model);
             await _notification.NotifyNewOrderAsync(order);          
             await InvokeAsync(StateHasChanged);

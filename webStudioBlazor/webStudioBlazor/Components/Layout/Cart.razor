@@ -13,6 +13,10 @@
         <span class="badge text-bg-secondary">@totalCount</span>
     }
 </h3>
+@if (!IsAuthenticated)
+{
+    <p class="text-center" style="color: #f8b7d8;">Авторизуйтеся, щоб переглядати та зберігати історію ваших записів.</p>
+}
 
 @if (items is null)
 {
@@ -204,12 +208,20 @@ else
 
 
 @code {
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthenticationStateUser { get; set; }
+
+    private bool IsAuthenticated { get; set; } = false;
     private List<CartItem>? items;
     private decimal total;
     private int totalCount;
    
     protected override async Task OnInitializedAsync()
     {
+        var authState = await AuthenticationStateUser;
+        var user = authState.User;
+
+        IsAuthenticated = user.Identity?.IsAuthenticated ?? false;
         await Refresh();
     }
 

@@ -2,7 +2,6 @@
 @page "/appointment-user/{Id:int}"
 @using System.ComponentModel.DataAnnotations
 @using System.Text.RegularExpressions
-@using Microsoft.AspNetCore.Identity
 @using webStudioBlazor.Data
 
 @inject UserManager<ApplicationUser> _userManager
@@ -19,7 +18,10 @@
         </div>
         <h1 class="display-5 mb-1">Залиште заявку на прийом</h1>
         <p>Заповніть форму, і ми з вами зв'яжемося для підтвердження запису.</p> 
-         <p style="color: #f8b7d8;">Авторизуйтеся, щоб переглядати та зберігати історію ваших записів.</p>
+        @if (!IsAuthenticated)
+        {
+          <p class="text-center" style="color: #f8b7d8;">Авторизуйтеся, щоб переглядати та зберігати історію ваших записів.</p>
+        }
     </div>
 
     <div class="row justify-content-center">

@@ -114,7 +114,8 @@ namespace webStudioBlazor.Services
                 AppointmentDate = model.AppointmentDate != default
                                     ? model.AppointmentDate
                                     : DateOnly.FromDateTime(DateTime.UtcNow.Date),
-                Price = 0m
+                Price = 0m,
+                UserId = model.UserId
             };
             db.ClientOrders.Add(client);
 
