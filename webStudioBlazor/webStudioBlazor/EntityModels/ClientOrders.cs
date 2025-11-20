@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
+using webStudioBlazor.Data;
+
 namespace webStudioBlazor.EntityModels
 {
     public class ClientOrders
@@ -32,5 +34,7 @@ namespace webStudioBlazor.EntityModels
 
         public int OrderId { get; set; }
         public Order Order { get; set; } = default!;
+        public string? UserId { get; set; } = default!;
+        public ApplicationUser? User { get; set; } = default!;
     }
 }

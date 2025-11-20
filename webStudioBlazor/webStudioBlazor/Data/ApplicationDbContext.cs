@@ -188,6 +188,14 @@ namespace webStudioBlazor.Data
             b.Property(x => x.IsCompleted)
                 .HasDefaultValue(false);
 
+            b.Property(x => x.UserId)             
+               .HasColumnType("nvarchar(450)");
+
+            b.HasOne(x => x.User)
+                .WithMany() //  .WithMany(u => u.Appointments)
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             // many (Appointment) : 1 (Master)
             b.HasOne(x => x.Master)
                 .WithMany()
@@ -417,8 +425,14 @@ namespace webStudioBlazor.Data
             b.Property(x => x.AddressNewPostOffice)
                 .HasMaxLength(128)
                 .IsRequired();
+            b.Property(x => x.UserId)                
+                 .HasColumnType("nvarchar(450)");
 
-           
+            b.HasOne(x => x.User)
+                .WithMany() //  .WithMany(u => u.Appointments)
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             b.Property(x => x.AppointmentDate)
                 .HasConversion(
                     v => v.ToDateTime(TimeOnly.MinValue),
