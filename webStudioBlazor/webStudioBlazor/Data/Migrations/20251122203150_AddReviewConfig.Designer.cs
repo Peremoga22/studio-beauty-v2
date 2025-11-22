@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using webStudioBlazor.Data;
 
@@ -11,9 +12,11 @@ using webStudioBlazor.Data;
 namespace webStudioBlazor.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251122203150_AddReviewConfig")]
+    partial class AddReviewConfig
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -600,9 +603,6 @@ namespace webStudioBlazor.Migrations
                     b.Property<int>("AppointmentId")
                         .HasColumnType("int");
 
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Comment")
                         .IsRequired()
                         .HasMaxLength(1000)
@@ -626,8 +626,6 @@ namespace webStudioBlazor.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AppointmentId");
-
-                    b.HasIndex("CategoryId");
 
                     b.HasIndex("MasterId");
 
@@ -872,12 +870,6 @@ namespace webStudioBlazor.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("webStudioBlazor.EntityModels.Category", "Category")
-                        .WithMany("Reviews")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
                     b.HasOne("webStudioBlazor.EntityModels.Master", "Master")
                         .WithMany()
                         .HasForeignKey("MasterId")
@@ -896,8 +888,6 @@ namespace webStudioBlazor.Migrations
                         .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Appointment");
-
-                    b.Navigation("Category");
 
                     b.Navigation("Master");
 
@@ -932,8 +922,6 @@ namespace webStudioBlazor.Migrations
             modelBuilder.Entity("webStudioBlazor.EntityModels.Category", b =>
                 {
                     b.Navigation("PageTherapy");
-
-                    b.Navigation("Reviews");
 
                     b.Navigation("TherapyCards");
                 });

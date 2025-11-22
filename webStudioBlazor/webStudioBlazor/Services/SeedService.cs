@@ -254,6 +254,14 @@ namespace webStudioBlazor.Services
                 .FirstOrDefaultAsync(c => c.Id == clientId, ct);
         }
 
+        public async Task<Appointment?> GetClientAppointmentUserId(string clientId, CancellationToken ct = default)
+        {
+            await using var db = await _dbFactory.CreateDbContextAsync(ct);
+            return await db.Appointments
+                .AsNoTracking()
+                .FirstOrDefaultAsync(c => c.UserId== clientId, ct);
+        }
+
         public async Task<List<AppointmentService>> ListForCalendarAsync(
             bool onlyCompleted = false,
             CancellationToken ct = default)
@@ -361,5 +369,32 @@ namespace webStudioBlazor.Services
                  })
                  .ToListAsync(ct);
         }
+
+        public async Task<List<Review>> GetReviewsForUserAsync(string userId, CancellationToken ct = default)
+        {
+            await using var db = await _dbFactory.CreateDbContextAsync(ct);
+
+            return await db.Reviews
+                .AsNoTracking()
+                .Include(r => r.TherapyCard)
+                .Include(r => r.Master)
+                .Where(r => r.UserId == userId)
+                .OrderByDescending(r => r.CreatedAt)
+                .ToListAsync(ct);
+        }
+        public async Task AddReviewAsync(Review review, CancellationToken ct = default)
+        {            
+            if (review == null)
+                throw new ArgumentNullException(nameof(review));
+                       
+            if (review.CreatedAt == default)
+                review.CreatedAt = DateTime.UtcNow;
+
+            await using var db = await _dbFactory.CreateDbContextAsync(ct);                    
+            db.Entry(review).State = EntityState.Added;
+
+            await db.SaveChangesAsync(ct);
+        }
+
     }
 }

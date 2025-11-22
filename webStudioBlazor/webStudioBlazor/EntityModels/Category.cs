@@ -8,5 +8,6 @@
         public List<PageTherapy?> PageTherapy { get; set; } = new();
         public List<TherapyCard?> TherapyCards { get; set; } = new();
         public Master Masters { get; set; } = default!;
+        public ICollection<Review> Reviews { get; set; } = new List<Review>();
     }
 }

@@ -1,0 +1,125 @@
+﻿@page "/appointment-reviews/{AppointmentId}"
+@using webStudioBlazor.Data
+@using System.Security.Claims
+@inject SeedService _seedService
+@inject NavigationManager NavigationManager
+@attribute [Authorize]
+
+
+<h3 style="padding-top: 7%;"></h3>
+<h3 class="mb-4">Мої відгуки 💬</h3>
+
+@if (reviews == null)
+{
+    <p>Завантаження...</p>
+}
+else if (!reviews.Any())
+{
+   @*  <div class="alert alert-light border rounded-3 d-flex justify-content-between align-items-center">
+        <span>Ви ще не залишали відгуків 🌸</span>
+
+        <a href="@($"/add-appointment-review/{AppointmentId}")"
+           class="btn btn-sm rounded-pill"
+           style="background-color:#f8b7d8;color:white;">
+            <i class="fa-solid fa-face-smile-beam me-1"></i>Залишити відгук
+        </a>
+    </div> *@
+    <div class="alert alert-light border rounded-3 d-flex justify-content-between align-items-center">
+        <span>
+            Ви ще не залишали відгуків 🌸
+        </span>
+
+        <a href="@($"/add-appointment-review/{AppointmentId}")"
+           class="btn btn-sm rounded-pill px-3"
+           style="background-color:#f8b7d8;color:white;">
+            Залишити відгук →
+        </a>
+    </div>
+
+}
+else
+{
+    <div class="alert alert-light border rounded-3 d-flex justify-content-between align-items-center">
+        <span>Додати ще відгук 🌸</span>
+
+        <a href="@($"/add-appointment-review/{AppointmentId}")"
+           class="btn btn-sm rounded-pill"
+           style="background-color:#f8b7d8;color:white;">
+            <i class="fa-solid fa-face-smile-beam me-1"></i>Залишити відгук
+        </a>
+    </div>
+    <div class="row g-3">
+        @foreach (var r in reviews)
+        {
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card shadow-sm border-0 h-100" style="border-radius: 16px;">
+                    <div class="card-body">
+
+                        <!-- Заголовок + дата -->
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h6 class="fw-bold mb-0" style="color:#f8b7d8;">
+                                @r.TherapyCard?.TitleCard
+                            </h6>
+                            <small class="text-muted">
+                                @r.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy")
+                            </small>
+                        </div>
+
+                        <!-- Рейтинг -->
+                        <div class="mb-2">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                if (i <= r.Rating)
+                                {
+                                    <i class="fa-solid fa-star" style="color:#f8b7d8;"></i>
+                                }
+                                else
+                                {
+                                    <i class="fa-regular fa-star" style="color:#f8b7d8;"></i>
+                                }
+                            }
+                        </div>
+
+                        <!-- Коментар -->
+                        <p class="small text-dark mb-3">
+                            @r.Comment
+                        </p>
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">
+                                👩‍⚕️ Майстер: <strong>@r.Master?.FullName</strong>
+                            </small>
+
+                            <span class="badge rounded-pill"
+                                  style="background:#fce4ef; color:#d65a8d;">
+                                Відгук
+                            </span>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+}
+
+@code {
+    [Parameter]
+    public string AppointmentId { get; set; }
+    private List<Review> reviews = new();
+
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthStateTask { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateTask;
+       
+
+        if (!string.IsNullOrEmpty(AppointmentId))
+        {
+            reviews = await _seedService.GetReviewsForUserAsync(AppointmentId);
+        }
+    }
+}

@@ -1,0 +1,202 @@
+﻿@page "/add-appointment-review/{AppointmentId}"
+@using System.ComponentModel.DataAnnotations
+@inject SeedService _seedService
+@inject NavigationManager _nav
+@rendermode InteractiveServer
+@attribute [Authorize]
+
+<h3 style="padding-top: 7%;"></h3>
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card shadow rounded">
+            <div class="card-body p-4">
+
+                <EditForm Model="@reviewModel"
+                          OnValidSubmit="HandleValidSubmitReview"
+                          class="card shadow-sm border rounded-3 p-4 bg-white">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary class="text-danger small" />
+
+                    <!-- Блок вибору категорії / послуги / майстра -->
+                    <div class="mb-3">
+                        <h5 class="mb-2">Відгук про послугу</h5>
+
+                        <!-- Категорія -->
+                        <div class="mb-2">
+                            <label class="form-label fw-semibold small">Категорія *</label>
+
+                            <InputSelect class="form-select"
+                                         @bind-Value="reviewModel.CategoryId"
+                                         TValue="int">
+                                <option value="0">Оберіть категорію</option>
+                                @foreach (var cat in categories)
+                                {
+                                    <option value="@cat.Id">@cat.NameCategory</option>
+                                }
+                            </InputSelect>
+
+                            <ValidationMessage For="@(() => reviewModel.CategoryId)"
+                                               class="text-danger small" />
+                        </div>
+
+                        <!-- Послуга -->
+                        <div class="mb-2">
+                            <label class="form-label fw-semibold small">Послуга *</label>
+
+                            <InputSelect class="form-select"
+                                         @bind-Value="reviewModel.TherapyId"
+                                         TValue="int">
+                                <option value="0">Оберіть послугу</option>
+                                @foreach (var srv in therapyCards.Where(e => e.CategoryId == reviewModel.CategoryId))
+                                {
+                                    <option value="@srv.Id">@srv.TitleCard</option>
+                                }
+                            </InputSelect>
+
+                            <ValidationMessage For="@(() => reviewModel.TherapyId)"
+                                               class="text-danger small" />
+                        </div>
+
+                        <!-- Майстер -->
+                        <div class="mb-2">
+                            <label class="form-label fw-semibold small">Майстер *</label>
+
+                            <InputSelect class="form-select form-select-sm"
+                                         @bind-Value="reviewModel.MasterId"
+                                         TValue="int">
+                                <option value="0">Оберіть майстра</option>
+                                @foreach (var master in masters)
+                                {
+                                    <option value="@master.Id">@master.FullName</option>
+                                }
+                            </InputSelect>
+
+                            <ValidationMessage For="@(() => reviewModel.MasterId)"
+                                               class="text-danger small" />
+                        </div>
+
+                        @if (clientUser is not null)
+                        {
+                            <p class="mb-0 text-muted mt-2 small">
+                                <strong>Дата запису:</strong> @clientUser.AppointmentDate.ToString("dd.MM.yyyy")
+                                о @clientUser.SetHour
+                            </p>
+                        }
+                    </div>
+
+                    <!-- Оцінка -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold small">Оцінка *</label>
+                        <InputSelect @bind-Value="reviewModel.Rating"
+                                     class="form-select form-select-sm">
+                            <option value="0">Оберіть оцінку</option>
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                <option value="@i">@i</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="@(() => reviewModel.Rating)"
+                                           class="text-danger small" />
+                    </div>
+
+                    <!-- Текст відгуку -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold small">Ваш відгук *</label>
+                        <InputTextArea @bind-Value="reviewModel.Comment"
+                                       class="form-control form-control-sm"
+                                       rows="4"
+                                       placeholder="Поділіться своїми враженнями..." />
+                        <ValidationMessage For="@(() => reviewModel.Comment)"
+                                           class="text-danger small" />
+                    </div>
+
+                    <div class="d-flex justify-content-center gap-2 mt-3">
+                        <button type="submit"
+                                class="btn rounded-pill px-4"
+                                style="background-color: #f8b7d8; color: white; border: none;">
+                            Додати відгук
+                        </button>
+                    </div>
+
+                </EditForm>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    [Parameter]
+    public string AppointmentId { get; set; }
+
+    private Appointment clientUser = new();
+    private ReviewInput reviewModel = new();
+
+    private List<Appointment> clientList = new();
+    private List<Master> masters = new();
+    private List<Category> categories = new();
+    private List<TherapyCard> therapyCards = new();
+
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthenticationStateTask { get; set; } = default!;
+    private int AppUserId;
+
+
+    protected override async Task OnInitializedAsync()
+    {         
+        masters = await _seedService.GetAllMasterListAsync();
+        categories = await _seedService.GetAllCategoryListAsync();
+        therapyCards = await _seedService.GetAllTherapyCardListAsync();
+        clientList = await _seedService.GetAllClientListAsync();
+        AppUserId = clientList.FirstOrDefault(a => a.UserId == AppointmentId)?.Id ?? 0;
+        clientUser = await _seedService.GetClientAppointmentId(AppUserId) ?? new Appointment();
+      
+    }    
+        
+
+    private async Task HandleValidSubmitReview()
+    {
+        if (clientUser is null || string.IsNullOrEmpty(AppointmentId))
+        {
+            return;
+        }
+
+        var review = new Review
+        {
+            Rating = reviewModel.Rating,
+            Comment = reviewModel.Comment,
+            AppointmentId = AppUserId,
+            CategoryId = reviewModel.CategoryId,
+            TherapyId = reviewModel.TherapyId,
+            MasterId = reviewModel.MasterId,
+            UserId = AppointmentId,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        await _seedService.AddReviewAsync(review);
+        
+        _nav.NavigateTo($"/appointment-reviews/{AppointmentId}");
+    }
+
+    public class ReviewInput
+    {
+        public int Id { get; set; }
+        [Required(ErrorMessage = "Оберіть категорію")]
+        public int CategoryId { get; set; }
+
+        [Required(ErrorMessage = "Оберіть послугу")]
+        public int TherapyId { get; set; }
+
+        [Required(ErrorMessage = "Оберіть майстра")]
+        public int MasterId { get; set; }
+
+        [Range(1, 5, ErrorMessage = "Оцінка має бути від 1 до 5")]
+        public int Rating { get; set; }
+
+        [Required(ErrorMessage = "Введіть текст відгуку")]
+        [StringLength(1000)]
+        public string Comment { get; set; } = string.Empty;
+    }
+}

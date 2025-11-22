@@ -48,5 +48,6 @@ namespace webStudioBlazor.EntityModels
         public TherapyCard? TherapyCard { get; set; }
 
         public List<AppointmentService?> AppointmentServices { get; set; } = new();
+        public List<Review> Reviews { get; set; } = new();
     }
 }

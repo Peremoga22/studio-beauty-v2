@@ -19,6 +19,7 @@ namespace webStudioBlazor.Data
         public DbSet<Order> Orders => Set<Order>();
         public DbSet<OrderItem> OrderItems => Set<OrderItem>();
         public DbSet<ClientOrders> ClientOrders { get; set; }
+        public DbSet<Review> Reviews => Set<Review>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -35,6 +36,7 @@ namespace webStudioBlazor.Data
             modelBuilder.ApplyConfiguration(new OrderConfig());
             modelBuilder.ApplyConfiguration(new OrderItemConfig());
             modelBuilder.ApplyConfiguration(new ClientOrdersConfig());
+            modelBuilder.ApplyConfiguration(new ReviewConfiguration());
         }
     }
     
@@ -446,6 +448,55 @@ namespace webStudioBlazor.Data
                         
             b.HasIndex(x => x.OrderId).IsUnique();
                        
+        }
+    }
+
+    public class ReviewConfiguration : IEntityTypeConfiguration<Review>
+    {
+        public void Configure(EntityTypeBuilder<Review> b)
+        {
+            b.ToTable("Reviews");
+
+            b.HasKey(x => x.Id);
+
+            b.Property(x => x.Rating)
+                .IsRequired();
+
+            b.Property(x => x.Comment)
+                .IsRequired()
+                .HasMaxLength(1000);
+
+            b.Property(x => x.CreatedAt)
+                .IsRequired();
+
+            // 🔗 Review -> Appointment (1:N)
+            b.HasOne(x => x.Appointment)
+                .WithMany(a => a.Reviews)
+                .HasForeignKey(x => x.AppointmentId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+           b.HasOne(x => x.Category)
+              .WithMany(c => c.Reviews)
+              .HasForeignKey(x => x.CategoryId)
+              .OnDelete(DeleteBehavior.NoAction);
+
+            // 🔗 Review -> TherapyCard (1:N)
+            b.HasOne(x => x.TherapyCard)
+                .WithMany()                // якщо в TherapyCard немає ICollection<Review>
+                .HasForeignKey(x => x.TherapyId)
+                .OnDelete(DeleteBehavior.NoAction); // можеш поставити Restrict/NoAction
+
+            // 🔗 Review -> Master (1:N)
+            b.HasOne(x => x.Master)
+                .WithMany()                // або .WithMany(m => m.Reviews), якщо додаси навігацію
+                .HasForeignKey(x => x.MasterId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // 🔗 Review -> User (опційно)
+            b.HasOne(x => x.User)
+                .WithMany()                // можна зробити User.Reviews, якщо треба
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }
