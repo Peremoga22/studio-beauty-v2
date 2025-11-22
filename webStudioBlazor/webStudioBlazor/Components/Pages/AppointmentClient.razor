@@ -3,12 +3,12 @@
 @using System.ComponentModel.DataAnnotations
 @using System.Text.RegularExpressions
 @using webStudioBlazor.Data
+@using Microsoft.AspNetCore.Components.Authorization
 
 @inject UserManager<ApplicationUser> _userManager
 @inject NavigationManager _navigationManager
-@rendermode InteractiveServer
 @inject SeedService _seedService
-
+@rendermode InteractiveServer
 
 <h3 style="padding-top: 5%;"></h3>
 <div class="container py-4">
@@ -17,110 +17,162 @@
             <h4 class="sub-title px-3 mb-0">Запис онлайн</h4>
         </div>
         <h1 class="display-5 mb-1">Залиште заявку на прийом</h1>
-        <p>Заповніть форму, і ми з вами зв'яжемося для підтвердження запису.</p> 
+        <p>Заповніть форму, і ми з вами зв'яжемося для підтвердження запису.</p>
         @if (!IsAuthenticated)
         {
-          <p class="text-center" style="color: #f8b7d8;">Авторизуйтеся, щоб переглядати та зберігати історію ваших записів.</p>
+            <p class="text-center" style="color: #f8b7d8;">
+                Авторизуйтеся, щоб переглядати та зберігати історію ваших записів.
+            </p>
         }
     </div>
 
     <div class="row justify-content-center">
         <div class="col-lg-6">
             <div class="card shadow rounded">
-                <div class="card-body p-4">                  
-                    <EditForm Model="@clientUser" method="post" OnSubmit="HandleValidSubmit"
-                              FormName="AppointmentClientRead"
-                              class="card shadow-sm border rounded-3 p-4 bg-white"
-                              style="width: 100%; max-width: 600px;">                                                    
+                <div class="card-body p-4">
+                    <EditForm Model="@clientUser"
+                              OnValidSubmit="HandleValidSubmit"
+                              class="card shadow-sm border rounded-3 p-4 bg-white">                      
+                        <DataAnnotationsValidator />                      
+                        <ValidationSummary class="text-danger small" />
 
                         <div class="mb-3">
-                            <label for="Input_Name" class="form-label fw-semibold small">
-                                Ім’я та прізвище <span class="text-danger">*</span><strong style="color:red">@ErrorMessageFullName</strong>
-                            </label>
-                            <InputText @bind-Value="clientUser.ClientName" id="InputCategory_Name"
-                                       class="form-control form-control-sm"
-                                       placeholder="Введіть назву..." />                         
+                            <label class="form-label fw-semibold small">Ім’я та прізвище *</label>
+                            <InputText @bind-Value="clientUser.ClientName"
+                                       class="form-control form-control-sm" />
+                            <ValidationMessage For="@(() => clientUser.ClientName)"
+                                               class="text-danger small" />
                         </div>
+
                         <div class="mb-3">
                             <label for="Input_Phone" class="form-label fw-semibold small">
-                                Телефон <span class="text-danger">*</span><strong style="color:red">@ErrorMessagePhone</strong>
+                                Телефон <span class="text-danger">*</span>
                             </label>
-                            <InputText @bind-Value="clientUser.ClientPhone" id="InputCategory_Name"
+                            <InputText @bind-Value="clientUser.ClientPhone"
+                                       id="Input_Phone"
                                        class="form-control form-control-sm"
-                                       placeholder="+380..."  oninput="this.value = this.value.replace(/\s+/g, '')"/>
-                           
+                                       placeholder="+380..."
+                                       oninput="this.value = this.value.replace(/\s+/g, '')" />
+                            <ValidationMessage For="@(() => clientUser.ClientPhone)"
+                                               class="text-danger small" />
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Послуга</label><span class="text-danger">*</span><strong style="color:red">@ErrorMessageService</strong>
-                            <InputSelect class="form-select" @bind-Value="clientUser.CategoryId" TValue="int">
-                                <option value="">Оберіть послугу</option>
+                            <label class="form-label">Послуга</label>
+                            <span class="text-danger">*</span>
+
+                            <InputSelect class="form-select"
+                                         Value="clientUser.CategoryId"
+                                         ValueChanged="@((int v) => OnCategoryChanged(v))"
+                                         ValueExpression="() => clientUser.CategoryId">
+                                <option value="0">Оберіть послугу</option>
                                 @foreach (var cat in categories.Where(a => a.NameCategory != DontChowPageName))
                                 {
                                     <option value="@cat.Id">@cat.NameCategory</option>
                                 }
                             </InputSelect>
+                            <ValidationMessage For="@(() => clientUser.CategoryId)"
+                                               class="text-danger small" />
+                          
                         </div>
-
-                        <!-- Послуга -->
+                                             
                         <div class="mb-3">
-                            <label class="form-label">Категорія</label><span class="text-danger">*</span><strong style="color:red">@ErrorMessageService</strong>
-                            <InputSelect class="form-select" @bind-Value="clientUser.TherapyId" TValue="int">
-                                <option value="">Оберіть послугу</option>
+                            <label class="form-label">Категорія</label>
+                            <span class="text-danger">*</span>
+
+                            <InputSelect class="form-select"
+                                         @bind-Value="clientUser.TherapyId"
+                                         TValue="int">
+                                <option value="0">Оберіть послугу</option>
                                 @foreach (var srv in therapyCards.Where(c => c.CategoryId == clientUser.CategoryId).ToList())
                                 {
                                     <option value="@srv.Id">@srv.TitleCard</option>
                                 }
                             </InputSelect>
-                           @*  <ValidationMessage For="@(() => clientUser.TherapyId)" class="text-danger small" /> *@
+                            <ValidationMessage For="@(() => clientUser.TherapyId)"
+                                               class="text-danger small" />
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Дата</label><span class="text-danger">*</span><strong style="color:red">@ErrorMessageSelectedDate</strong>
-                         
+                            <label class="form-label">Дата</label>
+                            <span class="text-danger">*</span>
+
                             <InputDate TValue="DateOnly"
                                        Value="clientUser.AppointmentDate"
                                        ValueChanged="@( (DateOnly v) => OnDateChanged(v) )"
                                        ValueExpression="() => clientUser.AppointmentDate"
                                        class="form-control" />
+                            <ValidationMessage For="@(() => clientUser.AppointmentDate)"
+                                               class="text-danger small" />
+                            <strong style="color:red">@ErrorMessageSelectedDate</strong>
                         </div>
-                     
+
                         <div class="mb-3">
-                            <label class="form-label">Час</label><span class="text-danger">*</span><strong style="color:red">@ErrorMessageSelectedTime</strong>
-                            <InputSelect @bind-Value="booking.SelectedTime" class="form-select" TValue="MassageTime?">
-                                <option value="">Оберіть час</option>
-                                @if (availableSlots?.Count > 0)
-                                {
-                                    foreach (var time in availableSlots)
+                            <label class="form-label">Час</label>
+                            <span class="text-danger">*</span>
+
+                            @if (IsManicureCategory)
+                            {
+                                <InputSelect @bind-Value="booking.SelectedManicureTime"
+                                             class="form-select"
+                                             TValue="ManicureTime ?">
+                                    <option value="">Оберіть час</option>
+                                    @if (availableManicureSlots?.Count > 0)
                                     {
-                                        <option value="@time">@GetDisplayName(time)</option>
+                                        foreach (var time in availableManicureSlots)
+                                        {
+                                            <option value="@time">@GetManicureDisplayName(time)</option>
+                                        }
                                     }
-                                }
-                                else
-                                {
-                                    <option disabled>Немає вільних слотів на цю дату</option>
-                                }
-                            </InputSelect>
+                                    else
+                                    {
+                                        <option disabled>Немає вільних слотів на цю дату</option>
+                                    }
+                                </InputSelect>                               
+                            }
+                            else
+                            {
+                                <InputSelect @bind-Value="booking.SelectedTime"
+                                             class="form-select"
+                                             TValue="MassageTime ?">
+                                    <option value="">Оберіть час</option>
+                                    @if (availableSlots?.Count > 0)
+                                    {
+                                        foreach (var time in availableSlots)
+                                        {
+                                            <option value="@time">@GetDisplayName(time)</option>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <option disabled>Немає вільних слотів на цю дату</option>
+                                    }
+                                </InputSelect>                               
+                            }
+
+                            <strong style="color:red">@ErrorMessageSelectedTime</strong>
                         </div>
 
                         <div class="d-flex justify-content-center gap-2 mt-3">
-                            <button type="submit" class="btn rounded-pill px-4" style="background-color: #f8b7d8; color: white; border: none;">
+                            <button type="submit"
+                                    class="btn rounded-pill px-4"
+                                    style="background-color: #f8b7d8; color: white; border: none;">
                                 Записатися
                             </button>
                         </div>
 
                     </EditForm>
+
                 </div>
             </div>
         </div>
     </div>
-
-
 </div>
 
 @code {
     [Parameter]
     public int Id { get; set; }
+
     [CascadingParameter]
     private Task<AuthenticationState> AuthenticationStateUser { get; set; }
 
@@ -129,22 +181,26 @@
 
     private Appointment clientUser = new();
     private MassageTherapyBooking booking = new();
-    private AppointmentService appointmentService= new();
+    private AppointmentService appointmentService = new();
 
     private static DateOnly Today => DateOnly.FromDateTime(DateTime.Today);
+
     private static readonly List<MassageTime> AllSlots = Enum.GetValues<MassageTime>().ToList();
+    private static readonly List<ManicureTime> AllManicureSlots = Enum.GetValues<ManicureTime>().ToList();
+
     private List<MassageTime> availableSlots = new();
+    private List<ManicureTime> availableManicureSlots = new();
     private List<Appointment> clientList = new();
     private List<Master> masters = new();
     private List<Category> categories = new();
     private List<TherapyCard> therapyCards = new();
 
+    private const int ManicureCategoryId = 4;
+    private bool IsManicureCategory => clientUser.CategoryId == ManicureCategoryId;
+
     private string ErrorMessageSelectedTime = string.Empty;
     private string ErrorMessageSelectedDate = string.Empty;
     private string ErrorMessageFullName = string.Empty;
-    private string ErrorMessagePhone = string.Empty;
-    private string ErrorMessageService = string.Empty;
-    private string ErrorMessageCategory = string.Empty;
     private string DontChowPageName = "Продажі";
 
     protected override async Task OnInitializedAsync()
@@ -157,74 +213,87 @@
         var authState = await AuthenticationStateUser;
         var user = authState.User;
         IsAuthenticated = user.Identity?.IsAuthenticated ?? false;
-        UserId = _userManager.GetUserId(user)!;
-       
+
+        UserId = IsAuthenticated
+            ? _userManager.GetUserId(user) ?? string.Empty
+            : string.Empty;
+
         if (Id > 0)
         {
             clientUser = await _seedService.GetClientAppointmentId(Id);
-            booking.SelectedTime = ConvertToMassageTime(clientUser.SetHour);
+
+            if (IsManicureCategory)
+            {
+                booking.SelectedManicureTime = ConvertToManicureTime(clientUser.SetHour);
+            }
+            else
+            {
+                booking.SelectedTime = ConvertToMassageTime(clientUser.SetHour);
+            }
+
             UpdateAvailableSlots(clientUser.AppointmentDate, excludeCurrent: true);
         }
         else
         {
             clientUser = new();
-            clientUser.AppointmentDate = DateOnly.FromDateTime(DateTime.Today);                       
+            clientUser.AppointmentDate = DateOnly.FromDateTime(DateTime.Today);
             UpdateAvailableSlots(clientUser.AppointmentDate, excludeCurrent: false);
         }
-    }          
+    }
 
     private async Task HandleValidSubmit()
     {
-        var isValid = ValidateClientB();
+      var isValid = ValidateClientB();
 
-        if (isValid)
+        if (!isValid)
+            return;
+
+        TimeOnly selectedTimeOnly;
+        if (IsManicureCategory && booking.SelectedManicureTime.HasValue)
         {
-            var selectedTimeOnly = MassageTimeToTimeOnly(booking.SelectedTime.Value);
-            clientUser.SetHour = selectedTimeOnly;
-            clientUser.MasterId = categories.FirstOrDefault(c => c.Id == clientUser.CategoryId)?.MasterId ?? 0;
-            clientUser.Price = therapyCards.FirstOrDefault(t => t.Id == clientUser.TherapyId)?.Price ?? 0;
-            clientUser.IsCompleted = true;
-            clientUser.UserId = UserId;
-            var idClient = await _seedService.SaveClientAsync(clientUser);
+            selectedTimeOnly = ManicureTimeToTimeOnly(booking.SelectedManicureTime.Value);
+        }
+        else if (booking.SelectedTime.HasValue)
+        {
+            selectedTimeOnly = MassageTimeToTimeOnly(booking.SelectedTime.Value);
+        }
+        else
+        {
+            return;
+        }
 
-            appointmentService.AppointmentId = idClient;
-            appointmentService.CategoryId = clientUser.CategoryId;
-            appointmentService.TherapyId = clientUser.TherapyId;
-            appointmentService.Price = clientUser.Price;
-            
+        clientUser.SetHour = selectedTimeOnly;
+        clientUser.MasterId = categories.FirstOrDefault(c => c.Id == clientUser.CategoryId)?.MasterId ?? 0;
+        clientUser.Price = therapyCards.FirstOrDefault(t => t.Id == clientUser.TherapyId)?.Price ?? 0;
+        clientUser.IsCompleted = true;
+        clientUser.UserId = IsAuthenticated ? UserId : null;
 
-            await _seedService.SaveClientServiceAsync(appointmentService);
-            _navigationManager.NavigateTo($"/appointment-confirm/{idClient}");
-        }            
-    }        
+        var idClient = await _seedService.SaveClientAsync(clientUser);
+
+        appointmentService.AppointmentId = idClient;
+        appointmentService.CategoryId = clientUser.CategoryId;
+        appointmentService.TherapyId = clientUser.TherapyId;
+        appointmentService.Price = clientUser.Price;
+
+        await _seedService.SaveClientServiceAsync(appointmentService);
+
+        _navigationManager.NavigateTo($"/appointment-confirm/{idClient}");
+    }
 
     private bool ValidateClientB()
     {
-        // clean mistakes
-        ErrorMessageFullName = ErrorMessagePhone = ErrorMessageService = ErrorMessageCategory = ErrorMessageSelectedDate = ErrorMessageSelectedTime = string.Empty;
+        ErrorMessageFullName  = ErrorMessageSelectedDate = ErrorMessageSelectedTime = string.Empty;
 
-        return (clientUser.ClientName, clientUser.ClientPhone, clientUser.TherapyId, clientUser.CategoryId, booking.SelectedTime) switch
-        {
-            // Name
-            (var name, _, _, _, _) when string.IsNullOrWhiteSpace(name) => Fail(() => ErrorMessageFullName = "Введіть своє ім'я"),
+        bool hasTime = IsManicureCategory
+            ? booking.SelectedManicureTime.HasValue
+            : booking.SelectedTime.HasValue;
 
-            // Phone
-            (_, var phone, _, _, _) when string.IsNullOrWhiteSpace(phone) => Fail(() => ErrorMessagePhone = "Введіть свій мобільний"),
-
-            (_, var phone, _, _, _) when !Regex.IsMatch(phone, @"^(\+380|0)\d{9}$")  => Fail(() => ErrorMessagePhone = "Невірний формат мобільного. Приклад: +380971234567"),
-
-            // Therapy
-            (_, _, var therapyId, _, _) when therapyId <= 0 => Fail(() => ErrorMessageService = "Оберіть послугу"),
-
-            // Category
-            (_, _, _, var categoryId, _) when categoryId <= 0 => Fail(() => ErrorMessageCategory = "Оберіть категорію"),
-
-            // Date
-            (_, _, _, _, _) when clientUser.AppointmentDate < Today => Fail(() => ErrorMessageSelectedDate = "Дата не може бути в минулому"),
-
-            // Time
-            (_, _, _, _, null) => Fail(() => ErrorMessageSelectedTime = "Оберіть час"),
-                    
+        return (clientUser.AppointmentDate,hasTime) switch
+        {                   
+            ( _, _) when clientUser.AppointmentDate < Today
+                => Fail(() => ErrorMessageSelectedDate = "Дата не може бути в минулому"),
+            ( _, false)
+                => Fail(() => ErrorMessageSelectedTime = "Оберіть час"),
             _ => true
         };
 
@@ -236,6 +305,7 @@
     }
 
     #region Booking state
+
     private void OnDateChanged(DateOnly newDate)
     {
         clientUser.AppointmentDate = newDate;
@@ -243,49 +313,115 @@
         UpdateAvailableSlots(newDate, excludeCurrent: isEdit);
     }
 
+    private void OnCategoryChanged(int categoryId)
+    {
+        clientUser.CategoryId = categoryId;
+        clientUser.TherapyId = 0;
+        booking.SelectedTime = null;
+        booking.SelectedManicureTime = null;
+
+        UpdateAvailableSlots(clientUser.AppointmentDate, excludeCurrent: false);
+        StateHasChanged();
+    }
+
     public class MassageTherapyBooking
     {
-        [Required(ErrorMessage = "Оберіть час")]       
+        [Required(ErrorMessage = "Оберіть час")]
         public MassageTime? SelectedTime { get; set; }
+        public ManicureTime? SelectedManicureTime { get; set; }
     }
 
     private void UpdateAvailableSlots(DateOnly date, bool excludeCurrent = false)
     {
-        var allSlots = Enum.GetValues<MassageTime>();
-        var booked = clientList.Where(c => c.AppointmentDate == date).Select(c => ConvertToMassageTime(c.SetHour)).Where(x => x.HasValue).Select(x => x.Value).ToHashSet();       
-        availableSlots = booked.Count == 0 ? new List<MassageTime>(allSlots) : allSlots.Where(s => !booked.Contains(s)).ToList();
-        if (excludeCurrent && booking.SelectedTime is { } sel && !availableSlots.Contains(sel)) availableSlots.Insert(0, sel);
+        if (IsManicureCategory)
+        {
+            var allManicureSlots = Enum.GetValues<ManicureTime>();
+
+            var bookedManicure = clientList
+                .Where(c => c.AppointmentDate == date && c.CategoryId == ManicureCategoryId)
+                .Select(c => ConvertToManicureTime(c.SetHour))
+                .Where(x => x.HasValue)
+                .Select(x => x.Value)
+                .ToHashSet();
+
+            availableManicureSlots = bookedManicure.Count == 0
+                ? new List<ManicureTime>(allManicureSlots)
+                : allManicureSlots.Where(s => !bookedManicure.Contains(s)).ToList();
+
+            if (excludeCurrent && booking.SelectedManicureTime is { } sel && !availableManicureSlots.Contains(sel))
+            {
+                availableManicureSlots.Insert(0, sel);
+            }
+        }
+        else
+        {
+            var allSlots = Enum.GetValues<MassageTime>();
+
+            var booked = clientList
+                .Where(c => c.AppointmentDate == date && c.CategoryId != ManicureCategoryId)
+                .Select(c => ConvertToMassageTime(c.SetHour))
+                .Where(x => x.HasValue)
+                .Select(x => x.Value)
+                .ToHashSet();
+
+            availableSlots = booked.Count == 0
+                ? new List<MassageTime>(allSlots)
+                : allSlots.Where(s => !booked.Contains(s)).ToList();
+
+            if (excludeCurrent && booking.SelectedTime is { } sel && !availableSlots.Contains(sel))
+            {
+                availableSlots.Insert(0, sel);
+            }
+        }
     }
 
-    private TimeOnly MassageTimeToTimeOnly(MassageTime time)
+    private TimeOnly MassageTimeToTimeOnly(MassageTime time) => time switch
     {
-        return time switch
-        {
-            MassageTime.Morning_10_00 => new TimeOnly(10, 0),
-            MassageTime.Morning_11_30 => new TimeOnly(11, 30),
-            MassageTime.Noon_13_00 => new TimeOnly(13, 0),
-            MassageTime.Afternoon_14_30 => new TimeOnly(14, 30),
-            MassageTime.Evening_16_00 => new TimeOnly(16, 0),
-            MassageTime.Evening_17_30 => new TimeOnly(17, 30),
-            MassageTime.Evening_18_30 => new TimeOnly(18, 30),
-            _ => throw new ArgumentOutOfRangeException(nameof(time), time, null)
-        };
-    }
+        MassageTime.Morning_10_00 => new TimeOnly(10, 0),
+        MassageTime.Morning_11_30 => new TimeOnly(11, 30),
+        MassageTime.Noon_13_00 => new TimeOnly(13, 0),
+        MassageTime.Afternoon_14_30 => new TimeOnly(14, 30),
+        MassageTime.Evening_16_00 => new TimeOnly(16, 0),
+        MassageTime.Evening_17_30 => new TimeOnly(17, 30),
+        MassageTime.Evening_18_30 => new TimeOnly(18, 30),
+        _ => throw new ArgumentOutOfRangeException(nameof(time), time, null)
+    };
 
-    private MassageTime? ConvertToMassageTime(TimeOnly time)
+    private MassageTime? ConvertToMassageTime(TimeOnly time) => time switch
     {
-        return time switch
-        {
-            { Hour: 10, Minute: 0 } => MassageTime.Morning_10_00,
-            { Hour: 11, Minute: 30 } => MassageTime.Morning_11_30,
-            { Hour: 13, Minute: 0 } => MassageTime.Noon_13_00,
-            { Hour: 14, Minute: 30 } => MassageTime.Afternoon_14_30,
-            { Hour: 16, Minute: 0 } => MassageTime.Evening_16_00,
-            { Hour: 17, Minute: 30 } => MassageTime.Evening_17_30,
-            { Hour: 18, Minute: 30 } => MassageTime.Evening_18_30,
-            _ => null 
-        };
-    }
+        { Hour: 10, Minute: 0 } => MassageTime.Morning_10_00,
+        { Hour: 11, Minute: 30 } => MassageTime.Morning_11_30,
+        { Hour: 13, Minute: 0 } => MassageTime.Noon_13_00,
+        { Hour: 14, Minute: 30 } => MassageTime.Afternoon_14_30,
+        { Hour: 16, Minute: 0 } => MassageTime.Evening_16_00,
+        { Hour: 17, Minute: 30 } => MassageTime.Evening_17_30,
+        { Hour: 18, Minute: 30 } => MassageTime.Evening_18_30,
+        _ => null
+    };
+
+    private ManicureTime? ConvertToManicureTime(TimeOnly time) => time switch
+    {
+        { Hour: 9, Minute: 0 } => ManicureTime.Morning_09_00,
+        { Hour: 10, Minute: 30 } => ManicureTime.Morning_10_30,
+        { Hour: 12, Minute: 0 } => ManicureTime.Noon_12_00,
+        { Hour: 13, Minute: 30 } => ManicureTime.Afternoon_13_30,
+        { Hour: 15, Minute: 0 } => ManicureTime.Afternoon_15_00,
+        { Hour: 16, Minute: 30 } => ManicureTime.Evening_16_30,
+        { Hour: 18, Minute: 0 } => ManicureTime.Evening_18_00,
+        _ => null
+    };
+
+    private TimeOnly ManicureTimeToTimeOnly(ManicureTime time) => time switch
+    {
+        ManicureTime.Morning_09_00 => new TimeOnly(9, 0),
+        ManicureTime.Morning_10_30 => new TimeOnly(10, 30),
+        ManicureTime.Noon_12_00 => new TimeOnly(12, 0),
+        ManicureTime.Afternoon_13_30 => new TimeOnly(13, 30),
+        ManicureTime.Afternoon_15_00 => new TimeOnly(15, 0),
+        ManicureTime.Evening_16_30 => new TimeOnly(16, 30),
+        ManicureTime.Evening_18_00 => new TimeOnly(18, 0),
+        _ => throw new ArgumentOutOfRangeException(nameof(time), time, null)
+    };
 
     public enum MassageTime
     {
@@ -298,11 +434,34 @@
         [Display(Name = "18:30")] Evening_18_30
     }
 
+    public enum ManicureTime
+    {
+        [Display(Name = "09:00")] Morning_09_00,
+        [Display(Name = "10:30")] Morning_10_30,
+        [Display(Name = "12:00")] Noon_12_00,
+        [Display(Name = "13:30")] Afternoon_13_30,
+        [Display(Name = "15:00")] Afternoon_15_00,
+        [Display(Name = "16:30")] Evening_16_30,
+        [Display(Name = "18:00")] Evening_18_00
+    }
+
     private string GetDisplayName(MassageTime time)
     {
         var member = time.GetType().GetMember(time.ToString()).First();
-        var display = member.GetCustomAttributes(typeof(DisplayAttribute), false).Cast<DisplayAttribute>().FirstOrDefault();
+        var display = member.GetCustomAttributes(typeof(DisplayAttribute), false)
+                            .Cast<DisplayAttribute>()
+                            .FirstOrDefault();
         return display?.Name ?? time.ToString();
     }
+
+    private string GetManicureDisplayName(ManicureTime time)
+    {
+        var member = time.GetType().GetMember(time.ToString()).First();
+        var display = member.GetCustomAttributes(typeof(DisplayAttribute), false)
+                            .Cast<DisplayAttribute>()
+                            .FirstOrDefault();
+        return display?.Name ?? time.ToString();
+    }
+
     #endregion
 }
