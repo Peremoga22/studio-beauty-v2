@@ -16,16 +16,22 @@ namespace webStudioBlazor.EntityModels
         public string Comment { get; set; } = string.Empty;
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-               
+             
         public int AppointmentId { get; set; }
         public Appointment Appointment { get; set; } = default!;
-              
+
+        [Required(ErrorMessage = "Категорія не вибрана")]
+        [Range(1, int.MaxValue, ErrorMessage = "Будь ласка, оберіть категорію")]
         public int CategoryId { get; set; }
         public Category Category { get; set; } =  default!;
 
+        [Required(ErrorMessage = "Послуга не вибрана")]
+        [Range(1, int.MaxValue, ErrorMessage = "Будь ласка, оберіть послугу")]
         public int TherapyId { get; set; }
         public TherapyCard TherapyCard { get; set; } = default!;
 
+        [Required(ErrorMessage = "Майстер не вибраний")]
+        [Range(1, int.MaxValue, ErrorMessage = "Будь ласка, оберіть майстра")]
         public int MasterId { get; set; }
         public Master Master { get; set; } = default!;
 

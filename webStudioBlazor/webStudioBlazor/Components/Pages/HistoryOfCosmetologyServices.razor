@@ -34,7 +34,7 @@
     else
     {
         <div class="row g-4">
-            @foreach (var item in сosmetologyHistories.Where(a => a.CategoryId != 2))
+            @foreach (var item in сosmetologyHistories.Where(a => a.CategoryId == 1))
             {           
                 <div class="col-12 col-sm-6 col-lg-4">
                     <div class="card appointment-card border-0 shadow-sm h-100">

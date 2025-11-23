@@ -1,4 +1,4 @@
-﻿@page "/add-appointment-review/{AppointmentId}"
+﻿@page "/add-appointment-review/{CurrentUserId}"
 @using System.ComponentModel.DataAnnotations
 @inject SeedService _seedService
 @inject NavigationManager _nav
@@ -109,15 +109,23 @@
                         <ValidationMessage For="@(() => reviewModel.Comment)"
                                            class="text-danger small" />
                     </div>
-
-                    <div class="d-flex justify-content-center gap-2 mt-3">
-                        <button type="submit"
-                                class="btn rounded-pill px-4"
-                                style="background-color: #f8b7d8; color: white; border: none;">
-                            Додати відгук
-                        </button>
-                    </div>
-
+                    @if (AppUserId == 0)
+                    {
+                        <div class="alert rounded-4 shadow-sm px-4 py-3 text-center"
+                             style="background:#fff0f6; color:#6c757d;">
+                            🌸 Вам потрібно скористатися послугами або здійснити покупку, після цього ви зможете залишати відгуки
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="d-flex justify-content-center gap-2 mt-3">
+                            <button type="submit"
+                                    class="btn rounded-pill px-4"
+                                    style="background-color: #f8b7d8; color: white; border: none;">
+                                Додати відгук
+                            </button>
+                        </div>
+                    }                  
                 </EditForm>
 
 
@@ -129,7 +137,10 @@
 
 @code {
     [Parameter]
-    public string AppointmentId { get; set; }
+    public string CurrentUserId { get; set; }
+
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthStateTask { get; set; }
 
     private Appointment clientUser = new();
     private ReviewInput reviewModel = new();
@@ -142,7 +153,7 @@
     [CascadingParameter]
     private Task<AuthenticationState> AuthenticationStateTask { get; set; } = default!;
     private int AppUserId;
-
+    private string unknownClientName = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {         
@@ -150,16 +161,22 @@
         categories = await _seedService.GetAllCategoryListAsync();
         therapyCards = await _seedService.GetAllTherapyCardListAsync();
         clientList = await _seedService.GetAllClientListAsync();
-        AppUserId = clientList.FirstOrDefault(a => a.UserId == AppointmentId)?.Id ?? 0;
+        AppUserId = clientList.FirstOrDefault(a => a.UserId == CurrentUserId)?.Id ?? 0;
         clientUser = await _seedService.GetClientAppointmentId(AppUserId) ?? new Appointment();
-      
+
     }    
-        
+
 
     private async Task HandleValidSubmitReview()
     {
-        if (clientUser is null || string.IsNullOrEmpty(AppointmentId))
+        if (clientUser is null || string.IsNullOrEmpty(CurrentUserId))
         {
+            return;
+        }
+
+        if (AppUserId == 0)
+        {
+            unknownClientName = "Вам потрібно скористатися послугами або щось придбати тоді ви зможете залишати відгуки";
             return;
         }
 
@@ -171,25 +188,30 @@
             CategoryId = reviewModel.CategoryId,
             TherapyId = reviewModel.TherapyId,
             MasterId = reviewModel.MasterId,
-            UserId = AppointmentId,
+            UserId = CurrentUserId,
             CreatedAt = DateTime.UtcNow
         };
 
         await _seedService.AddReviewAsync(review);
-        
-        _nav.NavigateTo($"/appointment-reviews/{AppointmentId}");
+
+        _nav.NavigateTo($"/appointment-reviews/{CurrentUserId}");
     }
+       
 
     public class ReviewInput
     {
         public int Id { get; set; }
-        [Required(ErrorMessage = "Оберіть категорію")]
+
+        [Required(ErrorMessage = "Категорія не вибрана")]
+        [Range(1, int.MaxValue, ErrorMessage = "Будь ласка, оберіть категорію")]
         public int CategoryId { get; set; }
 
-        [Required(ErrorMessage = "Оберіть послугу")]
+        [Required(ErrorMessage = "Послуга не вибрана")]
+        [Range(1, int.MaxValue, ErrorMessage = "Будь ласка, оберіть послугу")]
         public int TherapyId { get; set; }
 
-        [Required(ErrorMessage = "Оберіть майстра")]
+        [Required(ErrorMessage = "Майстер не вибраний")]
+        [Range(1, int.MaxValue, ErrorMessage = "Будь ласка, оберіть майстра")]
         public int MasterId { get; set; }
 
         [Range(1, 5, ErrorMessage = "Оцінка має бути від 1 до 5")]

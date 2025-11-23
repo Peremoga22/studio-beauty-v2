@@ -315,26 +315,28 @@ namespace webStudioBlazor.Services
             await using var db = await _dbFactory.CreateDbContextAsync(ct);
 
             return await db.Appointments
-                .AsNoTracking()
-                .Where(a => a.UserId == aspUserId)
-                .Include(a => a.TherapyCard)
-                .Include(a => a.Master) 
-                .OrderByDescending(a => a.AppointmentDate)
-                .Select(a => new AppointmentWithDetailsDto
-                {
-                    Id = a.Id,
-                    AppointmentDate = a.AppointmentDate,
-                    MasterId = a.MasterId,
-                    CategoryId = a.CategoryId,
-                    TherapyId = a.TherapyId,
+             .AsNoTracking()
+             .Where(a => a.UserId == aspUserId)
+             .Include(a => a.TherapyCard)
+             .Include(a => a.Master)
+             .OrderByDescending(a => a.AppointmentDate)
+             .ThenByDescending(a => a.Id)
+             .Select(a => new AppointmentWithDetailsDto
+             {
+                     Id = a.Id,
+                     AppointmentDate = a.AppointmentDate,
+                     MasterId = a.MasterId,
+                     CategoryId = a.CategoryId,
+                     TherapyId = a.TherapyId,
 
-                    ImageUrl = a.TherapyCard.ImagePath,
-                    ServiceName = a.TherapyCard.TitleCard,
-                    Description = a.TherapyCard.DescriptionCard,
-                                        
-                    MasterFullName = a.Master.FullName,
-                    IsVideo = a.CategoryId == 2
-                }).ToListAsync(ct);
+                     ImageUrl = a.TherapyCard.ImagePath,
+                     ServiceName = a.TherapyCard.TitleCard,
+                     Description = a.TherapyCard.DescriptionCard,
+
+                     MasterFullName = a.Master.FullName,
+                     IsVideo = a.CategoryId == 2
+              })
+             .ToListAsync(ct);
         }
 
         public async Task<List<ClientOrderWithDetailsDto>> GetClientOrdersByUserIdAsync(string aspUserId, CancellationToken ct = default)
