@@ -11,8 +11,6 @@
         public string City { get; set; } = string.Empty;
         public string Address { get; set; } = string.Empty;
 
-        public string ImageUrl { get; set; } = string.Empty;
-        public string ServiceName { get; set; } = string.Empty;
-        public string ServiceDescription { get; set; } = string.Empty;
+        public List<ClientOrderItemDto> Items { get; set; } = new();
     }
 }

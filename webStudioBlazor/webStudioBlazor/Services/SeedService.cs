@@ -262,9 +262,7 @@ namespace webStudioBlazor.Services
                 .FirstOrDefaultAsync(c => c.UserId== clientId, ct);
         }
 
-        public async Task<List<AppointmentService>> ListForCalendarAsync(
-            bool onlyCompleted = false,
-            CancellationToken ct = default)
+        public async Task<List<AppointmentService>> ListForCalendarAsync(bool onlyCompleted = false, CancellationToken ct = default)
         {
             await using var db = await _dbFactory.CreateDbContextAsync(ct);
 
@@ -350,6 +348,7 @@ namespace webStudioBlazor.Services
                      .ThenInclude(o => o.Items)
                          .ThenInclude(oi => oi.Therapy)
                  .OrderByDescending(co => co.AppointmentDate)
+                 .ThenByDescending(co => co.Id)
                  .Select(co => new ClientOrderWithDetailsDto
                  {
                      Id = co.Id,
@@ -360,17 +359,27 @@ namespace webStudioBlazor.Services
                      Address = co.AddressNewPostOffice,
                      Price = co.Price,
 
-                     ServiceName = co.Order.Items.Count > 0 && co.Order.Items.FirstOrDefault() != null && co.Order.Items.FirstOrDefault().Therapy != null
-                         ? co.Order.Items.FirstOrDefault().Therapy.TitleCard
-                         : string.Empty,
-                     ImageUrl = co.Order.Items.Count > 0 && co.Order.Items.FirstOrDefault() != null && co.Order.Items.FirstOrDefault().Therapy != null
-                         ? co.Order.Items.FirstOrDefault().Therapy.ImagePath
-                         : string.Empty,
-                     ServiceDescription = co.Order.Items.Count > 0 && co.Order.Items.FirstOrDefault() != null && co.Order.Items.FirstOrDefault().Therapy != null
-                         ? co.Order.Items.FirstOrDefault().Therapy.DescriptionCard : string.Empty,
+                     Items = co.Order.Items
+                         .Where(i => i.Therapy != null)
+                         .GroupBy(i => new
+                         {
+                             i.TherapyId,
+                             i.Therapy.TitleCard,
+                             i.Therapy.ImagePath,
+                             i.Therapy.DescriptionCard
+                         })
+                         .Select(g => new ClientOrderItemDto
+                         {
+                             ServiceName = g.Key.TitleCard,
+                             ImageUrl = g.Key.ImagePath,
+                             ServiceDescription = g.Key.DescriptionCard,
+                             Quantity = g.Sum(i => i.Quantity) 
+                         })
+                         .ToList()
                  })
-                 .ToListAsync(ct);
+             .ToListAsync(ct);
         }
+
 
         public async Task<List<Review>> GetReviewsForUserAsync(string userId, CancellationToken ct = default)
         {
@@ -424,6 +433,5 @@ namespace webStudioBlazor.Services
             db.Reviews.Remove(entity);
             await db.SaveChangesAsync(ct);
         }
-
     }
 }
