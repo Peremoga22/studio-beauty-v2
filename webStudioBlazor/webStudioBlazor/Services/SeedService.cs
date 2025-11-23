@@ -410,5 +410,18 @@ namespace webStudioBlazor.Services
             await db.SaveChangesAsync(ct);
         }
 
+        public async Task DeleteReviewAsync(int reviewId, CancellationToken ct = default)
+        {
+            await using var db = await _dbFactory.CreateDbContextAsync(ct);
+
+            var entity = await db.Reviews
+                .FirstOrDefaultAsync(x => x.Id == reviewId, ct);
+
+            if (entity is null) return;
+
+            db.Reviews.Remove(entity);
+            await db.SaveChangesAsync(ct);
+        }
+
     }
 }

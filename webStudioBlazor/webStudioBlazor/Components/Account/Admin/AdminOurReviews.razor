@@ -1,9 +1,11 @@
-﻿@page "/our-reviews-for-stududia"
+﻿@page "/admin-our-reviews-for-stududia"
 @using webStudioBlazor.Data
 @using System.Security.Claims
 @inject SeedService _seedService
 @inject NavigationManager NavigationManager
-
+@layout AdminLayout
+@rendermode InteractiveServer
+@attribute [Authorize(Roles = "Admin")]
 
 
 <h3 style="padding-top: 6%;"></h3>
@@ -18,7 +20,7 @@ else if (!reviews.Any())
     <div class="alert alert-light border rounded-3 d-flex justify-content-between align-items-center">
         <span>
             Ви ще не залишали відгуків 🌸
-        </span>              
+        </span>
     </div>
 
 }
@@ -30,17 +32,19 @@ else
             💬 Щоб залишити відгук, будь ласка, увійдіть у свій акаунт 🌸
         </span>
         <i class="fa-solid fa-lock" style="color:#f8b7d8;"></i>
-    </div> 
+    </div>
 
     <div class="row g-3">
         @foreach (var r in reviews)
         {
             <div class="col-12 col-md-6 col-lg-4">
-                <div class="card shadow-sm border-2 h-100" style="border-radius: 16px;">
-                    <div class="card-body">
+                <div class="card shadow-sm border-2 h-100 position-relative" style="border-radius: 16px;">
+                    <div class="card-body">                                                                   
+
                         <p class="mb-3 text-center">
                             @r.Appointment.ClientName
                         </p>
+
                         <div class="d-flex justify-content-between align-items-start mb-2">
                             <h6 class="fw-bold mb-0" style="color:#f8b7d8;text-decoration: underline;">
                                 @r.TherapyCard?.TitleCard
@@ -49,19 +53,14 @@ else
                                 @r.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy")
                             </small>
                         </div>
+                      
                         <div class="mb-2">
                             @for (int i = 1; i <= 5; i++)
                             {
-                                if (i <= r.Rating)
-                                {
-                                    <i class="fa-solid fa-star" style="color:#f8b7d8;"></i>
-                                }
-                                else
-                                {
-                                    <i class="fa-regular fa-star" style="color:#f8b7d8;"></i>
-                                }
+                                <i class="@(i <= r.Rating ? "fa-solid" : "fa-regular") fa-star" style="color:#f8b7d8;"></i>
                             }
                         </div>
+
                         <p class="small text-dark mb-3">
                             @r.Comment
                         </p>
@@ -73,6 +72,14 @@ else
                         </div>
 
                     </div>
+                    <!-- КНОПКА ВИДАЛЕННЯ -->
+                    <button class="btn-buy btn-sm"
+                            style="font-size: 0.8rem; padding: 6px 10px;"
+                            title="Видалити"
+                            @onclick="() => DeleteReview(r.Id)">
+                        <i class="fa-solid fa-trash me-1"></i> Видалити
+                    </button>
+
                 </div>
             </div>
         }
@@ -81,11 +88,17 @@ else
 }
 
 @code {
-   
-    private List<Review> reviews = new();       
+
+    private List<Review> reviews = new();
 
     protected override async Task OnInitializedAsync()
     {
+        reviews = await _seedService.GetAllReviewsForUserAsync();
+    }
+
+    private async Task DeleteReview(int reviewId)
+    {
+        await _seedService.DeleteReviewAsync(reviewId);
         reviews = await _seedService.GetAllReviewsForUserAsync();
     }
 }
