@@ -10,22 +10,27 @@
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
 
-<PageTitle>Register confirmation</PageTitle>
+<h3 style="padding-top: 7%;"></h3>
+<PageTitle>Підтвердження реєстрації</PageTitle>
 
-<h1>Register confirmation</h1>
+<h1>Підтвердження реєстрації</h1>
 
 <StatusMessage Message="@statusMessage" />
 
 @if (emailConfirmationLink is not null)
 {
     <p>
-        This app does not currently have a real email sender registered, see <a href="https://aka.ms/aspaccountconf">these docs</a> for how to configure a real email sender.
-        Normally this would be emailed: <a href="@emailConfirmationLink">Click here to confirm your account</a>
+        Наразі сервіс надсилання електронних листів ще не налаштований 🔧
+        Тому замість листа ви можете підтвердити свій акаунт вручну за цим посиланням:
+        <br />
+        <a href="@emailConfirmationLink">✅ Підтвердити обліковий запис натиснути тут!</a>
     </p>
 }
 else
 {
-    <p role="alert">Please check your email to confirm your account.</p>
+    <p role="alert">
+        Будь ласка, перевірте свою електронну пошту, щоб підтвердити обліковий запис.
+    </p>
 }
 
 @code {

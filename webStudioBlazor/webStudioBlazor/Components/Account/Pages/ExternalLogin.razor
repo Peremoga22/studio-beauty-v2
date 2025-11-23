@@ -19,14 +19,13 @@
 <PageTitle>Register</PageTitle>
 
 <StatusMessage Message="@message" />
-<h1>Register</h1>
-<h2>Associate your @ProviderDisplayName account.</h2>
+<h1>Реєстрація</h1>
+<h2>За допомогою @ProviderDisplayName акаунту.</h2>
 <hr />
 
-<div  class="alert alert-info">
-    You've successfully authenticated with <strong>@ProviderDisplayName</strong>.
-    Please enter an email address for this site below and click the Register button to finish
-    logging in.
+<div class="alert alert-success">
+    Ви успішно увійшли через <strong>@ProviderDisplayName</strong>.
+    Будь ласка, підтвердіть свою електронну адресу, щоб завершити реєстрацію.
 </div>
 
 <div class="row">
@@ -39,7 +38,7 @@
                 <label for="Input.Email" class="form-label">Email</label>
                 <ValidationMessage For="() => Input.Email" />
             </div>
-            <button type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
+            <button type="submit" class="w-100 btn btn-lg btn-buy">Зареєструватися</button>
         </EditForm>
     </div>
 </div>
