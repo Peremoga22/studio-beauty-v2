@@ -378,6 +378,7 @@ namespace webStudioBlazor.Services
                 .AsNoTracking()
                 .Include(r => r.TherapyCard)
                 .Include(r => r.Master)
+                .Include(r =>r.Appointment)
                 .Where(r => r.UserId == userId)
                 .OrderByDescending(r => r.CreatedAt)
                 .ToListAsync(ct);

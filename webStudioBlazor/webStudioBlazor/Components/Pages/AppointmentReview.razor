@@ -15,15 +15,6 @@
 }
 else if (!reviews.Any())
 {
-   @*  <div class="alert alert-light border rounded-3 d-flex justify-content-between align-items-center">
-        <span>Ви ще не залишали відгуків 🌸</span>
-
-        <a href="@($"/add-appointment-review/{AppointmentId}")"
-           class="btn btn-sm rounded-pill"
-           style="background-color:#f8b7d8;color:white;">
-            <i class="fa-solid fa-face-smile-beam me-1"></i>Залишити відгук
-        </a>
-    </div> *@
     <div class="alert alert-light border rounded-3 d-flex justify-content-between align-items-center">
         <span>
             Ви ще не залишали відгуків 🌸
@@ -52,20 +43,22 @@ else
         @foreach (var r in reviews)
         {
             <div class="col-12 col-md-6 col-lg-4">
-                <div class="card shadow-sm border-0 h-100" style="border-radius: 16px;">
+                <div class="card shadow-sm border-2 h-100" style="border-radius: 16px;">
                     <div class="card-body">
-
-                        <!-- Заголовок + дата -->
+                        <p class="mb-3 text-center"
+                           style="font-size: 1.3rem;
+                              font-family: 'Segoe Script', 'Comic Sans MS', cursive;
+                              font-weight: 600;">
+                            @r.Appointment.ClientName
+                        </p>                       
                         <div class="d-flex justify-content-between align-items-start mb-2">
-                            <h6 class="fw-bold mb-0" style="color:#f8b7d8;">
+                            <h6 class="fw-bold mb-0" style="color:#f8b7d8;text-decoration: underline;">
                                 @r.TherapyCard?.TitleCard
                             </h6>
                             <small class="text-muted">
                                 @r.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy")
                             </small>
-                        </div>
-
-                        <!-- Рейтинг -->
+                        </div>                                            
                         <div class="mb-2">
                             @for (int i = 1; i <= 5; i++)
                             {
@@ -77,23 +70,16 @@ else
                                 {
                                     <i class="fa-regular fa-star" style="color:#f8b7d8;"></i>
                                 }
-                            }
-                        </div>
-
-                        <!-- Коментар -->
+                            }                        
+                        </div>                                              
                         <p class="small text-dark mb-3">
                             @r.Comment
                         </p>
 
                         <div class="d-flex justify-content-between align-items-center">
                             <small class="text-muted">
-                                👩‍⚕️ Майстер: <strong>@r.Master?.FullName</strong>
+                                👩‍⚕️ Ваш майстер: <strong>@r.Master?.FullName</strong>
                             </small>
-
-                            <span class="badge rounded-pill"
-                                  style="background:#fce4ef; color:#d65a8d;">
-                                Відгук
-                            </span>
                         </div>
 
                     </div>
