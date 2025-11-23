@@ -383,6 +383,19 @@ namespace webStudioBlazor.Services
                 .OrderByDescending(r => r.CreatedAt)
                 .ToListAsync(ct);
         }
+
+        public async Task<List<Review>> GetAllReviewsForUserAsync(CancellationToken ct = default)
+        {
+            await using var db = await _dbFactory.CreateDbContextAsync(ct);
+
+            return await db.Reviews
+                .AsNoTracking()
+                .Include(r => r.TherapyCard)
+                .Include(r => r.Master)
+                .Include(r => r.Appointment)                
+                .OrderByDescending(r => r.CreatedAt)
+                .ToListAsync(ct);
+        }
         public async Task AddReviewAsync(Review review, CancellationToken ct = default)
         {            
             if (review == null)
