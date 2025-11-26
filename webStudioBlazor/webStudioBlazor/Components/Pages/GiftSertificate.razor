@@ -1,37 +1,381 @@
 ﻿@page "/history-of-gift-sertificate-services/{CurrentUserId}"
 @inject SeedService _seedService
 
+<style>
+    .cert-section-title {
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+    }
+
+    .cert-card {
+        position: relative;
+        border-radius: 24px;
+        overflow: hidden;
+        background: #ffffff;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
+        border: 1px solid rgba(248, 183, 216, 0.4);
+        min-height: 210px;
+    }
+
+    .cert-card-ribbon {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 85px;
+        background: linear-gradient(180deg, #d62335, #f8515f);
+    }
+
+        .cert-card-ribbon::after {
+            content: "";
+            position: absolute;
+            right: -26px;
+            top: 35px;
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #fff5f7 0, #f02f45 55%, #b91226 100%);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+        }
+
+    .cert-card-content {
+        position: relative;
+        margin-left: 95px;
+        padding: 20px 22px 18px 22px;
+    }
+
+    .cert-title-top {
+        font-size: 0.9rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: #999;
+        margin-bottom: 4px;
+    }
+
+    .cert-title-main {
+        font-size: 1.2rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        font-weight: 700;
+        color: #333;
+    }
+
+    .cert-line {
+        height: 1px;
+        background: rgba(0, 0, 0, 0.12);
+        margin: 10px 0 12px 0;
+    }
+
+    .cert-label {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: #999;
+        margin-bottom: 2px;
+    }
+
+    .cert-value {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .cert-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+        .cert-row > div {
+            min-width: 45%;
+        }
+
+    .cert-amount {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #d62335;
+    }
+
+    .cert-status {
+        position: absolute;
+        right: 16px;
+        top: 14px;
+        font-size: 0.8rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 999px;
+        font-weight: 600;
+    }
+
+    .cert-status-approved {
+        background: #d1f6dd;
+        color: #167c3b;
+    }
+
+    .cert-status-pending {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .cert-footer {
+        margin-top: 12px;
+        font-size: 0.8rem;
+        color: #777;
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 4px;
+    }
+
+    /* ==== Адаптивність ==== */
+
+    @@media (max-width: 992px) {
+        .cert-card {
+            min-height: auto;
+        }
+
+        .cert-card-ribbon {
+            width: 60px;
+        }
+
+            .cert-card-ribbon::after {
+                width: 40px;
+                height: 40px;
+                right: -20px;
+                top: 28px;
+            }
+
+        .cert-card-content {
+            margin-left: 72px;
+            padding: 16px 18px;
+        }
+
+        .cert-title-main {
+            font-size: 1rem;
+            letter-spacing: 0.16em;
+        }
+
+        .cert-amount {
+            font-size: 1.2rem;
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .cert-card {
+            border-radius: 18px;
+        }
+
+        .cert-card-ribbon {
+            width: 48px;
+        }
+
+            .cert-card-ribbon::after {
+                width: 34px;
+                height: 34px;
+                right: -16px;
+                top: 24px;
+            }
+
+        .cert-card-content {
+            margin-left: 56px;
+            padding: 12px 12px;
+        }
+
+        .cert-row {
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .cert-section-title {
+            font-size: 0.75rem;
+        }
+
+        .cert-title-top {
+            font-size: 0.7rem;
+            letter-spacing: 0.14em;
+        }
+
+        .cert-title-main {
+            font-size: 0.9rem;
+            letter-spacing: 0.12em;
+        }
+
+        .cert-amount {
+            font-size: 1.1rem;
+        }
+
+        .cert-status {
+            position: static;
+            display: inline-block;
+            margin-bottom: 6px;
+        }
+
+        .cert-footer {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 3px;
+        }
+
+        .cert-wrapper {
+            max-width: 900px;
+        }
+
+        .cert-create-block {
+            border-radius: 30px;
+            background: linear-gradient(135deg, #fff, #fff7fb);
+        }
+
+        .cert-section-title {
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+
+        .cert-card {
+            background: #fff;
+            border-radius: 24px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.05);
+            padding: 25px;
+            position: relative;
+        }
+    }
+</style>
+
+
 <h3 style="padding-top: 4%;"></h3>
-<div class="container py-2">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
+<div class="container py-5">
+    <div class="cert-wrapper mx-auto">
 
-            <div class="card border-0 shadow-sm text-center p-5"
-                 style="border-radius: 25px; background: linear-gradient(135deg, #fff, #fff7fb);">
+        <!-- ===== БЛОК СТВОРЕННЯ СЕРТИФІКАТА ===== -->
+        <div class="card border-0 shadow-sm text-center p-5 mb-5 cert-create-block">
+            <h2 class="fw-bold mb-3" style="color:#f8b7d8;">
+                ✨ Подарунковий сертифікат
+            </h2>
 
-                <h2 class="fw-bold mb-3" style="color:#f8b7d8;">
-                    ✨ Подарунковий сертифікат
-                </h2>
+            <p class="text-muted fs-5 mb-4">
+                Ви можете створити тут подарунковий сертифікат для близької людини
+            </p>
 
-                <p class="text-muted fs-5 mb-4">
-                    Ви можете створити тут подарунковий сертифікат
-                </p>
-
-                <div>
-                    <a href="/create-certificate"
-                       class="btn px-5 py-2 text-white fw-semibold"
-                       style="background-color:#f8b7d8; border-radius: 50px; font-size: 18px;">
-                        ➕ Створити сертифікат
-                    </a>
-                </div>
-
-            </div>
-
+            <a href="@($"/history-of-create-gift-sertificate-services/{CurrentUserId}")"
+               class="btn px-5 py-2 text-white fw-semibold"
+               style="background-color:#f8b7d8; border-radius: 50px; font-size: 18px;">
+                ➕ Створити сертифікат
+            </a>
         </div>
+
+        <!-- ===== ЗАГОЛОВОК ІСТОРІЇ ===== -->
+        <div class="text-center mb-4">
+            <div class="cert-section-title text-muted">
+                мої подарункові сертифікати
+            </div>
+            <h3 class="fw-bold mt-2" style="color:#f8b7d8;">
+                🎀 Історія сертифікатів
+            </h3>
+        </div>
+
+        <!-- ===== СПИСОК СЕРТИФІКАТІВ ===== -->
+        @if (Certificates == null)
+        {
+            <p class="text-center text-muted">Завантаження сертифікатів...</p>
+        }
+        else if (!Certificates.Any())
+        {
+            <p class="text-center text-muted">
+                У вас поки що немає створених сертифікатів.
+            </p>
+        }
+        else
+        {
+            <div class="row g-4">
+                @foreach (var cert in Certificates)
+                {
+                    <div class="col-md-6">
+                        <div class="cert-card">
+
+                            <div class="cert-card-ribbon"></div>
+
+                            <div class="cert-card-content">
+
+                                @if (cert.IsApproved)
+                                {
+                                    <div class="text-end mb-2">
+                                        <a href="@($"/download-gift-certificate/{cert.Id}")"
+                                           class="btn btn-sm fw-semibold"
+                                           style="background:#d62335;color:white;border-radius:30px;padding:6px 18px;">
+                                            ⬇ Завантажити сертифікат
+                                        </a>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="cert-status cert-status-pending">
+                                        ⏳ Очікує оплату
+                                    </div>
+                                }
+
+                                <div class="text-center mb-2">
+                                    <div class="cert-title-top">Shine Cosmetology</div>
+                                    <div class="cert-title-main">ПОДАРУНКОВИЙ СЕРТИФІКАТ</div>
+                                </div>
+
+                                <div class="cert-line"></div>
+
+                                <div class="cert-row mb-2">
+                                    <div class="cert-left">
+                                        <div class="cert-label">Отримувач: @cert.RecipientName</div>
+
+                                        @if (!string.IsNullOrWhiteSpace(cert.Message))
+                                        {
+                                            <div class="cert-value fst-italic text-muted mt-1">
+                                                💌 @cert.Message
+                                            </div>
+                                        }
+                                    </div>
+
+                                    <div class="cert-right">
+                                        <div class="cert-label">Номінал: <span class="cert-amount">@cert.Amount.ToString("N0") грн</span> </div>                                       
+                                    </div>
+                                </div>
+
+                                <div class="cert-row mb-2">
+                                    <div class="cert-left">
+                                        <div class="cert-label">Сертифікат № #@cert.Id</div>
+                                    </div>
+
+                                    <div class="cert-right">
+                                        <div class="cert-label">Термін дії</div>
+                                        <div class="cert-value">3 місяці</div>
+                                    </div>
+                                </div>
+
+
+                                <div class="cert-footer">
+                                    <span>Створено: @cert.CreatedAt.ToString("dd.MM.yyyy")</span>
+                                    <span>Студія краси «Shine Cosmetology»</span>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
     </div>
 </div>
 
 
+
+
 @code {
     [Parameter] public string CurrentUserId { get; set; } = string.Empty;
+
+
+    private List<GiftCertificate>? Certificates;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        Certificates = await _seedService.GetGiftCertificatesByUserIdAsync(CurrentUserId);
+    }
 }

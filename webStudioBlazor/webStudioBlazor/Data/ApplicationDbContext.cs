@@ -20,6 +20,7 @@ namespace webStudioBlazor.Data
         public DbSet<OrderItem> OrderItems => Set<OrderItem>();
         public DbSet<ClientOrders> ClientOrders { get; set; }
         public DbSet<Review> Reviews => Set<Review>();
+        public DbSet<GiftCertificate> GiftCertificates => Set<GiftCertificate>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -37,6 +38,7 @@ namespace webStudioBlazor.Data
             modelBuilder.ApplyConfiguration(new OrderItemConfig());
             modelBuilder.ApplyConfiguration(new ClientOrdersConfig());
             modelBuilder.ApplyConfiguration(new ReviewConfiguration());
+            modelBuilder.ApplyConfiguration(new GiftCertificateConfig());
         }
     }
     
@@ -497,6 +499,42 @@ namespace webStudioBlazor.Data
                 .WithMany()                // можна зробити User.Reviews, якщо треба
                 .HasForeignKey(x => x.UserId)
                 .OnDelete(DeleteBehavior.SetNull);
+        }
+    }
+
+    public class GiftCertificateConfig : IEntityTypeConfiguration<GiftCertificate>
+    {
+        public void Configure(EntityTypeBuilder<GiftCertificate> b)
+        {
+            b.ToTable("GiftCertificates");
+
+            b.HasKey(x => x.Id);
+
+            b.Property(x => x.RecipientName)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            b.Property(x => x.Amount)
+                .IsRequired();
+
+            b.Property(x => x.CreatedAt)
+                .IsRequired();                       
+
+            b.Property(x => x.Message)
+                .HasMaxLength(500);
+                      
+            b.Property(x => x.IsApproved)
+                .IsRequired()
+                .HasDefaultValue(false);
+                    
+            b.Property(x => x.UserId)
+                .IsRequired()
+                .HasMaxLength(450); 
+
+            b.HasOne(x => x.User)
+                .WithMany() // або .WithMany(u => u.GiftCertificates), 
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

@@ -126,6 +126,23 @@ namespace webStudioBlazor.Services
             await db.SaveChangesAsync(ct);
         }
 
+        public async Task SaveGiftCertificateAsync(GiftCertificate certificate, CancellationToken ct = default)
+        {
+            await using var db = await _dbFactory.CreateDbContextAsync(ct);
+
+            if (certificate.Id == 0)
+            {
+                await db.GiftCertificates.AddAsync(certificate, ct);
+            }
+            else
+            {
+                db.GiftCertificates.Update(certificate);
+            }
+
+            await db.SaveChangesAsync(ct);
+        }
+
+
         // ===== EDIT (READ SINGLE) =====
 
         public async Task<Master?> EditMaster(int masterId, CancellationToken ct = default)
@@ -261,6 +278,19 @@ namespace webStudioBlazor.Services
                 .AsNoTracking()
                 .FirstOrDefaultAsync(c => c.UserId== clientId, ct);
         }
+
+        public async Task<List<GiftCertificate>> GetGiftCertificatesByUserIdAsync(string userId, CancellationToken ct = default)
+        {
+            await using var db = await _dbFactory.CreateDbContextAsync(ct);
+
+            return await db.GiftCertificates
+                .AsNoTracking()
+                .Where(gc => gc.UserId == userId)
+                .OrderByDescending(gc => gc.CreatedAt)
+                .ToListAsync(ct);
+        }
+
+
 
         public async Task<List<AppointmentService>> ListForCalendarAsync(bool onlyCompleted = false, CancellationToken ct = default)
         {

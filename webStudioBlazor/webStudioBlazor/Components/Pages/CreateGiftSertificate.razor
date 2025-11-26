@@ -1,0 +1,124 @@
+﻿@page "/history-of-create-gift-sertificate-services/{CurrentUserId}"
+@inject SeedService _seedService
+@inject NavigationManager _nav
+@rendermode InteractiveServer
+
+
+<h3 style="padding-top: 4%;"></h3>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-9 col-xl-8">
+
+            <!-- Заголовок сторінки -->
+            <div class="text-center mb-5">
+                <h1 class="fw-bold" style="color:#f8b7d8; font-size: 2.5rem;">
+                    🎁 Створення подарункового сертифіката
+                </h1>
+                <p class="text-muted fs-5 mt-3">
+                    Створіть унікальний подарунковий сертифікат для рідних та близьких.
+                    Ви можете обрати суму, послугу та додати персональне привітання.
+                </p>
+            </div>
+
+            <!-- Основна картка -->
+            <div class="card border-0 shadow-lg p-4 p-md-5"
+                 style="border-radius: 30px; background: linear-gradient(135deg, #fff, #fff0f7);">
+
+                <h4 class="fw-semibold text-center mb-4" style="color:#333;">
+                    ✨ Заповніть дані для сертифіката
+                </h4>
+
+                <EditForm class="gift-form" Model="@Model" OnValidSubmit="CreateCertificate">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+
+                    <div class="row g-4">
+                    
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Ім'я отримувача</label>
+                            <InputText class="form-control"
+                                       @bind-Value="Model.RecipientName"
+                                       placeholder="Наприклад: Марія" />
+                            <ValidationMessage For="@(() => Model.RecipientName)" class="text-danger small" />
+                        </div>
+                                               
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Сума сертифіката (грн)</label>
+                            <InputSelect class="form-select" @bind-Value="Model.Amount">
+                                <option value="">Оберіть суму</option>
+                                <option value="1000">1000 грн</option>
+                                <option value="3000">3000 грн</option>
+                                <option value="5000">5000 грн</option>
+                                <option value="10000">10 000 грн</option>
+                            </InputSelect>
+                            <ValidationMessage For="@(() => Model.Amount)" class="text-danger small" />
+                        </div>                                            
+
+                       
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Термін дії</label>
+                            <input type="text" class="form-control" value="Сертифікат дійсний 3 місяці!" readonly />
+                            <small class="text-muted">Термін встановлено автоматично.</small>
+                        </div>
+                                              
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Персональне побажання</label>
+                            <InputTextArea class="form-control"
+                                           rows="4"
+                                           @bind-Value="Model.Message"
+                                           placeholder="Напишіть теплі слова для особливої людини..."></InputTextArea>
+                            <ValidationMessage For="@(() => Model.Message)" class="text-danger small" />
+                        </div>
+
+                     
+                        <div class="col-12 text-center mt-4">
+                            <button type="submit" class="btn-buy">
+                                💖 Створити сертифікат
+                            </button>
+                        </div>
+
+                    </div>
+                </EditForm>
+
+                <!-- Інфо-блок -->
+                <div class="alert alert-danger text-center mt-5" style="border-radius:20px;">
+                    <small class="fw-semibold text-danger">
+                        Після створення сертифіката потрібно оплатити його в студії, після чого ви зможете його завантажити та надіслати отримувачу ❤️
+                    </small>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    [Parameter] public string CurrentUserId { get; set; } = string.Empty;
+
+    private GiftCertificate Model { get; set; } = new();
+
+    
+    private async Task CreateCertificate()
+    {
+        if (string.IsNullOrWhiteSpace(CurrentUserId))
+        {
+            
+            return;
+        }
+
+        var entity = new GiftCertificate
+        {
+            UserId = CurrentUserId,
+            RecipientName = Model.RecipientName,
+            Amount = Model.Amount,
+            CreatedAt = DateTime.Now,          
+            Message = Model.Message,
+            IsApproved = false 
+        };
+               
+        await _seedService.SaveGiftCertificateAsync(entity);
+               
+        _nav.NavigateTo($"/history-of-gift-sertificate-services/{CurrentUserId}", forceLoad: true);
+    }
+}
