@@ -244,11 +244,18 @@
 
 
 <h3 style="padding-top: 4%;"></h3>
-<div class="container py-5">
+<div class="container">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb bg-white p-2 mb-3 rounded shadow-sm">
+            <li class="breadcrumb-item"><a href="/personal-account" style="color: #f8b7d8;">Особистий кабінет</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Подарункові сертифікати</li>
+        </ol>
+    </nav>
+</div>
+<div class="container py-0">
     <div class="cert-wrapper mx-auto">
-
-        <!-- ===== БЛОК СТВОРЕННЯ СЕРТИФІКАТА ===== -->
-        <div class="card border-0 shadow-sm text-center p-5 mb-5 cert-create-block">
+               
+        <div class="card border-1 shadow-sm text-center p-5 mb-4 cert-create-block">
             <h2 class="fw-bold mb-3" style="color:#f8b7d8;">
                 ✨ Подарунковий сертифікат
             </h2>
@@ -263,8 +270,7 @@
                 ➕ Створити сертифікат
             </a>
         </div>
-
-        <!-- ===== ЗАГОЛОВОК ІСТОРІЇ ===== -->
+              
         <div class="text-center mb-4">
             <div class="cert-section-title text-muted">
                 мої подарункові сертифікати
@@ -273,8 +279,7 @@
                 🎀 Історія сертифікатів
             </h3>
         </div>
-
-        <!-- ===== СПИСОК СЕРТИФІКАТІВ ===== -->
+             
         @if (Certificates == null)
         {
             <p class="text-center text-muted">Завантаження сертифікатів...</p>
@@ -370,9 +375,7 @@
 @code {
     [Parameter] public string CurrentUserId { get; set; } = string.Empty;
 
-
     private List<GiftCertificate>? Certificates;
-
 
     protected override async Task OnInitializedAsync()
     {

@@ -5,11 +5,18 @@
 
 
 <h3 style="padding-top: 4%;"></h3>
-<div class="container py-5">
+<div class="container">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb bg-white p-2 mb-3 rounded shadow-sm">
+            <li class="breadcrumb-item"><a href="@($"/history-of-gift-sertificate-services/{CurrentUserId}")" style="color: #f8b7d8;">Особистий кабінет</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Подарункові сертифікати</li>
+        </ol>
+    </nav>
+</div>
+<div class="container py-0">
     <div class="row justify-content-center">
         <div class="col-lg-9 col-xl-8">
-
-            <!-- Заголовок сторінки -->
+                      
             <div class="text-center mb-5">
                 <h1 class="fw-bold" style="color:#f8b7d8; font-size: 2.5rem;">
                     🎁 Створення подарункового сертифіката
@@ -19,8 +26,7 @@
                     Ви можете обрати суму, послугу та додати персональне привітання.
                 </p>
             </div>
-
-            <!-- Основна картка -->
+                   
             <div class="card border-0 shadow-lg p-4 p-md-5"
                  style="border-radius: 30px; background: linear-gradient(135deg, #fff, #fff0f7);">
 
@@ -79,8 +85,7 @@
 
                     </div>
                 </EditForm>
-
-                <!-- Інфо-блок -->
+                               
                 <div class="alert alert-danger text-center mt-5" style="border-radius:20px;">
                     <small class="fw-semibold text-danger">
                         Після створення сертифіката потрібно оплатити його в студії, після чого ви зможете його завантажити та надіслати отримувачу ❤️
@@ -95,18 +100,10 @@
 
 @code {
     [Parameter] public string CurrentUserId { get; set; } = string.Empty;
-
     private GiftCertificate Model { get; set; } = new();
-
-    
+        
     private async Task CreateCertificate()
-    {
-        if (string.IsNullOrWhiteSpace(CurrentUserId))
-        {
-            
-            return;
-        }
-
+    {    
         var entity = new GiftCertificate
         {
             UserId = CurrentUserId,
