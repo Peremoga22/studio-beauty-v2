@@ -107,6 +107,39 @@ namespace webStudioBlazor.BL
             }            
         }
 
+        public async Task NotifyGiftCertificateApprovedAsync(
+                                    string recipientName,
+                                    string buyerName,
+                                    decimal amount,
+                                    DateTime createdAt,
+                                    string phone,
+                                    long? overrideChatId = null,
+                                    CancellationToken ct = default)
+        {
+            var chatId = overrideChatId ?? _cfg.AdminChatId;
+
+            var text = new StringBuilder()
+                .AppendLine("🎁 *Створено подарунковий сертифікат!*")
+                .AppendLine($"👤 Отримувач: *{Esc(buyerName)}*")
+                .AppendLine($"🛍 Замовник: *{Esc(recipientName)}*")
+                .AppendLine($"📞 Телефон замовника: `{Esc(phone)}`")
+                .AppendLine($"💰 Номінал: *{amount:N0} грн*")
+                .AppendLine($"📅 Дата створення: *{createdAt:dd.MM.yyyy}*")
+                .AppendLine()
+                .AppendLine("✅ Сертифікат ще не активний.")                
+                .ToString();
+
+            try
+            {
+                await _bot.SendMessage(chatId, text, parseMode: ParseMode.Markdown, cancellationToken: ct);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error sending gift certificate notification: {ex.Message}");
+            }
+        }
+
+
         private static string Esc(string s) => s
             .Replace("_", "\\_").Replace("*", "\\*").Replace("[", "\\[").Replace("`", "\\`");       
     }

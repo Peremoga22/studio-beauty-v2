@@ -1,6 +1,7 @@
 ﻿@page "/history-of-create-gift-sertificate-services/{CurrentUserId}"
 @inject SeedService _seedService
 @inject NavigationManager _nav
+@inject AppointmentNotifier _notification
 @rendermode InteractiveServer
 
 
@@ -101,7 +102,7 @@
 @code {
     [Parameter] public string CurrentUserId { get; set; } = string.Empty;
     private GiftCertificate Model { get; set; } = new();
-        
+
     private async Task CreateCertificate()
     {    
         var entity = new GiftCertificate
@@ -113,9 +114,23 @@
             Message = Model.Message,
             IsApproved = false 
         };
-               
+
         await _seedService.SaveGiftCertificateAsync(entity);
-               
+        var userAppointment = await _seedService.GetCustomerFullNameByUserId(CurrentUserId);
+
+        await SendGiftCertificateApprovedNotificationAsync(userAppointment, entity);
+                   
         _nav.NavigateTo($"/history-of-gift-sertificate-services/{CurrentUserId}", forceLoad: true);
+    }
+
+    private async Task SendGiftCertificateApprovedNotificationAsync(Appointment? userAppointment,GiftCertificate entity)
+    {        
+        await _notification.NotifyGiftCertificateApprovedAsync(
+            recipientName: userAppointment?.ClientName ?? string.Empty,
+            buyerName: entity.RecipientName,
+            amount: entity.Amount,
+            createdAt: entity.CreatedAt,
+            phone: userAppointment?.ClientPhone ?? string.Empty
+        );
     }
 }

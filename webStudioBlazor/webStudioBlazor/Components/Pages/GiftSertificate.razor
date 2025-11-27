@@ -108,6 +108,31 @@
             color: #ffffff;
         }
 
+    .cert-footer-admin {
+        margin-top: 18px;
+        padding-top: 12px;
+        border-top: 1px dashed #f2dcea;
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        font-size: 0.8rem;
+        color: #9b8a98;
+    }
+
+    .cert-download-btn {
+        background: #d62335;
+        color: white;
+        border-radius: 999px;
+        box-shadow: 0 6px 14px rgba(214,35,53,0.15);
+        transition: all 0.2s ease;
+    }
+
+        .cert-download-btn:hover {
+            background: #b81d2c;
+            transform: translateY(-1px);
+        }
+
+
 
     /* ===================== АДАПТИВ ===================== */
 
@@ -196,6 +221,102 @@
             }
     }
 
+    .cert-header {
+    padding-bottom: 8px;
+    border-bottom: 1px solid #f3e6ef;
+}
+
+.cert-logo {
+    width: 52px;
+    height: 52px;
+    object-fit: cover;
+}
+
+.cert-brand {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #6c4960;
+}
+
+.cert-brand-sub {
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #b28aa8;
+}
+
+.cert-status {
+    font-size: 0.75rem;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.cert-status-pending {
+    background: #fff4e0;
+    color: #b26a12;
+    border: 1px solid #f3c274;
+}
+
+.cert-status-approved {
+    background: #e4f6ec;
+    color: #1e8b4c;
+    border: 1px solid #6bcf97;
+}
+
+/* ================= АДАПТАЦІЯ ================= */
+
+@@media (max-width: 768px) {
+
+    .cert-header {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 10px;
+    }
+
+    /* Лого + текст стають рядком */
+    .cert-header > div:first-child {
+        gap: 10px;
+    }
+
+    /* Статус стає нижче і вирівнюється вліво */
+    .cert-header > div:last-child {
+        align-self: flex-start;
+    }
+
+    .cert-logo {
+        width: 44px;
+        height: 44px;
+    }
+
+    .cert-brand {
+        font-size: 0.9rem;
+    }
+
+    .cert-brand-sub {
+        font-size: 0.7rem;
+        letter-spacing: 0.1em;
+    }
+}
+
+@@media (max-width: 480px) {
+
+    .cert-logo {
+        width: 40px;
+        height: 40px;
+    }
+
+    .cert-status {
+        font-size: 0.7rem;
+        padding: 3px 10px;
+    }
+
+    .cert-brand {
+        font-size: 0.85rem;
+    }
+}
+
     
 </style>
 
@@ -258,31 +379,39 @@
 
                             <div class="cert-card-content">
                                 <!-- Верхній рядок: логотип + статус/кнопка -->
-                                <div class="d-flex justify-content-between align-items-start mb-3">
-                                    <div class="d-flex align-items-center gap-2">
+                                <div class="cert-header d-flex justify-content-between align-items-center mb-3">
+
+                                    <!-- Ліва частина: лого + назва -->
+                                    <div class="d-flex align-items-center gap-3">
                                         <img src="img/logo-new.png"
                                              alt="Логотип"
                                              class="cert-logo rounded-circle shadow-sm">
+
                                         <div>
                                             <div class="cert-brand">Shine Cosmetology</div>
                                             <div class="cert-brand-sub">Подарунковий сертифікат</div>
                                         </div>
                                     </div>
 
-                                    @if (cert.IsApproved)
-                                    {
-                                        <a href="@($"/download-gift-certificate/{cert.Id}")"
-                                           class="btn btn-sm fw-semibold cert-download-btn">
-                                            ⬇ Завантажити
-                                        </a>
-                                    }
-                                    else
-                                    {
-                                        <div class="cert-status cert-status-pending">
-                                            ⏳ Очікує оплату
-                                        </div>
-                                    }
+                                    <!-- Права частина: статус -->
+                                    <div>
+                                        @if (!cert.IsApproved)
+                                        {
+                                            <div class="cert-status cert-status-pending">
+                                                ⏳ Очікує оплату
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="cert-status cert-status-approved">
+                                                ✅ Оплачено
+                                            </div>
+                                        }
+                                    </div>
+
                                 </div>
+
+
 
                                 <!-- Великий центрований заголовок -->
                                 <div class="text-center mb-2">
@@ -325,10 +454,20 @@
                                 </div>
 
                                 <!-- Футер -->
-                                <div class="cert-footer">
+                                <div class="cert-footer cert-footer-admin">
                                     <span>Створено: @cert.CreatedAt.ToString("dd.MM.yyyy")</span>
                                     <span>Студія краси «Shine Cosmetology»</span>
                                 </div>
+
+                                @if (cert.IsApproved)
+                                {
+                                    <div class="text-center mt-3">
+                                        <a href="@($"/download-gift-certificate/{cert.Id}")"
+                                           class="btn btn-sm fw-semibold cert-download-btn px-4 py-2">
+                                            ⬇ Завантажити сертифікат
+                                        </a>
+                                    </div>
+                                }
                             </div>
                         </div>
                     </div>
