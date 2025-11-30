@@ -1,5 +1,6 @@
 ﻿@page "/history-of-gift-sertificate-services/{CurrentUserId}"
 @inject GiftCertificateService _giftCertificateService
+@rendermode InteractiveServer
 
 <h3 style="padding-top: 4%;"></h3>
 <div class="container">
@@ -120,7 +121,7 @@
                                 @if (cert.IsApproved)
                                 {
                                     <div class="text-center mt-3">
-                                        <a href="@($"/download-gift-certificate/{cert.Id}")"
+                                        <a @onclick="() => DownloadPdf(cert.Id)"
                                            class="btn btn-sm fw-semibold cert-download-btn px-4 py-2">
                                             ⬇ Завантажити сертифікат
                                         </a>
@@ -142,5 +143,11 @@
     protected override async Task OnInitializedAsync()
     {
         Certificates = await _giftCertificateService.GetGiftCertificatesByUserIdAsync(CurrentUserId);
-    }       
+    }    
+    
+    private async Task DownloadPdf(int id)
+    {
+        var result = await _giftCertificateService.DownloadGiftCertificatePdfAsync(id);
+        Console.WriteLine(result);
+    }
 }

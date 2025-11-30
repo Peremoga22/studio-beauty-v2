@@ -1,18 +1,22 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.JSInterop;
 
 using webStudioBlazor.Data;
 using webStudioBlazor.EntityModels;
 using webStudioBlazor.ModelDTOs;
+using webStudioBlazor.Services.PDF;
 
 namespace webStudioBlazor.Services
 {
     public class GiftCertificateService
     {
         private readonly IDbContextFactory<ApplicationDbContext> _dbFactory;
+        private readonly IJSRuntime _jsRuntime;
 
-        public GiftCertificateService(IDbContextFactory<ApplicationDbContext> dbFactory)
+        public GiftCertificateService(IDbContextFactory<ApplicationDbContext> dbFactory,IJSRuntime jsRuntime)
         {
             _dbFactory = dbFactory;
+            _jsRuntime = jsRuntime;
         }
 
         public async Task SaveGiftCertificateAsync(GiftCertificate certificate, CancellationToken ct = default)
@@ -107,5 +111,54 @@ namespace webStudioBlazor.Services
             db.GiftCertificates.Remove(entity);                       
             await db.SaveChangesAsync(ct);
         }
+
+        public async Task<string> DownloadGiftCertificatePdfAsync(int certificateId)
+        {
+            await using var db = await _dbFactory.CreateDbContextAsync();
+                       
+            var cert = await db.GiftCertificates
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == certificateId);
+
+            if (cert is null)
+                return "Сертифікат не знайдено!";
+                     
+            var pdfBytes = await GenerateGiftCertificatePdfAsync(certificateId);
+
+            if (pdfBytes is null || pdfBytes.Length == 0)
+                return "Не вдалося створити PDF-файл!";
+                      
+            var rawName = cert.RecipientName ?? "Recipient";
+                       
+            var safeName = string.Concat(
+                rawName.Split(Path.GetInvalidFileNameChars())
+            ).Replace(" ", "_");
+                      
+            var fileName = $"Подарунковий сертифікат від {safeName}.pdf";
+                        
+            await _jsRuntime.InvokeVoidAsync(
+                "saveAsFile",
+                fileName,
+                Convert.ToBase64String(pdfBytes)
+            );
+
+            return $"Файл {fileName} успішно завантажено!";
+        }
+
+        private async Task<byte[]> GenerateGiftCertificatePdfAsync(int certId)
+        {
+            await using var db = await _dbFactory.CreateDbContextAsync();
+
+            var cert = await db.GiftCertificates
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == certId);
+
+            if (cert is null)
+                return null;
+
+            var generator = new GiftCertificatePdfGenerator();
+            return generator.Generate(cert);
+        }
+
     }
 }

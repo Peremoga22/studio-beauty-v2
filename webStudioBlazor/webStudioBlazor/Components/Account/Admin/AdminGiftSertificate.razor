@@ -152,7 +152,7 @@
                                 </span>
 
                                 <div class="d-flex gap-2">
-                                    <a href="@($"/download-gift-certificate/{cert.Id}")"
+                                    <a @onclick="() => DownloadPdf(cert.Id)"
                                        class="btn btn-outline-secondary btn-sm rounded-pill">
                                         ⬇ PDF
                                     </a>
@@ -201,5 +201,11 @@
         await _giftCertificateService.DeleteGiftCertificateAsync(id);
         Certificates = await _giftCertificateService.GetGiftCertificatesAll();
         StateHasChanged();
+    }
+
+    private async Task DownloadPdf(int id)
+    {
+        var result = await _giftCertificateService.DownloadGiftCertificatePdfAsync(id);
+        Console.WriteLine(result);
     }
 }
