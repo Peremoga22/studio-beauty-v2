@@ -54,26 +54,19 @@
                 @foreach (var cert in Certificates)
                 {
                     <div class="col-md-6">
-                        <div class="cert-card h-100">
+                        <div class="cert-card h-100">                           
                             <div class="cert-card-ribbon"></div>
-
-                            <div class="cert-card-content">
-                                <!-- Верхній рядок: логотип + статус/кнопка -->
-                                <div class="cert-header d-flex justify-content-between align-items-center mb-3">
-
-                                    <!-- Ліва частина: лого + назва -->
+                            <div class="cert-card-content">                             
+                                <div class="cert-header d-flex justify-content-between align-items-center mb-3">                                 
                                     <div class="d-flex align-items-center gap-3">
                                         <img src="img/logo-new.png"
                                              alt="Логотип"
                                              class="cert-logo rounded-circle shadow-sm">
-
                                         <div>
                                             <div class="cert-brand">Shine Cosmetology</div>
                                             <div class="cert-brand-sub">Подарунковий сертифікат</div>
                                         </div>
-                                    </div>
-
-                                    <!-- Права частина: статус -->
+                                    </div>                                                                       
                                     <div>
                                         @if (!cert.IsApproved)
                                         {
@@ -88,24 +81,15 @@
                                             </div>
                                         }
                                     </div>
-
-                                </div>
-
-
-
-                                <!-- Великий центрований заголовок -->
+                                                                    </div>                               
                                 <div class="text-center mb-2">
                                     <div class="cert-title-main">ПОДАРУНКОВИЙ СЕРТИФІКАТ</div>
                                 </div>
-
-                                <div class="cert-line"></div>
-
-                                <!-- Рядок: отримувач + номінал -->
+                                <div class="cert-line"></div>                                                              
                                 <div class="cert-row mb-2 d-flex justify-content-between gap-3">
                                     <div class="cert-left">
                                         <div class="cert-label">Отримувач</div>
                                         <div class="cert-value fw-semibold">@cert.RecipientName</div>
-
                                         @if (!string.IsNullOrWhiteSpace(cert.Message))
                                         {
                                             <div class="cert-value fst-italic text-muted mt-1">
@@ -113,14 +97,11 @@
                                             </div>
                                         }
                                     </div>
-
                                     <div class="cert-right text-end">
                                         <div class="cert-label">Номінал</div>
                                         <div class="cert-amount">@cert.Amount.ToString("N0") грн</div>
                                     </div>
-                                </div>
-
-                                <!-- Рядок: номер + термін дії -->
+                                </div>                             
                                 <div class="cert-row mb-2 d-flex justify-content-between gap-3">
                                     <div class="cert-left">
                                         <div class="cert-label">Сертифікат №</div>
@@ -131,14 +112,11 @@
                                         <div class="cert-label">Термін дії</div>
                                         <div class="cert-value">3 місяці</div>
                                     </div>
-                                </div>
-
-                                <!-- Футер -->
+                                </div>                                                               
                                 <div class="cert-footer cert-footer-admin">
                                     <span>Створено: @cert.CreatedAt.ToString("dd.MM.yyyy")</span>
                                     <span>Студія краси «Shine Cosmetology»</span>
                                 </div>
-
                                 @if (cert.IsApproved)
                                 {
                                     <div class="text-center mt-3">
@@ -151,23 +129,18 @@
                             </div>
                         </div>
                     </div>
-
                 }
             </div>
         }
     </div>
 </div>
 
-
-
-
 @code {
     [Parameter] public string CurrentUserId { get; set; } = string.Empty;
-
     private List<GiftCertificate>? Certificates;
 
     protected override async Task OnInitializedAsync()
     {
         Certificates = await _giftCertificateService.GetGiftCertificatesByUserIdAsync(CurrentUserId);
-    }
+    }       
 }

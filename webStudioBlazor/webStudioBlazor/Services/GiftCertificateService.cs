@@ -14,6 +14,7 @@ namespace webStudioBlazor.Services
         {
             _dbFactory = dbFactory;
         }
+
         public async Task SaveGiftCertificateAsync(GiftCertificate certificate, CancellationToken ct = default)
         {
             await using var db = await _dbFactory.CreateDbContextAsync(ct);
@@ -29,6 +30,7 @@ namespace webStudioBlazor.Services
 
             await db.SaveChangesAsync(ct);
         }
+
         public async Task<List<GiftCertificate>> GetGiftCertificatesByUserIdAsync(string userId, CancellationToken ct = default)
         {
             await using var db = await _dbFactory.CreateDbContextAsync(ct);
@@ -39,6 +41,7 @@ namespace webStudioBlazor.Services
                 .OrderByDescending(gc => gc.CreatedAt)
                 .ToListAsync(ct);
         }
+
         public async Task<List<GiftCertificateWithClientDto>> GetGiftCertificatesAll(CancellationToken ct = default)
         {
             await using var db = await _dbFactory.CreateDbContextAsync(ct);
@@ -69,6 +72,7 @@ namespace webStudioBlazor.Services
                 })
          .ToListAsync(ct);
         }
+
         public async Task ApproveGiftCertificateAsync(int id, CancellationToken ct = default)
         {
             await using var db = await _dbFactory.CreateDbContextAsync(ct);
@@ -88,6 +92,20 @@ namespace webStudioBlazor.Services
                 .Where(u => u.UserId == userId)
                 .FirstOrDefaultAsync(ct);
             return user;
+        }
+
+        public async Task DeleteGiftCertificateAsync(int giftCertificateId, CancellationToken ct = default)
+        {
+            await using var db = await _dbFactory.CreateDbContextAsync(ct);
+                        
+            var entity = await db.GiftCertificates
+                .FirstOrDefaultAsync(x => x.Id == giftCertificateId, ct);
+                      
+            if (entity is null)
+                return;
+                     
+            db.GiftCertificates.Remove(entity);                       
+            await db.SaveChangesAsync(ct);
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿@page "/admin-history-of-gift-sertificate-services"
 @using System.Threading.Tasks
-@inject GiftCertificateService _GiftCertificateService
+@inject GiftCertificateService _giftCertificateService
 @inject NavigationManager _navigationManager
 @layout AdminLayout
 @rendermode InteractiveServer
@@ -53,38 +53,55 @@
             @foreach (var cert in Certificates)
             {
                 <div class="col-lg-4 col-md-6">
-                    <div class="card border-2 shadow-sm h-100">
-                                              
+                    <div class="card admin-cert-card border-0 shadow-sm h-100 position-relative">
+
+                        <!-- Верх: бренд + статус + delete -->
                         <div class="card-header bg-white border-0 pb-0">
                             <div class="d-flex justify-content-between align-items-start">
                                 <div>
                                     <div class="admin-cert-brand">Shine Cosmetology</div>
-                                   
+                                    <div class="admin-cert-brand-sub">Подарунковий сертифікат</div>
                                 </div>
-                                @if (cert.IsApproved)
-                                {
-                                    <span class="admin-cert-status admin-cert-status-approved">
-                                        ✅ Активовано
-                                    </span>
-                                }
-                                else
-                                {
-                                    <span class="admin-cert-status admin-cert-status-pending">
-                                        ⏳ Очікує оплату
-                                    </span>
-                                }
+
+                                <div class="d-flex align-items-start gap-2">
+                                    @if (cert.IsApproved)
+                                    {
+                                        <span class="admin-cert-status admin-cert-status-approved">
+                                            ✅ Активовано
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="admin-cert-status admin-cert-status-pending">
+                                            ⏳ Очікує оплату
+                                        </span>
+                                    }
+
+                                    <button class="btn btn-sm btn-icon-danger"
+                                            title="Видалити"
+                                            @onclick="() => DeleteGiftCertificate(cert.Id)">
+                                        🗑
+                                    </button>
+                                </div>
                             </div>
-                        </div>                                            
+                        </div>
+
+                        <!-- Тіло -->
                         <div class="card-body pt-2">
 
                             <div class="admin-cert-title-main text-center mb-2">
                                 ПОДАРУНКОВИЙ СЕРТИФІКАТ
                             </div>
+
                             <div class="admin-cert-line mb-3"></div>
+
                             <div class="mb-2">
                                 <div class="admin-cert-label">Отримувач</div>
-                                <div class="admin-cert-value fw-semibold">@cert.RecipientName</div>                                                               
+                                <div class="admin-cert-value fw-semibold">
+                                    @cert.RecipientName
+                                </div>
                             </div>
+
                             <div class="d-flex justify-content-between mb-2">
                                 <div>
                                     <div class="admin-cert-label">Сертифікат №</div>
@@ -97,6 +114,7 @@
                                     </div>
                                 </div>
                             </div>
+
                             <div class="d-flex justify-content-between mb-2">
                                 <div>
                                     <div class="admin-cert-label">Термін дії</div>
@@ -109,50 +127,57 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="cert-row mb-2">
+
+                            <div class="cert-row mb-1">
                                 <div class="cert-label">Замовник:</div>
                                 <div class="cert-value">
                                     @cert.ClientName
                                 </div>
                             </div>
+
                             <div class="cert-row">
                                 <div class="cert-label">Телефон замовника:</div>
                                 <div class="cert-value text-muted">
                                     @cert.ClientPhone
                                 </div>
                             </div>
-                        </div>                                         
-                        <div class="card-footer bg-white border-top d-flex justify-content-between align-items-center">
-                            <span class="small text-muted">
-                                ID: @cert.Id
-                            </span>
-                            <div class="d-flex gap-2">
-                                <a href="@($"/download-gift-certificate/{cert.Id}")"
-                                   class="btn btn-outline-secondary btn-sm">
-                                    ⬇ PDF
-                                </a>
-                                <button class="btn btn-sm cert-action-btn"
-                                        @onclick="@(() => OnCertificateClick(cert.Id))"
-                                        disabled="@cert.IsApproved">
-                                    @if (!cert.IsApproved)
-                                    {
-                                        <span class="cert-status cert-status-unpaid">
-                                            ❌ Очікує оплату
-                                        </span>
-                                    }
-                                    else
-                                    {
-                                        <span class="cert-status cert-status-paid">
-                                            ✅ Оплачено
-                                        </span>
-                                    }
-                                </button>
+                        </div>
+
+                        <!-- Футер -->
+                        <div class="card-footer bg-white border-0 pt-0">
+                            <div class="d-flex justify-content-between align-items-center">
+
+                                <span class="small text-muted">
+                                    ID: @cert.Id
+                                </span>
+
+                                <div class="d-flex gap-2">
+                                    <a href="@($"/download-gift-certificate/{cert.Id}")"
+                                       class="btn btn-outline-secondary btn-sm rounded-pill">
+                                        ⬇ PDF
+                                    </a>
+
+                                    <button class="btn btn-sm rounded-pill cert-action-btn"
+                                            @onclick="@(() => OnCertificateClick(cert.Id))"
+                                            disabled="@cert.IsApproved">
+                                        @if (!cert.IsApproved)
+                                        {
+                                            <span>Підтвердити оплату</span>
+                                        }
+                                        else
+                                        {
+                                            <span>Оплачено</span>
+                                        }
+                                    </button>
+                                </div>
                             </div>
                         </div>
+
                     </div>
                 </div>
             }
         </div>
+
     }
 </div>
 
@@ -161,13 +186,20 @@
     
     protected override async Task OnInitializedAsync()
     {   
-        Certificates = await _GiftCertificateService.GetGiftCertificatesAll();
+        Certificates = await _giftCertificateService.GetGiftCertificatesAll();
         await InvokeAsync(StateHasChanged);
     }
 
     private async Task OnCertificateClick(int id)
     {
-        await _GiftCertificateService.ApproveGiftCertificateAsync(id);
-        Certificates = await _GiftCertificateService.GetGiftCertificatesAll();
+        await _giftCertificateService.ApproveGiftCertificateAsync(id);
+        Certificates = await _giftCertificateService.GetGiftCertificatesAll();
+    }
+
+    private async Task DeleteGiftCertificate(int id)
+    {
+        await _giftCertificateService.DeleteGiftCertificateAsync(id);
+        Certificates = await _giftCertificateService.GetGiftCertificatesAll();
+        StateHasChanged();
     }
 }
