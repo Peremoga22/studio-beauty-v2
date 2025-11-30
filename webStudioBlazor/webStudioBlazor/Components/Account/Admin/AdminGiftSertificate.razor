@@ -1,49 +1,12 @@
 ﻿@page "/admin-history-of-gift-sertificate-services"
 @using System.Threading.Tasks
-@inject SeedService _seedService
+@inject GiftCertificateService _GiftCertificateService
 @inject NavigationManager _navigationManager
 @layout AdminLayout
 @rendermode InteractiveServer
 @attribute [Authorize(Roles = "Admin")]
 
-<style>
-    .cert-action-btn {
-        background: transparent;
-        border: none;
-        padding: 0;
-        cursor: pointer;
-    }
-
-        .cert-action-btn:disabled {
-            cursor: default;
-        }
-
-    /* Статуси */
-    .cert-status {
-        display: inline-block;
-        font-size: 0.75rem;
-        padding: 6px 14px;
-        border-radius: 999px;
-        font-weight: 600;
-    }
-
-    /* 🔴 Не оплачено */
-    .cert-status-unpaid {
-        background: #ffe5e7;
-        color: #d62335;
-        border: 1px solid #f5a3aa;
-    }
-
-    /* 🟢 Оплачено */
-    .cert-status-paid {
-        background: #e4f6ec;
-        color: #1e8b4c;
-        border: 1px solid #6bcf97;
-    }
-
-</style>
-<div class="container my-4">
-    <!-- Заголовок + хлібні крихти -->
+<div class="container my-4">  
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-3">
         <div>
             <h3 class="mb-1 fw-bold" style="color:#f8b7d8;">
@@ -69,8 +32,7 @@
             </li>
         </ol>
     </nav>
-
-    <!-- Стан завантаження / порожній список -->
+       
     @if (Certificates == null)
     {
         <div class="text-center text-muted py-5">
@@ -92,15 +54,13 @@
             {
                 <div class="col-lg-4 col-md-6">
                     <div class="card border-2 shadow-sm h-100">
-
-                        <!-- HEADER CARD -->
+                                              
                         <div class="card-header bg-white border-0 pb-0">
                             <div class="d-flex justify-content-between align-items-start">
                                 <div>
                                     <div class="admin-cert-brand">Shine Cosmetology</div>
                                    
                                 </div>
-
                                 @if (cert.IsApproved)
                                 {
                                     <span class="admin-cert-status admin-cert-status-approved">
@@ -114,23 +74,17 @@
                                     </span>
                                 }
                             </div>
-                        </div>
-
-                        <!-- BODY CARD -->
+                        </div>                                            
                         <div class="card-body pt-2">
 
                             <div class="admin-cert-title-main text-center mb-2">
                                 ПОДАРУНКОВИЙ СЕРТИФІКАТ
                             </div>
-
                             <div class="admin-cert-line mb-3"></div>
-
                             <div class="mb-2">
                                 <div class="admin-cert-label">Отримувач</div>
-                                <div class="admin-cert-value fw-semibold">@cert.RecipientName</div>
-                                                               
+                                <div class="admin-cert-value fw-semibold">@cert.RecipientName</div>                                                               
                             </div>
-
                             <div class="d-flex justify-content-between mb-2">
                                 <div>
                                     <div class="admin-cert-label">Сертифікат №</div>
@@ -143,7 +97,6 @@
                                     </div>
                                 </div>
                             </div>
-
                             <div class="d-flex justify-content-between mb-2">
                                 <div>
                                     <div class="admin-cert-label">Термін дії</div>
@@ -168,24 +121,19 @@
                                     @cert.ClientPhone
                                 </div>
                             </div>
-                        </div>
-
-                        <!-- FOOTER CARD -->
+                        </div>                                         
                         <div class="card-footer bg-white border-top d-flex justify-content-between align-items-center">
                             <span class="small text-muted">
                                 ID: @cert.Id
                             </span>
-
                             <div class="d-flex gap-2">
                                 <a href="@($"/download-gift-certificate/{cert.Id}")"
                                    class="btn btn-outline-secondary btn-sm">
                                     ⬇ PDF
                                 </a>
-
                                 <button class="btn btn-sm cert-action-btn"
                                         @onclick="@(() => OnCertificateClick(cert.Id))"
                                         disabled="@cert.IsApproved">
-
                                     @if (!cert.IsApproved)
                                     {
                                         <span class="cert-status cert-status-unpaid">
@@ -198,17 +146,13 @@
                                             ✅ Оплачено
                                         </span>
                                     }
-
                                 </button>
-
                             </div>
                         </div>
-
                     </div>
                 </div>
             }
         </div>
-
     }
 </div>
 
@@ -217,13 +161,13 @@
     
     protected override async Task OnInitializedAsync()
     {   
-        Certificates = await _seedService.GetGiftCertificatesAll();        
+        Certificates = await _GiftCertificateService.GetGiftCertificatesAll();
         await InvokeAsync(StateHasChanged);
     }
 
     private async Task OnCertificateClick(int id)
     {
-        await _seedService.ApproveGiftCertificateAsync(id);
-        Certificates = await _seedService.GetGiftCertificatesAll();
+        await _GiftCertificateService.ApproveGiftCertificateAsync(id);
+        Certificates = await _GiftCertificateService.GetGiftCertificatesAll();
     }
 }

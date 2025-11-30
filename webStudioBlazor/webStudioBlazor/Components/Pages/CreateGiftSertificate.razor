@@ -1,5 +1,5 @@
 ﻿@page "/history-of-create-gift-sertificate-services/{CurrentUserId}"
-@inject SeedService _seedService
+@inject GiftCertificateService _giftCertificateService
 @inject NavigationManager _nav
 @inject AppointmentNotifier _notification
 @rendermode InteractiveServer
@@ -115,8 +115,8 @@
             IsApproved = false 
         };
 
-        await _seedService.SaveGiftCertificateAsync(entity);
-        var userAppointment = await _seedService.GetCustomerFullNameByUserId(CurrentUserId);
+        await _giftCertificateService.SaveGiftCertificateAsync(entity);
+        var userAppointment = await _giftCertificateService.GetCustomerFullNameByUserIdAsync(CurrentUserId);
 
         await SendGiftCertificateApprovedNotificationAsync(userAppointment, entity);
                    

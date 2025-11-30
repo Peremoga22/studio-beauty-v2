@@ -124,46 +124,20 @@ namespace webStudioBlazor.Services
             }
 
             await db.SaveChangesAsync(ct);
-        }
+        }            
+       
+        //public async Task<Appointment?> GetAppointmentOwnerByEmail(string email, CancellationToken ct = default)
+        //{
+        //    await using var db = await _dbFactory.CreateDbContextAsync(ct);
 
-        public async Task SaveGiftCertificateAsync(GiftCertificate certificate, CancellationToken ct = default)
-        {
-            await using var db = await _dbFactory.CreateDbContextAsync(ct);
+        //    var appointment = await db.Appointments
+        //        .Include(a => a.User)
+        //        .Where(a => a.User.Email == email)
+        //        .OrderByDescending(a => a.AppointmentDate)
+        //        .FirstOrDefaultAsync(ct);
 
-            if (certificate.Id == 0)
-            {
-                await db.GiftCertificates.AddAsync(certificate, ct);
-            }
-            else
-            {
-                db.GiftCertificates.Update(certificate);
-            }
-
-            await db.SaveChangesAsync(ct);               
-        }
-
-        public async Task<Appointment?> GetCustomerFullNameByUserId(string userId, CancellationToken ct = default)
-        {
-            await using var db = await _dbFactory.CreateDbContextAsync(ct);
-
-            var user = await db.Appointments
-                .Where(u => u.UserId == userId)                
-                .FirstOrDefaultAsync(ct);
-            return user;
-        }
-
-        public async Task<Appointment?> GetAppointmentOwnerByEmail(string email, CancellationToken ct = default)
-        {
-            await using var db = await _dbFactory.CreateDbContextAsync(ct);
-
-            var appointment = await db.Appointments
-                .Include(a => a.User)
-                .Where(a => a.User.Email == email)
-                .OrderByDescending(a => a.AppointmentDate)
-                .FirstOrDefaultAsync(ct);
-
-            return appointment;
-        }
+        //    return appointment;
+        //}
         // ===== EDIT (READ SINGLE) =====
 
         public async Task<Master?> EditMaster(int masterId, CancellationToken ct = default)
@@ -292,56 +266,14 @@ namespace webStudioBlazor.Services
                 .FirstOrDefaultAsync(c => c.Id == clientId, ct);
         }
 
-        public async Task<Appointment?> GetClientAppointmentUserId(string clientId, CancellationToken ct = default)
-        {
-            await using var db = await _dbFactory.CreateDbContextAsync(ct);
-            return await db.Appointments
-                .AsNoTracking()
-                .FirstOrDefaultAsync(c => c.UserId== clientId, ct);
-        }
-
-        public async Task<List<GiftCertificate>> GetGiftCertificatesByUserIdAsync(string userId, CancellationToken ct = default)
-        {
-            await using var db = await _dbFactory.CreateDbContextAsync(ct);
-
-            return await db.GiftCertificates
-                .AsNoTracking()
-                .Where(gc => gc.UserId == userId)
-                .OrderByDescending(gc => gc.CreatedAt)
-                .ToListAsync(ct);
-        }
-
-        public async Task<List<GiftCertificateWithClientDto>> GetGiftCertificatesAll(CancellationToken ct = default)
-        {
-            await using var db = await _dbFactory.CreateDbContextAsync(ct);
-
-            return await db.GiftCertificates
-                .AsNoTracking()
-                .OrderByDescending(c => c.CreatedAt)
-                .Select(c => new GiftCertificateWithClientDto
-                {
-                    Id = c.Id,
-                    RecipientName = c.RecipientName,
-                    Amount = c.Amount,
-                    IsApproved = c.IsApproved,
-                    CreatedAt = c.CreatedAt,
-                    UserId = c.UserId,
-                    UserName = c.User != null ? c.User.UserName : string.Empty,
-
-                ClientName = db.Appointments
-                   .Where(a => a.UserId == c.UserId)
-                   .OrderByDescending(a => a.AppointmentDate)
-                   .Select(a => a.ClientName)
-                   .FirstOrDefault(),
-                ClientPhone = db.Appointments
-                   .Where(a => a.UserId == c.UserId)
-                   .OrderByDescending(a => a.AppointmentDate)
-                   .Select(a => a.ClientPhone)
-                   .FirstOrDefault()
-                })
-         .ToListAsync(ct);
-        }
-
+        //public async Task<Appointment?> GetClientAppointmentUserId(string clientId, CancellationToken ct = default)
+        //{
+        //    await using var db = await _dbFactory.CreateDbContextAsync(ct);
+        //    return await db.Appointments
+        //        .AsNoTracking()
+        //        .FirstOrDefaultAsync(c => c.UserId== clientId, ct);
+        //}              
+       
         public async Task<List<AppointmentService>> ListForCalendarAsync(bool onlyCompleted = false, CancellationToken ct = default)
         {
             await using var db = await _dbFactory.CreateDbContextAsync(ct);
@@ -460,7 +392,6 @@ namespace webStudioBlazor.Services
              .ToListAsync(ct);
         }
 
-
         public async Task<List<Review>> GetReviewsForUserAsync(string userId, CancellationToken ct = default)
         {
             await using var db = await _dbFactory.CreateDbContextAsync(ct);
@@ -487,6 +418,7 @@ namespace webStudioBlazor.Services
                 .OrderByDescending(r => r.CreatedAt)
                 .ToListAsync(ct);
         }
+
         public async Task AddReviewAsync(Review review, CancellationToken ct = default)
         {            
             if (review == null)
@@ -512,17 +444,6 @@ namespace webStudioBlazor.Services
 
             db.Reviews.Remove(entity);
             await db.SaveChangesAsync(ct);
-        }
-
-        public async Task ApproveGiftCertificateAsync(int id, CancellationToken ct = default)
-        {
-            await using var db = await _dbFactory.CreateDbContextAsync(ct);
-            var certificate = await db.GiftCertificates.FindAsync(id);
-            if (certificate != null)
-            {
-                certificate.IsApproved = true;
-                await db.SaveChangesAsync();
-            }
-        }
+        }               
     }
 }

@@ -1,5 +1,5 @@
 ﻿@page "/history-of-gift-sertificate-services/{CurrentUserId}"
-@inject SeedService _seedService
+@inject GiftCertificateService _giftCertificateService
 
 <style>
     .cert-card {
@@ -488,6 +488,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        Certificates = await _seedService.GetGiftCertificatesByUserIdAsync(CurrentUserId);
+        Certificates = await _giftCertificateService.GetGiftCertificatesByUserIdAsync(CurrentUserId);
     }
 }
