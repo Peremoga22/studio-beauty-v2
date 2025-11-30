@@ -15,7 +15,7 @@
      * Number of snowflakes to create initially.
      * @type {number}
      */
-    const snowflakeCount = 300;
+    const snowflakeCount = 50;
     
     // Створення контейнера для снігу
     /**
