@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.JSInterop;
 
 using webStudioBlazor.Data;
@@ -12,11 +13,17 @@ namespace webStudioBlazor.Services
     {
         private readonly IDbContextFactory<ApplicationDbContext> _dbFactory;
         private readonly IJSRuntime _jsRuntime;
+        private readonly IWebHostEnvironment _env;
 
-        public GiftCertificateService(IDbContextFactory<ApplicationDbContext> dbFactory,IJSRuntime jsRuntime)
+        public GiftCertificateService(
+            IDbContextFactory<ApplicationDbContext> dbFactory,
+            IJSRuntime jsRuntime,
+            IWebHostEnvironment env
+        )
         {
             _dbFactory = dbFactory;
             _jsRuntime = jsRuntime;
+            _env = env;
         }
 
         public async Task SaveGiftCertificateAsync(GiftCertificate certificate, CancellationToken ct = default)
@@ -112,7 +119,7 @@ namespace webStudioBlazor.Services
             await db.SaveChangesAsync(ct);
         }
 
-        public async Task<string> DownloadGiftCertificatePdfAsync(int certificateId)
+        public async Task<string> DownloadGiftCertificatePdfAsync(int certificateId, Appointment currentUser)
         {
             await using var db = await _dbFactory.CreateDbContextAsync();
                        
@@ -123,7 +130,7 @@ namespace webStudioBlazor.Services
             if (cert is null)
                 return "Сертифікат не знайдено!";
                      
-            var pdfBytes = await GenerateGiftCertificatePdfAsync(certificateId);
+            var pdfBytes = await GenerateGiftCertificatePdfAsync(certificateId, currentUser);
 
             if (pdfBytes is null || pdfBytes.Length == 0)
                 return "Не вдалося створити PDF-файл!";
@@ -134,7 +141,7 @@ namespace webStudioBlazor.Services
                 rawName.Split(Path.GetInvalidFileNameChars())
             ).Replace(" ", "_");
                       
-            var fileName = $"Подарунковий сертифікат від {safeName}.pdf";
+            var fileName = $"Подарунковий сертифікат для {safeName}.pdf";
                         
             await _jsRuntime.InvokeVoidAsync(
                 "saveAsFile",
@@ -145,7 +152,7 @@ namespace webStudioBlazor.Services
             return $"Файл {fileName} успішно завантажено!";
         }
 
-        private async Task<byte[]> GenerateGiftCertificatePdfAsync(int certId)
+        private async Task<byte[]> GenerateGiftCertificatePdfAsync(int certId, Appointment currentUser)
         {
             await using var db = await _dbFactory.CreateDbContextAsync();
 
@@ -155,9 +162,38 @@ namespace webStudioBlazor.Services
 
             if (cert is null)
                 return null;
+           
+            var template = new GiftCertificatePdfGenerator();
+            var logoPath = Path.Combine(_env.WebRootPath, "img", "logo-new.png");
 
-            var generator = new GiftCertificatePdfGenerator();
-            return generator.Generate(cert);
+            var pdfBytes = template.Generate(
+                logoPath: logoPath,
+                brandName: "Shine Cosmetology",
+                certificateTitle: "Подарунковий сертифікат",
+                recipientName: cert.RecipientName,
+                amount: cert.Amount,
+                currencySymbol: "грн",
+                personalMessage: cert.Message,
+                fromName: currentUser.ClientName,          // залогінений користувач / замовник
+                certificateNumber: $"SC-{cert.Id:D5}",
+                issueDate: cert.CreatedAt,
+                validityText: "3 місяці"
+            );
+
+            return pdfBytes;
+        }
+
+        public async Task<Appointment?> GetAppointmentOwnerByEmail(string userId, CancellationToken ct = default)
+        {
+            await using var db = await _dbFactory.CreateDbContextAsync(ct);
+
+            var appointment = await db.Appointments
+                .Include(a => a.User)
+                .Where(a => a.User.Id == userId)
+                .OrderByDescending(a => a.AppointmentDate)
+                .FirstOrDefaultAsync(ct);
+
+            return appointment;
         }
 
     }

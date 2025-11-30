@@ -183,10 +183,11 @@
 
 @code {
     public List<GiftCertificateWithClientDto> Certificates { get; set; } = new();
+    private Appointment appointment = new();
     
     protected override async Task OnInitializedAsync()
     {   
-        Certificates = await _giftCertificateService.GetGiftCertificatesAll();
+        Certificates = await _giftCertificateService.GetGiftCertificatesAll();       
         await InvokeAsync(StateHasChanged);
     }
 
@@ -205,7 +206,7 @@
 
     private async Task DownloadPdf(int id)
     {
-        var result = await _giftCertificateService.DownloadGiftCertificatePdfAsync(id);
+        var result = await _giftCertificateService.DownloadGiftCertificatePdfAsync(id, appointment);
         Console.WriteLine(result);
     }
 }

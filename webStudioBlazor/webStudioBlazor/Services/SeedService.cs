@@ -124,20 +124,9 @@ namespace webStudioBlazor.Services
             }
 
             await db.SaveChangesAsync(ct);
-        }            
-       
-        //public async Task<Appointment?> GetAppointmentOwnerByEmail(string email, CancellationToken ct = default)
-        //{
-        //    await using var db = await _dbFactory.CreateDbContextAsync(ct);
+        }
+            
 
-        //    var appointment = await db.Appointments
-        //        .Include(a => a.User)
-        //        .Where(a => a.User.Email == email)
-        //        .OrderByDescending(a => a.AppointmentDate)
-        //        .FirstOrDefaultAsync(ct);
-
-        //    return appointment;
-        //}
         // ===== EDIT (READ SINGLE) =====
 
         public async Task<Master?> EditMaster(int masterId, CancellationToken ct = default)
