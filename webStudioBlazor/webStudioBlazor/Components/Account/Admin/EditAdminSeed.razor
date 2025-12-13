@@ -1,6 +1,6 @@
 ﻿@page "/edit-seed"
 @page "/edit-seed/{Id:int}"
-
+@inject NavigationManager _navigationManager
 @inject SeedService _seedService
 @layout AdminLayout
 @rendermode InteractiveServer
@@ -333,6 +333,14 @@
                     </table>
                 </div>
             </div>
+        </div>  
+        <div>
+            <button type="button"
+                    class="btn btn-outline-danger btn-action"
+                    @onclick="() =>GoToRoles()">
+                <i class="bi bi-pencil-square"></i>
+                <span class="d-none d-sm-inline ms-1">Перейти до присвоєння ролей</span>
+            </button>
         </div>
     </section>                  
 </div>
@@ -453,5 +461,10 @@
     {
         pageTherapy = new();
         StateHasChanged();
+    }
+
+    private void GoToRoles()
+    {
+        _navigationManager.NavigateTo($"/admin/roles");
     }
 }

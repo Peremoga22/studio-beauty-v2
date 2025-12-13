@@ -433,6 +433,76 @@ namespace webStudioBlazor.Services
 
             db.Reviews.Remove(entity);
             await db.SaveChangesAsync(ct);
-        }               
+        }
+
+        public async Task<List<CalendarRowDto>> ListForCalendarForAdminAsync(bool onlyCompleted = false,CancellationToken ct = default)
+        {
+            await using var db = await _dbFactory.CreateDbContextAsync(ct);
+            var query = db.Appointments
+                .AsNoTracking()
+                .Include(a => a.Category)
+                .Include(a => a.TherapyCard)
+                .Include(a => a.Master)
+                 .Where(a => a.Category != null && a.Category.NameCategory != "Манікюр")
+                .AsQueryable();
+
+            if (onlyCompleted)
+            {
+                query = query.Where(a => a.IsCompleted);
+            }
+
+            return await query
+                .OrderBy(a => a.AppointmentDate)
+                .ThenBy(a => a.SetHour)
+                .Select(a => new CalendarRowDto
+                {
+                    Id = a.Id,
+                    Date = a.AppointmentDate,
+                    Time = a.SetHour,
+                    ClientName = a.ClientName,
+                    ClientPhone = a.ClientPhone,
+                    Price = a.Price,
+                    ServiceName = a.TherapyCard != null ? a.TherapyCard.TitleCard : "",
+                    CategoryName = a.Category != null ? a.Category.NameCategory : "",
+                    MasterName = a.Master != null ? a.Master.FullName : "",
+                    IsCompleted = a.IsCompleted
+                })
+                .ToListAsync(ct);
+        }
+
+        public async Task<List<CalendarRowDto>> ListManicureCalendarForManicureAsync(bool onlyCompleted = false,CancellationToken ct = default)
+        {
+            await using var db = await _dbFactory.CreateDbContextAsync(ct);
+            var query = db.Appointments
+                .AsNoTracking()
+                .Include(a => a.Category)
+                .Include(a => a.TherapyCard)
+                .Include(a => a.Master)
+                .Where(a => a.Category != null && a.Category.NameCategory == "Манікюр")
+                .AsQueryable();
+
+            if (onlyCompleted)
+            {
+                query = query.Where(a => a.IsCompleted);
+            }
+
+            return await query
+                .OrderBy(a => a.AppointmentDate)
+                .ThenBy(a => a.SetHour)
+                .Select(a => new CalendarRowDto
+                {
+                    Id = a.Id,
+                    Date = a.AppointmentDate,
+                    Time = a.SetHour,
+                    ClientName = a.ClientName,
+                    ClientPhone = a.ClientPhone,
+                    Price = a.Price,
+                    ServiceName = a.TherapyCard != null ? a.TherapyCard.TitleCard : "",
+                    CategoryName = a.Category != null ? a.Category.NameCategory : "",
+                    MasterName = a.Master != null ? a.Master.FullName : "",
+                    IsCompleted = a.IsCompleted
+                })
+                .ToListAsync(ct);
+        }
     }
 }

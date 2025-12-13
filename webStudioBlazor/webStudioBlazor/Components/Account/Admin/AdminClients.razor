@@ -1,11 +1,12 @@
 ﻿@page "/admin-clients"
 @using Microsoft.AspNetCore.Authorization
 @using webStudioBlazor.Components.Layout
+@inject AuthenticationStateProvider Auth
 @inject SeedService _seedService
 @layout AdminLayout
 @using System.Globalization
 @inject NavigationManager _navigationManager
-@attribute [Authorize(Roles = "Admin")]
+@attribute [Authorize(Roles = "Admin,Manicure")]
 @rendermode InteractiveServer
 
 <h3 style="padding-top: 2%;"></h3>
@@ -13,6 +14,7 @@
     <h3 style="color:hotpink">Записи клієнтів</h3>
 </div>
 <main class="container">
+    @* @if (User.IsInRole("Manicure")) { ... } *@
 
     <section class="card card--elevated">
         <header class="card__header">
@@ -33,32 +35,41 @@
             {
                 @foreach (var row in rows)
                 {
-                    var appt = row.Appointment;
-                    var cat = row.Category;
-                    var therapy = row.TherapyCard;
-
                     <article class="entry">
                         <div class="entry__row">
-                            <span class="badge badge--massage">@cat?.NameCategory</span>
+                            <span class="badge badge--massage">
+                                @row.CategoryName
+                            </span>
+
                             <span class="time">
-                                @($"{appt.SetHour:HH\\:mm} – {appt.SetHour.AddMinutes(60):HH\\:mm}")
+                                @($"{row.Time:HH\\:mm} – {row.Time.AddMinutes(60):HH\\:mm}")
                             </span>
                         </div>
 
                         <div class="text-end">
-                            <span>@appt.AppointmentDate.ToString("dd.MM.yyyy")</span>
+                            <span>@row.Date.ToString("dd.MM.yyyy")</span>
                         </div>
 
-                        <div class="client"><strong>@appt.ClientName</strong></div>
                         <div class="client">
-                            <strong><a href="tel:@appt.ClientPhone">@appt.ClientPhone</a></strong>
+                            <strong>@row.ClientName</strong>
                         </div>
 
-                        @if (therapy is not null)
+                        <div class="client">
+                            <strong>
+                                <a href="tel:@row.ClientPhone">@row.ClientPhone</a>
+                            </strong>
+                        </div>
+
+                        @if (!string.IsNullOrWhiteSpace(row.ServiceName))
                         {
-                            <div class="procedure">@therapy.TitleCard</div>
+                            <div class="procedure">@row.ServiceName</div>
                             <div class="meta">
-                                <span class="duration">@therapy.Price.ToString("C0", ua)</span>
+                                @if (row.Price.HasValue)
+                                {
+                                    <span class="duration">
+                                        @row.Price.Value.ToString("C0", ua)
+                                    </span>
+                                }
                             </div>
                         }
                         else
@@ -77,6 +88,7 @@
                         </div>
                     </article>
                 }
+
             }
         </section>
      </section>
@@ -86,7 +98,7 @@
 
 
 @code {
-    private List<AppointmentService> rows = new();
+    private List<CalendarRowDto> rows = new();
     private Appointment clientUser = new();
     private List<Appointment> clientList = new();
     private List<Master> masters = new();
@@ -97,10 +109,21 @@
 
     protected override async Task OnInitializedAsync()
     {        
-        rows = await _seedService.ListForCalendarAsync(onlyCompleted: true);
+        var state = await Auth.GetAuthenticationStateAsync();
+        var user = state.User;
+
+        if (user.IsInRole("Admin"))
+        {           
+            rows = await _seedService.ListForCalendarForAdminAsync(onlyCompleted: true);
+        }
+        else if (user.IsInRole("Manicure"))
+        {
+            
+            rows = await _seedService.ListManicureCalendarForManicureAsync(onlyCompleted: true);
+        }       
     }
 
-    private async Task ConfirmAndDeleteAsync(AppointmentService row)
+    private async Task ConfirmAndDeleteAsync(CalendarRowDto row)
     {
         if (row is null) return;
 

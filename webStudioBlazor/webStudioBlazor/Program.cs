@@ -39,6 +39,7 @@ builder.Services.AddScoped<CartService>();
 builder.Services.AddScoped<OrderService>();
 builder.Services.AddScoped<AdminCustomerOrdersService>();
 builder.Services.AddScoped<GiftCertificateService>();
+builder.Services.AddScoped<AdminRoleService>();
 
 builder.Services.AddSingleton<ITelegramBotClient>(sp =>
 {

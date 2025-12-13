@@ -1,0 +1,100 @@
+﻿@page "/admin/roles"
+@attribute [Authorize(Roles = "Admin")]  
+@inject AdminRoleService RoleService
+@rendermode InteractiveServer
+
+<h3 style="padding-top: 5%;"></h3>
+<h3>Керування ролями користувачів</h3>
+
+@if (isLoading)
+{
+    <p>Завантаження...</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Email</th>
+                <th>Ролі</th>
+                <th>Дії</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in users)
+            {
+                <tr>
+                    <td>@user.Email</td>
+                    <td>
+                        @string.Join(", ", user.Roles)
+                    </td>
+                    <td>
+                        <!-- Кнопки для ролі Manicure -->
+                        @if (user.Roles.Contains("Manicure"))
+                        {
+                            <button class="btn btn-sm btn-outline-danger"
+                                    @onclick="() => RemoveRole(user.UserId, ManicureRoleName)">
+                                Забрати Manicure
+                            </button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-sm btn-outline-success"
+                                    @onclick="() => AddRole(user.UserId, ManicureRoleName)">
+                                Додати Manicure
+                            </button>
+                        }
+
+                        <!-- Приклад для Admin -->
+                        @if (user.Roles.Contains("Admin"))
+                        {
+                            <button class="btn btn-sm btn-outline-secondary ms-2"
+                                    @onclick="() => RemoveRole(user.UserId, AdminRoleName)">
+                                Забрати Admin
+                            </button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-sm btn-outline-primary ms-2"
+                                    @onclick="() => AddRole(user.UserId, AdminRoleName)">
+                                Додати Admin
+                            </button>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private bool isLoading = true;
+    private List<UserWithRolesDto> users = new();
+    private string AdminRoleName = "Admin";
+    private string ManicureRoleName = "Manicure";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadUsersAsync();
+    }
+
+    private async Task LoadUsersAsync()
+    {
+        isLoading = true;
+        users = await RoleService.GetUsersAsync();
+        isLoading = false;
+        StateHasChanged();
+    }
+
+    private async Task AddRole(string userId, string roleName)
+    {
+        await RoleService.AddRoleToUserAsync(userId, roleName);
+        await LoadUsersAsync();
+    }
+
+    private async Task RemoveRole(string userId, string roleName)
+    {
+        await RoleService.RemoveRoleFromUserAsync(userId, roleName);
+        await LoadUsersAsync();
+    }
+}

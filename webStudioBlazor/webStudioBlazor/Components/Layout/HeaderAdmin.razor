@@ -1,97 +1,112 @@
 ﻿@implements IDisposable
 @using Microsoft.AspNetCore.Components.Routing
 @inject NavigationManager NavigationManager
+@inject AdminRoleService RoleService
 
 <div class="container-fluid position-relative p-0">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm px-4 px-lg-5 py-3">
         <!-- Logo -->
         <a href="/" class="navbar-brand d-flex align-items-center gap-2">
-            <img src="img/logo-new.png" alt="Логотип" class="rounded-circle shadow-sm" style="height: 48px; width: 48px; object-fit: cover;">
+            <img src="img/logo-new.png" alt="Логотип" class="rounded-circle shadow-sm"
+                 style="height: 48px; width: 48px; object-fit: cover;">
             <span class="fs-4 fw-bold text-light">Адмінка</span>
         </a>
 
         <!-- Mobile Toggle -->
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
-                aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button"
+                data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
+                aria-controls="navbarCollapse" aria-expanded="false"
+                aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        <!-- Navigation -->
         <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav ms-auto gap-2">
-                <li class="nav-item">
-                    <NavLink href="/admin-clients" class="nav-link text-light" Match="NavLinkMatch.All" activeClass="active">
-                        Запис клієнтів
-                    </NavLink>
-                </li>
-                <li class="nav-item">
-                    <NavLink href="/admin-order-clients" class="nav-link text-light" Match="NavLinkMatch.All" activeClass="active">
-                        Замовлення клієнтів
-                    </NavLink>
-                </li>
-                <li class="nav-item">
-                    <NavLink href="/admin-our-reviews-for-stududia" class="nav-link text-light" activeClass="active">
-                       Відгуки
-                    </NavLink>
-                </li>
-                <li class="nav-item">
-                    <NavLink href="/admin-us-clients" class="nav-link text-light" activeClass="active">
-                        Наші клієнти
-                    </NavLink>
-                 </li>
-                <li class="nav-item">
-                    <NavLink href="/admin-customer-orders" class="nav-link text-light" activeClass="active">
-                        Наші покупці
-                    </NavLink>
-                </li>
-                <li class="nav-item">
-                    <NavLink href="/analytics" class="nav-link text-light" Match="NavLinkMatch.All" activeClass="active">
-                        Аналітика
-                    </NavLink>
-                </li>
-             @*    <li class="nav-item">
-                    <NavLink href="/admin-about-us" class="nav-link text-light" activeClass="active">
-                        Про нас
-                    </NavLink>
-                </li> *@
-                <li class="nav-item">
-                    <NavLink href="/admin-cosmetology" class="nav-link text-light" activeClass="active">
-                        Косметологія
-                    </NavLink>
-                </li>
-                <li class="nav-item">
-                    <NavLink href="/admin-massage-therapy" class="nav-link text-light" activeClass="active">
-                        Масажна терапія
-                    </NavLink>
-                </li>
-                <li class="nav-item">
-                    <NavLink href="/admin-manicure" class="nav-link text-light" activeClass="active">
-                        Манікюр
-                    </NavLink>
-                </li>
-                <li class="nav-item">
-                    <NavLink href="/admin-sales" class="nav-link text-light" activeClass="active">
-                        Наш магазин
-                    </NavLink>
-                </li>
-                <li class="nav-item">
-                    <NavLink href="/admin-history-of-gift-sertificate-services" class="nav-link text-light" activeClass="active">
-                        Подарункові сертифікати
-                    </NavLink>
-                </li>
-            @*     <li class="nav-item">
-                    <NavLink href="/admin-event" class="nav-link text-light" activeClass="active">
-                        Події
-                    </NavLink>
-                </li> *@
-                <li class="nav-item">
-                    <NavLink href="/admin-seed" class="nav-link text-light" activeClass="active">
-                        Наповнення категорії
-                    </NavLink>
-                </li>
 
                 <AuthorizeView>
-                    <Authorized>
+                    <Authorized Context="auth">
+                                              
+                        @if (auth.User.IsInRole("Admin") || auth.User.IsInRole("Manicure"))
+                        {
+                            <li class="nav-item">
+                                <NavLink href="/admin-clients"
+                                         class="nav-link text-light"
+                                         Match="NavLinkMatch.All"
+                                         activeClass="active">
+                                    Запис клієнтів
+                                </NavLink>
+                            </li>
+                            <li class="nav-item">
+                                <NavLink href="/admin-manicure" class="nav-link text-light" activeClass="active">
+                                    Манікюр
+                                </NavLink>
+                            </li>
+                        }
+                                              
+                        @if (auth.User.IsInRole("Admin"))
+                        {                           
+                            <li class="nav-item">
+                                <NavLink href="/admin-order-clients" class="nav-link text-light" Match="NavLinkMatch.All" activeClass="active">
+                                    Замовлення клієнтів
+                                </NavLink>
+                            </li>
+                            <li class="nav-item">
+                                <NavLink href="/admin-our-reviews-for-stududia" class="nav-link text-light" activeClass="active">
+                                   Відгуки
+                                </NavLink>
+                            </li>
+                            <li class="nav-item">
+                                <NavLink href="/admin-us-clients" class="nav-link text-light" activeClass="active">
+                                    Наші клієнти
+                                </NavLink>
+                             </li>
+                            <li class="nav-item">
+                                <NavLink href="/admin-customer-orders" class="nav-link text-light" activeClass="active">
+                                    Наші покупці
+                                </NavLink>
+                            </li>
+                            <li class="nav-item">
+                                <NavLink href="/analytics" class="nav-link text-light" Match="NavLinkMatch.All" activeClass="active">
+                                    Аналітика
+                                </NavLink>
+                            </li>
+                         @*    <li class="nav-item">
+                                <NavLink href="/admin-about-us" class="nav-link text-light" activeClass="active">
+                                    Про нас
+                                </NavLink>
+                            </li> *@
+                            <li class="nav-item">
+                                <NavLink href="/admin-cosmetology" class="nav-link text-light" activeClass="active">
+                                    Косметологія
+                                </NavLink>
+                            </li>
+                            <li class="nav-item">
+                                <NavLink href="/admin-massage-therapy" class="nav-link text-light" activeClass="active">
+                                    Масажна терапія
+                                </NavLink>
+                            </li>
+                              <li class="nav-item">
+                                 <NavLink href="/admin-sales" class="nav-link text-light" activeClass="active">
+                                        Наш магазин
+                                 </NavLink>
+                              </li>
+                              <li class="nav-item">
+                                 <NavLink href="/admin-history-of-gift-sertificate-services" class="nav-link text-light" activeClass="active">
+                                        Подарункові сертифікати
+                                 </NavLink>
+                              </li>
+                            @*   <li class="nav-item">
+                                    <NavLink href="/admin-event" class="nav-link text-light" activeClass="active">
+                                        Події
+                                    </NavLink>
+                                </li> *@
+                               <li class="nav-item">
+                                  <NavLink href="/admin-seed" class="nav-link text-light" activeClass="active">
+                                        Наповнення категорії
+                                  </NavLink>
+                               </li>
+                        }                                             
+                                             
                         <li class="nav-item">
                             <NavLink class="nav-link text-warning fw-bold" href="/">
                                 На сайт
@@ -106,8 +121,18 @@
                                 </button>
                             </form>
                         </li>
+
                     </Authorized>
+
+                    <NotAuthorized>
+                        <li class="nav-item">
+                            <NavLink href="Account/Login" class="nav-link text-light">
+                                <i class="bi bi-person me-1"></i> Логін
+                            </NavLink>
+                        </li>
+                    </NotAuthorized>
                 </AuthorizeView>
+
             </ul>
         </div>
     </nav>
@@ -115,12 +140,22 @@
 
 @code {
     private string? currentUrl;
+    private List<UserWithRolesDto> users = new();
+    private string AdminRoleName = "Admin";
+    private string ManicureRoleName = "Manicure";
 
-    protected override Task OnInitializedAsync()
+    protected override  Task OnInitializedAsync()
     {
+        LoadUsersAsync();
         currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
         NavigationManager.LocationChanged += OnLocationChanged;
         return Task.CompletedTask;
+    }
+
+    private async Task LoadUsersAsync()
+    {       
+        users = await RoleService.GetUsersAsync();       
+        StateHasChanged();
     }
 
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e)

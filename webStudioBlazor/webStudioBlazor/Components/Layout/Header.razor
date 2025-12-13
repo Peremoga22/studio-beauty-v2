@@ -72,11 +72,11 @@
                         Масажна терапія
                     </NavLink>
                 </li>
-                <li class="nav-item">
+             @*    <li class="nav-item">
                     <NavLink href="/manicure" class="nav-link" activeClass="active">
                         Манікюр
                     </NavLink>
-                </li>
+                </li> *@
                 <li class="nav-item">
                     <NavLink href="/sales" class="nav-link" activeClass="active">
                         Наш магазин
@@ -102,15 +102,15 @@
                 }
               
                 <AuthorizeView>
-                    <Authorized>
-                        @if (userName == "admin@outlook.com")
+                    <Authorized Context="auth">
+                        @if (auth.User.IsInRole("Admin") || auth.User.IsInRole("Manicure"))
                         {
                             <li class="nav-item">
                                 <NavLink class="nav-link fw-semibold text-primary" href="/admin-clients">
                                     <i class="bi bi-shield-lock me-1"></i> Адмінка
                                 </NavLink>
                             </li>
-                        }                      
+                        }
                         <li class="nav-item">
                             <form action="Account/Logout" method="post" class="d-inline">
                                 <AntiforgeryToken />
