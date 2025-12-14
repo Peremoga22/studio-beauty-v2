@@ -1,9 +1,10 @@
 ﻿@page "/admin-us-clients"
 
+@inject AuthenticationStateProvider Auth
 @inject NavigationManager _navigationManager
 @inject SeedService _seedService
 @layout AdminLayout
-@attribute [Authorize(Roles = "Admin")]
+@attribute [Authorize(Roles = "Admin,Manicure")]
 @rendermode InteractiveServer
 
 
@@ -105,15 +106,24 @@
     private int totalPages;
     private bool IsFirstPage => page <= 1;
     private bool IsLastPage => page >= totalPages;
+    private bool _isAdmin;
+    private bool _isManicure;
 
     protected override async Task OnInitializedAsync()
     {
+        var state = await Auth.GetAuthenticationStateAsync();
+        var user = state.User;
+
+        _isAdmin = user.IsInRole("Admin");
+        _isManicure = user.IsInRole("Manicure");
+
         allClientList = await _seedService.GetAllClientListAsync();
-        categories   = await _seedService.GetAllCategoryListAsync();
+        categories = await _seedService.GetAllCategoryListAsync();
         therapyCards = await _seedService.GetAllTherapyCardListAsync();
 
         Rebuild();
     }
+
 
     private void Rebuild()
     {      
@@ -160,21 +170,28 @@
                        a.Price
                    );
 
+       
+        if (_isManicure && !_isAdmin)
+        {
+            rows = rows.Where(r => r.Category == "Манікюр");           
+        }
+
         if (!string.IsNullOrWhiteSpace(search))
         {
             var s = search.Trim().ToLowerInvariant();
             rows = rows.Where(r =>
-               r.Name.ToLowerInvariant().Contains(s) ||
-               r.Phone.ToLowerInvariant().Contains(s) ||
-               r.Service.ToLowerInvariant().Contains(s));
-        }     
+                r.Name.ToLowerInvariant().Contains(s) ||
+                r.Phone.ToLowerInvariant().Contains(s) ||
+                r.Service.ToLowerInvariant().Contains(s));
+        }
 
         rows = rows
-       .OrderByDescending(r => r.Date)
-       .ThenByDescending(r => r.Time);
+            .OrderByDescending(r => r.Date)
+            .ThenByDescending(r => r.Time);
 
         return rows.ToList();
     }
+
 
     private async Task Reset()
     {
