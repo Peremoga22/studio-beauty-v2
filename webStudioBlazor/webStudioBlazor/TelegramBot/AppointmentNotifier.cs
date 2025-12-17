@@ -81,14 +81,14 @@ namespace webStudioBlazor.BL
             }           
         }
 
-        public async Task NotifyNewAsync(string clientName, string phone, string serviceName,
+        public async Task NotifyNewAsync(string clientName, string phone, string serviceName,string procedureName,
                                          DateOnly date, TimeOnly time, string? notes = null,
                                          long? overrideChatId = null, CancellationToken ct = default)
         {
             long chatId;
             string text;
 
-            if (serviceName == "Манікюр")
+            if (serviceName == "Подологія")
             {
 
                 chatId = (long)(overrideChatId ?? _cfg.ManicureChatId);
@@ -97,7 +97,8 @@ namespace webStudioBlazor.BL
                     .AppendLine($"👤 Клієнт: *{Esc(clientName)}*")
                     .AppendLine($"📞 Телефон: `{Esc(phone)}`")
                     .AppendLine($"💆 Послуга: *{Esc(serviceName)}*")
-                    .AppendLine($"📅 Дата: *{date:dd.MM.yyyy}*")
+                    .AppendLine($"💆 Процедура: *{Esc(procedureName)}*")
+                    .AppendLine($"📅 Дата: *{date:dd.MM.yyyy}*")                    
                     .AppendLine($"⏰ Час: *{time:HH\\:mm}*")
                     .AppendLine(!string.IsNullOrWhiteSpace(notes) ? $"📝 Примітки: {Esc(notes!)}" : "")
                     .ToString();

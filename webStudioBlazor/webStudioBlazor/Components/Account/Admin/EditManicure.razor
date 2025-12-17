@@ -134,50 +134,64 @@
     <!-- Таблиця в картці -->
     <section class="pt-3">
         <div class="container">
-            <figure class="figure m-0">
-                <div class="row g-2">
-                    @{
-                        var page = pageTherapies.FirstOrDefault(p => p.TitlePage == @selectedManicure);
-                    }
-                    @foreach (var item in therapyCards.Where(x => x.CategoryId == page.CategoryId))
-                    {
-                        <div class="col-6 col-lg-3">
-                            <div class="card shadow-sm border-0 rounded-3 product-card h-100">
-                                <div class="ratio ratio-1x1">
-                                    <img src="@item.ImagePath"
-                                         alt="@item.TitleCard"
-                                         class="card-img-top object-fit-cover"
-                                         loading="lazy">
+            <div class="row g-3">
+                @{
+                    var page = pageTherapies.FirstOrDefault(p => p.TitlePage == selectedManicure);
+                }
+
+                @foreach (var item in therapyCards.Where(x => x.CategoryId == page.CategoryId))
+                {
+                    <!--
+                      xs (телефон)   : 1 картка
+                      sm (великий)   : 2 картки
+                      md (планшет)   : 3 картки
+                      lg+ (десктоп)  : 4 картки
+                    -->
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                        <div class="card shadow-sm border-0 rounded-3 product-card h-100">
+
+                            <!-- Картинка -->
+                            <div class="ratio ratio-1x1">
+                                <img src="@item.ImagePath"
+                                     alt="@item.TitleCard"
+                                     class="card-img-top object-fit-cover"
+                                     loading="lazy">
+                            </div>
+
+                            <!-- Контент -->
+                            <div class="card-body d-flex flex-column p-3 p-sm-2">
+
+                                <h6 class="card-title mb-1 fw-semibold text-dark text-truncate"
+                                    title="@item.TitleCard">
+                                    @item.TitleCard
+                                </h6>
+
+                                <p class="card-text text-muted small mb-2 line-clamp-2"
+                                   title="@item.DescriptionCard">
+                                    @item.DescriptionCard
+                                </p>
+
+                                <!-- Кнопки -->
+                                <div class="mt-auto d-grid gap-2 d-sm-flex justify-content-sm-between">
+                                    <button @onclick="(() => EdittherapyCard(item.Id))"
+                                            class="btn btn-outline-primary btn-sm">
+                                        <i class="bi bi-pencil-square me-1"></i>
+                                        Редагувати
+                                    </button>
+
+                                    <button class="btn btn-dark btn-sm">
+                                        @item.Price.ToString("C0", new System.Globalization.CultureInfo("uk-UA"))
+                                    </button>
                                 </div>
-                                <div class="card-body d-flex flex-column p-2">
-                                    <h6 class="card-title mb-1 text-dark fw-semibold text-truncate"
-                                        title="@item.TitleCard">
-                                        @item.TitleCard
-                                    </h6>
-                                    <p class="card-text text-muted mb-2 small line-clamp-2"
-                                       title="@item.DescriptionCard">
-                                        @item.DescriptionCard
-                                    </p>
-                                    <div class="mt-auto d-flex flex-column flex-sm-row justify-content-end gap-2">
-                                        <button @onclick="(() => EdittherapyCard(item.Id))"
-                                                class="btn btn-outline-primary w-100 w-sm-auto">
-                                            <i class="bi bi-pencil-square me-1"></i> Редагувати
-                                        </button>
 
-                                        <button class="btn btn-dark w-100 w-sm-auto">
-                                            @item.Price.ToString("C0", new System.Globalization.CultureInfo("uk-UA"))
-                                        </button>
-                                    </div>
-
-
-                                </div>
                             </div>
                         </div>
-                    }
-                </div>
-            </figure>
+                    </div>
+                }
+            </div>
         </div>
     </section>
+
 </div>
 
 

@@ -216,6 +216,7 @@ namespace webStudioBlazor.Services
             return await db.Categories
                 .AsNoTracking()
                 .Include(c => c.Masters)
+                .Include(p =>p.TherapyCards)
                 .OrderBy(x => x.Id)
                 .ToListAsync(ct);
         }
@@ -443,7 +444,7 @@ namespace webStudioBlazor.Services
                 .Include(a => a.Category)
                 .Include(a => a.TherapyCard)
                 .Include(a => a.Master)
-                 .Where(a => a.Category != null && a.Category.NameCategory != "Манікюр")
+                 .Where(a => a.Category != null && a.Category.NameCategory != "Подологія")
                 .AsQueryable();
 
             if (onlyCompleted)
@@ -478,7 +479,7 @@ namespace webStudioBlazor.Services
                 .Include(a => a.Category)
                 .Include(a => a.TherapyCard)
                 .Include(a => a.Master)
-                .Where(a => a.Category != null && a.Category.NameCategory == "Манікюр")
+                .Where(a => a.Category != null && a.Category.NameCategory == "Подологія")
                 .AsQueryable();
 
             if (onlyCompleted)
