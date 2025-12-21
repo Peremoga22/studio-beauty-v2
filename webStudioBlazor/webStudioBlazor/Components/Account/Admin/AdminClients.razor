@@ -6,6 +6,7 @@
 @layout AdminLayout
 @using System.Globalization
 @inject NavigationManager _navigationManager
+@inject IJSRuntime JS
 @attribute [Authorize(Roles = "Admin,Manicure")]
 @rendermode InteractiveServer
 
@@ -85,6 +86,9 @@
                                 <i class="fa-solid fa-trash" aria-hidden="true"></i>
                                 <span>@(deleting.Contains(row.Id) ? "Видаляю..." : "Видалити")</span>
                             </button>
+                            <button class="btn btn-outline-info btn-sm rounded-pill d-inline-flex align-items-center gap-1" @onclick="() => EditRow(row.Id)">
+                               Редагувати
+                            </button>
                         </div>
                     </article>
                 }
@@ -122,15 +126,30 @@
             rows = await _seedService.ListManicureCalendarForManicureAsync(onlyCompleted: true);
         }       
     }
+    private void EditRow(int rowId)
+    {
+        _navigationManager.NavigateTo($"/admin/treatment-history/{rowId}");
+    }
 
     private async Task ConfirmAndDeleteAsync(CalendarRowDto row)
     {
         if (row is null) return;
 
+        var message =
+            $"Ви дійсно хочете видалити запис?\n\n" +
+            $"Клієнт: {row.ClientName}\n" +
+            $"Дата: {row.Date:dd.MM.yyyy}\n\n" +
+            $"❗ Цю дію неможливо скасувати.";
+
+        var confirmed = await JS.InvokeAsync<bool>("confirm", message);
+
+        if (!confirmed)
+            return;
+
         deleting.Add(row.Id);
         try
         {
-            await _seedService.DeleteAdminClientCardAsync(row.Id);           
+            await _seedService.DeleteAdminClientCardAsync(row.Id);
             rows.RemoveAll(r => r.Id == row.Id);
             StateHasChanged();
         }
@@ -139,4 +158,5 @@
             deleting.Remove(row.Id);
         }
     }
+
 }

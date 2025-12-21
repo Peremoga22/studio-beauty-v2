@@ -1,0 +1,174 @@
+﻿@page "/admin/treatment-history/{Id:int}"
+@using System.ComponentModel.DataAnnotations
+@inject NavigationManager Nav
+@rendermode InteractiveServer
+
+<h3 style="padding-top: 7%;"></h3>
+<div class="container my-4">
+    <h2 class="mb-4 text-center fw-bold">
+        Історія записів клієнта
+    </h2>
+
+   <div class="alert ec-client-card mx-auto px-4 py-3 text-center">
+    <div class="d-flex align-items-center justify-content-center gap-3 mb-2">
+        <i class="fa-solid fa-lock ec-client-lock"></i>
+        <h5 class="mb-0 fw-semibold">
+            Столярук Іван Васильович
+        </h5>
+    </div>
+
+    <div class="ec-client-meta">
+        <i class="fa-regular fa-calendar me-1"></i>
+        <span>Дата відвідування:</span>
+        <strong class="ms-1">11.12.2025</strong>
+    </div>
+</div>
+
+
+@if (isLoading)
+{
+    <div class="text-muted">Завантаження...</div>
+}
+else if (vm is null)
+{
+    <div class="alert alert-warning">
+        Запис не знайдено.
+    </div>
+}
+else
+{
+    <section class="ec-bg-soft py-0">
+        <div class="container">
+            <div class="row g-4 justify-content-center">
+                <div class="col-12 col-lg-10 col-xl-9">
+
+                    <!-- Header / Info card -->
+                    <div class="bg-white border rounded-4 p-4 shadow-sm">
+                        <div class="d-flex flex-column flex-md-row align-items-md-start justify-content-between gap-3">
+
+                            <div class="flex-grow-1">
+                                <span class="badge rounded-pill ec-badge-primary px-3 py-0 mb-3">
+                                    @vm.CategoryName
+                                </span>
+
+                                <h2 class="fw-bold mb-2">@vm.ProcedureName</h2>
+
+                                @if (!string.IsNullOrWhiteSpace(vm.CosmetologistDescription))
+                                {
+                                    <p class="text-muted mb-0" style="line-height:1.65;">
+                                        @vm.CosmetologistDescription
+                                    </p>
+                                }
+                                else
+                                {
+                                    <p class="text-muted mb-0">
+                                        Опис косметолога поки не додано.
+                                    </p>
+                                }
+                            </div>                                                       
+                        </div>
+
+                        <hr class="my-4" />
+
+                        <!-- Photos -->
+                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+                            <h5 class="fw-bold mb-0">Фото процедури</h5>
+                            <span class="text-muted small">
+                                Показано @vm.Photos.Count з 6
+                            </span>
+                        </div>
+
+                        @if (vm.Photos.Count == 0)
+                        {
+                            <div class="alert alert-info mb-0">
+                                Фото ще не додані до цієї процедури.
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="row g-3">
+                                @foreach (var photo in vm.Photos.Take(6))
+                                {
+                                    <div class="col-6 col-md-4">
+                                        <a href="@photo.Url" target="_blank" class="ec-photo-card">
+                                            <img src="@photo.Url"
+                                                 alt="Фото процедури"
+                                                 class="ec-photo-img"
+                                                 loading="lazy" decoding="async" />
+                                        </a>
+                                    </div>
+                                }
+
+                                @* якщо менше 6 — покажемо “пусті” плейсхолдери *@
+                                @for (int i = vm.Photos.Count; i < 6; i++)
+                                {
+                                    <div class="col-6 col-md-4">
+                                        <div class="ec-photo-placeholder">
+                                            <i class="bi bi-image"></i>
+                                            <div class="small mt-1">Немає фото</div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <button class="btn ec-btn-outline-white px-4 py-2" type="button" @onclick="Back">
+                                <i class="bi bi-arrow-left me-1"></i> Назад
+                            </button>
+
+                            <button class="btn ec-btn-primary px-4 py-2" type="button" @onclick="Edit">
+                                <i class="bi bi-pencil me-1"></i> Редагувати
+                            </button>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </section>
+}
+</div>
+@code {
+    [Parameter] public int Id { get; set; }
+
+    private bool isLoading = true;
+    private TreatmentHistoryVm? vm;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // TODO: підстав свій сервіс/БД.
+        // vm = await _service.GetTreatmentHistoryAsync(Id);
+
+        // DEMO (прибери після інтеграції)
+        await Task.Delay(150);
+        vm = new TreatmentHistoryVm
+        {
+            ProcedureName = "Чищення обличчя",
+            CategoryName = "Косметологія",
+            CosmetologistDescription = "Проведено комбіноване чищення, нанесено заспокійливу маску. Рекомендації: SPF щодня, зволоження, уникати скрабів 3-5 днів.",
+            Photos = new()
+            {
+                new PhotoVm { Url = "/images/carosel1.jpg" },
+                new PhotoVm { Url = "/images/carosel2.jpg" },
+                new PhotoVm { Url = "/images/carosel1.jpg" }
+            }
+        };
+
+        isLoading = false;
+    }
+
+    private void Back() => Nav.NavigateTo($"/admin-clients");
+    private void Edit() => Nav.NavigateTo($"/admin/treatment-history/{Id}/edit");
+
+    private sealed class TreatmentHistoryVm
+    {
+        public string ProcedureName { get; set; } = "";
+        public string CategoryName { get; set; } = "";
+        public string? CosmetologistDescription { get; set; }
+        public List<PhotoVm> Photos { get; set; } = new();
+    }
+
+    private sealed class PhotoVm
+    {
+        public string Url { get; set; } = "";
+    }
+}

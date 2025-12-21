@@ -1,0 +1,291 @@
+﻿body {
+    .ec-bg-soft {
+        background: #f3f5f8;
+    }
+
+    .ec-badge-primary {
+        background-color: #0b3c5d;
+        color: #fff;
+        font-weight: 600;
+        letter-spacing: .35px;
+        border-radius: 999px;
+        box-shadow: 0 6px 16px rgba(11,60,93,.22);
+    }
+    /* Photo cards */
+    .ec-photo-card {
+        display: block;
+        border-radius: 18px;
+        overflow: hidden;
+        border: 1px solid rgba(15,23,42,.10);
+        box-shadow: 0 10px 26px rgba(15,23,42,.08);
+        transition: transform .2s ease, box-shadow .2s ease;
+        background: #fff;
+    }
+
+        .ec-photo-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 34px rgba(15,23,42,.12);
+        }
+
+    .ec-photo-img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        display: block;
+    }
+    /* placeholders for missing photos */
+    .ec-photo-placeholder {
+        height: 180px;
+        border-radius: 18px;
+        border: 1px dashed rgba(15,23,42,.20);
+        background: rgba(11,60,93,.05);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: rgba(15,23,42,.55);
+    }
+
+    .ec-client-card {
+        max-width: 520px;
+        border: none;
+        border-radius: 18px;
+        background: #f3f5f8; /* сірувато-білий */
+        box-shadow: 0 10px 26px rgba(15, 23, 42, 0.08);
+    }
+
+    .ec-client-lock {
+        color: #0b3c5d; /* темно-синій */
+        font-size: 18px;
+    }
+
+    .ec-client-card {
+        max-width: 520px;
+        border: none;
+        border-radius: 18px;
+        background: #f3f5f8;
+        box-shadow: 0 10px 26px rgba(15, 23, 42, 0.08);
+    }
+
+    .ec-client-lock {
+        color: #0b3c5d;
+        font-size: 18px;
+    }
+
+    .ec-client-meta {
+        font-size: 14px;
+        color: #6c757d;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    /* background */
+    .ec-bg-soft {
+        background: #f3f5f8;
+    }
+    /* page title */
+    .ec-page-title {
+        font-weight: 800;
+        letter-spacing: .2px;
+        color: #0f172a;
+    }
+    /* letter card base */
+    .ec-letter-card {
+        max-width: 980px;
+        background: #ffffff;
+        border: 1px solid rgba(15,23,42,.08);
+        border-radius: 22px;
+        box-shadow: 0 18px 46px rgba(15, 23, 42, .08);
+        overflow: hidden;
+    }
+    /* subtle paper top strip */
+    .ec-letter-top {
+        padding: 16px 18px;
+        background: linear-gradient(180deg, rgba(11,60,93,.06), rgba(11,60,93,0));
+    }
+    /* client row */
+    .ec-client-row {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .ec-client-badge {
+        width: 44px;
+        height: 44px;
+        border-radius: 999px;
+        background: rgba(11,60,93,.10);
+        border: 1px solid rgba(11,60,93,.18);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #0b3c5d;
+    }
+
+    .ec-client-name {
+        font-weight: 700;
+        color: #0f172a;
+        line-height: 1.2;
+    }
+
+    .ec-client-date {
+        color: #64748b;
+        font-size: 13px;
+        margin-top: 2px;
+    }
+
+    .ec-letter-note {
+        padding: 10px 18px 16px;
+        color: #64748b;
+        font-size: 13px;
+        text-align: center;
+    }
+    /* header */
+    .ec-letter-header {
+        padding: 22px 22px 0;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .ec-pill {
+        display: inline-flex;
+        align-self: flex-start;
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: rgba(11,60,93,.10);
+        color: #0b3c5d;
+        font-weight: 700;
+        letter-spacing: .35px;
+        font-size: 12px;
+    }
+
+    .ec-letter-title {
+        margin: 0;
+        font-weight: 800;
+        color: #0f172a;
+        font-size: clamp(22px, 3.2vw, 32px);
+        line-height: 1.15;
+    }
+
+    .ec-letter-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+    }
+    /* body */
+    .ec-letter-body {
+        padding: 18px 22px 22px;
+    }
+
+    .ec-letter-text {
+        color: #475569;
+        line-height: 1.7;
+        margin: 0;
+        font-size: 15px;
+    }
+
+    .ec-divider {
+        height: 1px;
+        background: rgba(15,23,42,.08);
+        margin: 18px 0 18px;
+    }
+
+    .ec-section-title {
+        font-weight: 800;
+        color: #0f172a;
+        font-size: 16px;
+    }
+
+    .ec-section-sub {
+        color: #64748b;
+        font-size: 13px;
+    }
+    /* empty */
+    .ec-empty {
+        border: 1px dashed rgba(15,23,42,.18);
+        border-radius: 18px;
+        background: rgba(11,60,93,.04);
+        padding: 18px;
+        color: #475569;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+    /* polaroid */
+    .ec-polaroid {
+        display: block;
+        text-decoration: none;
+        background: #fff;
+        border-radius: 18px;
+        padding: 10px;
+        border: 1px solid rgba(15,23,42,.10);
+        box-shadow: 0 12px 28px rgba(15,23,42,.10);
+        transition: transform .18s ease, box-shadow .18s ease;
+        overflow: hidden;
+    }
+
+        .ec-polaroid:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 18px 42px rgba(15,23,42,.16);
+        }
+
+    .ec-polaroid-img {
+        border-radius: 14px;
+        overflow: hidden;
+        height: 180px;
+        background: rgba(11,60,93,.06);
+    }
+
+        .ec-polaroid-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transform: scale(1);
+            transition: transform .22s ease;
+        }
+    /* ✅ zoom on hover */
+    .ec-polaroid:hover .ec-polaroid-img img {
+        transform: scale(1.08);
+    }
+
+    .ec-polaroid-cap {
+        padding: 10px 6px 2px;
+        color: #64748b;
+        font-size: 12px;
+        text-align: center;
+        font-weight: 600;
+    }
+    /* empty polaroid */
+    .ec-polaroid--empty {
+        cursor: default;
+    }
+
+    .ec-polaroid-img--empty {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: rgba(15,23,42,.55);
+        font-size: 22px;
+    }
+    /* mobile tweaks */
+    @media (max-width: 575.98px) {
+        .ec-letter-header, .ec-letter-body {
+            padding-left: 16px;
+            padding-right: 16px;
+        }
+
+        .ec-polaroid-img {
+            height: 150px;
+        }
+
+        .ec-client-row {
+            justify-content: flex-start;
+            text-align: left;
+        }
+    }
+}
