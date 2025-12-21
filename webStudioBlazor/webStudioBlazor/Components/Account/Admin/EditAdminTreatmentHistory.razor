@@ -2,6 +2,7 @@
 @using System.ComponentModel.DataAnnotations
 @inject NavigationManager Nav
 @rendermode InteractiveServer
+@attribute [Authorize(Roles = "Admin,Manicure")]
 
 <h3 style="padding-top: 7%;"></h3>
 <div class="container my-4">
@@ -23,7 +24,7 @@
             <strong class="ms-1 mt-4">11.12.2025</strong>
     </div>
         <div class="ec-client-meta py-0 mt-4">
-            <button class="btn btn-outline-info btn-sm rounded-pill d-inline-flex align-items-center gap-1">
+            <button class="btn btn-outline-info btn-sm rounded-pill d-inline-flex align-items-center gap-1" @onclick="AddCard">
                 Додати нову картку
             </button>
         </div>
@@ -162,6 +163,7 @@ else
 
     private void Back() => Nav.NavigateTo($"/admin-clients");
     private void Edit() => Nav.NavigateTo($"/admin/treatment-history/{Id}/edit");
+    private void AddCard() => Nav.NavigateTo($"/admin/add-treatment-history/{Id}");
 
     private sealed class TreatmentHistoryVm
     {
