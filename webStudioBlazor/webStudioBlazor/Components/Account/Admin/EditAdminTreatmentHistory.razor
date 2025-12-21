@@ -9,7 +9,7 @@
         Історія записів клієнта
     </h2>
 
-   <div class="alert ec-client-card mx-auto px-4 py-3 text-center">
+   <div class="alert ec-client-card mx-auto px-4 py-0 text-center">
     <div class="d-flex align-items-center justify-content-center gap-3 mb-2">
         <i class="fa-solid fa-lock ec-client-lock"></i>
         <h5 class="mb-0 fw-semibold">
@@ -20,11 +20,15 @@
     <div class="ec-client-meta">
         <i class="fa-regular fa-calendar me-1"></i>
         <span>Дата відвідування:</span>
-        <strong class="ms-1">11.12.2025</strong>
+            <strong class="ms-1 mt-4">11.12.2025</strong>
     </div>
+        <div class="ec-client-meta py-0 mt-4">
+            <button class="btn btn-outline-info btn-sm rounded-pill d-inline-flex align-items-center gap-1">
+                Додати нову картку
+            </button>
+        </div>
 </div>
-
-
+   
 @if (isLoading)
 {
     <div class="text-muted">Завантаження...</div>
