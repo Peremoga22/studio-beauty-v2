@@ -439,34 +439,30 @@ namespace webStudioBlazor.Services
         public async Task<List<CalendarRowDto>> ListForCalendarForAdminAsync(bool onlyCompleted = false,CancellationToken ct = default)
         {
             await using var db = await _dbFactory.CreateDbContextAsync(ct);
-            var query = db.Appointments
+            var query = db.AppointmentServices
                 .AsNoTracking()
                 .Include(a => a.Category)
                 .Include(a => a.TherapyCard)
-                .Include(a => a.Master)
+                //.Include(a => a.Master)
                  .Where(a => a.Category != null && a.Category.NameCategory != "Подологія")
                 .AsQueryable();
-
-            if (onlyCompleted)
-            {
-                query = query.Where(a => a.IsCompleted);
-            }
+                       
 
             return await query
-                .OrderBy(a => a.AppointmentDate)
-                .ThenBy(a => a.SetHour)
+                .OrderBy(a => a.Appointment.AppointmentDate)
+                .ThenBy(a => a.Appointment.SetHour)
                 .Select(a => new CalendarRowDto
                 {
                     Id = a.Id,
-                    Date = a.AppointmentDate,
-                    Time = a.SetHour,
-                    ClientName = a.ClientName,
-                    ClientPhone = a.ClientPhone,
+                    Date = a.Appointment.AppointmentDate,
+                    Time = a.Appointment.SetHour,
+                    ClientName = a.Appointment.ClientName,
+                    ClientPhone = a.Appointment.ClientPhone,
                     Price = a.Price,
                     ServiceName = a.TherapyCard != null ? a.TherapyCard.TitleCard : "",
                     CategoryName = a.Category != null ? a.Category.NameCategory : "",
-                    MasterName = a.Master != null ? a.Master.FullName : "",
-                    IsCompleted = a.IsCompleted
+                    //MasterName = a.Master != null ? a.Master.FullName : "",
+                    IsCompleted = a.Appointment.IsCompleted
                 })
                 .ToListAsync(ct);
         }
