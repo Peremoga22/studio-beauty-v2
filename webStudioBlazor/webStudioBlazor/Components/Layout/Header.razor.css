@@ -351,16 +351,19 @@
     color: var(--bs-primary) !important;
 }
 
-.shine-cta {
-    font-weight: 600;
+/* Кнопка «Записатися» у хромі хедера — той самий рожевий стиль, що shine-hero-btn */
+.shine-header-cta {
     font-size: 0.875rem;
-    padding: 0.5rem 1.25rem;
-    box-shadow: 0 4px 14px rgba(255, 79, 163, 0.35);
+    padding: 0.5rem 1.15rem;
 }
 
-.shine-cta:hover {
-    box-shadow: 0 6px 18px rgba(255, 79, 163, 0.45);
-    transform: translateY(-1px);
+.shine-header-cta-icon {
+    width: 2.75rem;
+    height: 2.75rem;
+    min-height: 2.75rem;
+    padding: 0;
+    border-radius: 0.75rem;
+    margin-top: 0;
 }
 
 .shine-cart {

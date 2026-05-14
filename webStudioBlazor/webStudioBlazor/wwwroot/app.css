@@ -66,7 +66,7 @@ body {
     background: #f2f4f7;
 }
 
-/* Ãîëîâíà âåëèêà êàğòêà */
+/* ˜˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜˜ */
 .main-card {
     max-width: 800px;
     margin: auto;
@@ -84,7 +84,7 @@ body {
     margin-bottom: 20px;
 }
 
-/* Ñ³òêà ìàëåíüêèõ êàğòîê */
+/* ?˜˜˜ ˜˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ */
 .cards {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -124,30 +124,30 @@ body {
         color: #555;
     }
 
-/* Êîëüîğè ïîñëóã */
+/* ˜˜˜˜˜˜˜ ˜˜˜˜˜˜ */
 .service.massage {
-    background: #4caf50; /* çåëåíèé */
+    background: #4caf50; /* ˜˜˜˜˜˜˜ */
 }
 
 .service.cosmo {
-    background: #2196f3; /* ñèí³é */
+    background: #2196f3; /* ˜˜˜˜˜ */
 }
 
 
 
-/* ==== ÒÅÌÈ ÒÀ ÇÌ²ÍÍ² ==== */
+/* ==== ˜˜˜˜ ˜˜ ˜?˜? ==== */
 /*:root {
     --bg: #f4f7fb;
     --card-bg: #ffffff;
     --text: #101828;
     --muted: #667085;*/
-    /* Àêöåíòè ó ô³ğìîâ³é ïàë³òğ³: ñèí³é/æîâòèé */
-    /*--primary: #1d4ed8;*/ /* ñèí³é */
+    /* ˜˜˜˜˜˜˜ ˜ ˜˜˜˜˜˜˜ ˜˜˜˜˜: ˜˜˜˜˜/˜˜˜˜˜˜ */
+    /*--primary: #1d4ed8;*/ /* ˜˜˜˜˜ */
     /*--primary-10: rgba(29,78,216,.10);
-    --accent: #f5c518;*/ /* æîâòèé (ì’ÿêèé àêöåíò) */
+    --accent: #f5c518;*/ /* ˜˜˜˜˜˜ (˜˜˜˜˜ ˜˜˜˜˜˜) */
 
-    /*--success: #16a34a;*/ /* ìàñàæ */
-    /*--info: #0ea5e9;*/ /* êîñìåòîëîã³ÿ */
+    /*--success: #16a34a;*/ /* ˜˜˜˜˜ */
+    /*--info: #0ea5e9;*/ /* ˜˜˜˜˜˜˜˜˜˜˜ */
 
     /*--ring: 3px;
     --radius-lg: 16px;
@@ -158,7 +158,7 @@ body {
     --shadow-lg: 0 18px 40px rgba(16,24,40,.12);
 }*/
 
-/* ==== ÁÀÇÀ ==== */
+/* ==== ˜˜˜˜ ==== */
 * {
     box-sizing: border-box;
 }
@@ -174,14 +174,14 @@ body {
     background: radial-gradient(1200px 800px at 10% -10%, var(--primary-10), transparent) no-repeat, radial-gradient(1200px 800px at 110% 10%, rgba(245,197,24,.12), transparent) no-repeat, var(--bg);
 }
 
-/* ==== ÊÎÍÒÅÉÍÅĞ ==== */
+/* ==== ˜˜˜˜˜˜˜˜˜ ==== */
 .container {
     max-width: 960px;
     margin: 40px auto;
     padding: 0 16px;
 }
 
-/* ==== ÊÀĞÒÊÀ-ÎÁÃÎĞÒÊÀ ==== */
+/* ==== ˜˜˜˜˜˜-˜˜˜˜˜˜˜˜ ==== */
 .card {
     background: var(--card-bg);
     border-radius: var(--radius-lg);
@@ -195,7 +195,7 @@ body {
     transition: box-shadow .25s ease;
 }
 
-/* ==== ÕÅÄÅĞ ==== */
+/* ==== ˜˜˜˜˜ ==== */
 .card__header {
     display: flex;
     gap: 24px;
@@ -256,13 +256,13 @@ body {
         box-shadow: 0 0 0 var(--ring) rgba(29,78,216,.18);
     }
 
-/* ==== Ä²ËÈÒÅËÜ ==== */
+/* ==== ?˜˜˜˜˜˜ ==== */
 .divider {
     height: 1px;
     background: linear-gradient(to right, transparent, rgba(16,24,40,.08), transparent);
 }
 
-/* ==== Ñ²ÒÊÀ ÇÀÏÈÑ²Â ==== */
+/* ==== ?˜˜˜ ˜˜˜˜?˜ ==== */
 .cards {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(260px,1fr));
@@ -270,7 +270,7 @@ body {
     padding: 20px 24px 28px;
 }
 
-/* Îêğåìà êàğòêà çàïèñó */
+/* ˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜˜ */
 .entry {
     background: linear-gradient(180deg, #fff, #fcfcfd);
     border: 1px solid #eef2f6;
@@ -294,7 +294,7 @@ body {
     margin-bottom: 8px;
 }
 
-/* Áåéäæ³ ïîñëóã */
+/* ˜˜˜˜˜ ˜˜˜˜˜˜ */
 .badge {
     display: inline-flex;
     align-items: center;
@@ -315,7 +315,7 @@ body {
     background: linear-gradient(90deg, #0ea5e9, #38bdf8);
 }
 
-/* ×àñ ³ êë³ºíò */
+/* ˜˜˜ ˜ ˜?˜˜ */
 .time {
     font-weight: 700;
     font-feature-settings: "tnum" 1, "lnum" 1;
@@ -327,7 +327,7 @@ body {
     font-size: 14px;
 }
 
-/* ==== ÀÄÀÏÒÈÂ ==== */
+/* ==== ˜˜˜˜˜˜˜ ==== */
 @media (max-width: 640px) {
     .card__header {
         align-items: stretch;
@@ -344,7 +344,7 @@ body {
     }
 }
 
-/* Íàçâà ïğîöåäóğè */
+/* ˜˜˜˜˜ ˜˜˜˜˜˜˜˜˜ */
 .procedure {
     margin-top: 6px;
     font-weight: 500;
@@ -352,7 +352,7 @@ body {
     color: #1f2937;
 }
 
-/* Ìåòàäàí³: ö³íà òà òğèâàë³ñòü */
+/* ˜˜˜˜˜˜˜˜: ˜˜˜˜ ˜˜ ˜˜˜˜˜˜˜˜˜ */
 .meta {
     margin-top: 6px;
     display: flex;
@@ -366,18 +366,18 @@ body {
         color: var(--primary);
     }
 
-/* Îáğ³çàííÿ äîâãèõ îïèñ³â ó òàáëèö³ */
+/* ˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜ ˜ ˜˜˜˜˜˜˜ */
 .text-truncate {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-/* Áğåíäîâ³ àêöåíòè (çà ïîòğåáè ï³äëàøòóé ï³ä ñâî¿ êîëüîğè) */
+/* ˜˜˜˜˜˜˜ ˜˜˜˜˜˜˜ (˜˜ ˜˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜ ˜˜ ˜˜˜ ˜˜˜˜˜˜˜) */
 .bg-brand {
     background-color: #233565;
 }
-/* òåìíî-ñèí³é */
+/* ˜˜˜˜˜-˜˜˜˜˜ */
 .link-brand {
     color: #f8b7d8;
     text-decoration: none;
@@ -387,7 +387,7 @@ body {
         text-decoration: underline;
     }
 
-/* Êíîïêè-ä³¿: çğó÷í³ äëÿ ìîá³ëüíèõ (ì³í. ğîçì³ğ), ³êîíêà öåíòğîâàíà */
+/* ˜˜˜˜˜˜-?: ˜˜˜˜˜˜ ˜˜˜ ˜˜˜˜˜˜˜˜ (˜˜. ˜˜˜˜˜), ˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜˜˜ */
 .btn-action {
     min-width: 40px;
     min-height: 40px;
@@ -397,9 +397,181 @@ body {
     padding: .25rem .6rem;
 }
 
-/* Îáğ³çàííÿ äîâãèõ îïèñ³â ó òàáëèö³ */
+/* ˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜ ˜ ˜˜˜˜˜˜˜ */
 .text-truncate {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+/* ==== ˜˜˜˜˜˜˜ ˜˜˜˜˜˜: premium 3D hero (˜˜˜˜˜˜˜ shine-reviews-hero ˜ ˜˜˜ ˜˜˜˜˜˜˜˜ ˜ .hero-*) ==== */
+.shine-reviews-hero {
+    position: relative;
+    margin: 2.5rem auto 3.75rem;
+    max-width: 1150px;
+    min-height: 360px;
+    border-radius: 34px;
+    padding: 4.375rem 2.5rem;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at 20% 20%, rgba(255, 105, 180, 0.22), transparent 35%),
+        radial-gradient(circle at 80% 30%, rgba(255, 192, 203, 0.35), transparent 35%),
+        linear-gradient(135deg, #fff7fb 0%, #ffffff 45%, #ffeaf4 100%);
+    box-shadow:
+        0 35px 80px rgba(255, 105, 180, 0.18),
+        inset 0 0 0 1px rgba(255, 182, 213, 0.45);
+    perspective: 1100px;
+    transform-style: preserve-3d;
+}
+
+.shine-reviews-hero::before {
+    content: "";
+    position: absolute;
+    z-index: 0;
+    width: 280px;
+    height: 280px;
+    right: -80px;
+    top: -70px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ff5fa2, #ffc1dc);
+    opacity: 0.22;
+    filter: blur(4px);
+}
+
+.shine-reviews-hero::after {
+    content: "";
+    position: absolute;
+    z-index: 0;
+    width: 220px;
+    height: 220px;
+    left: -70px;
+    bottom: -80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ffd6e8, #ff7eb8);
+    opacity: 0.28;
+    filter: blur(6px);
+}
+
+.shine-reviews-hero-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+}
+
+.shine-reviews-hero-label {
+    display: inline-block;
+    margin-bottom: 16px;
+    font-size: 12px;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: #d9468f;
+    font-weight: 700;
+}
+
+.shine-reviews-hero-title {
+    margin: 0;
+    font-size: 52px;
+    line-height: 1.05;
+    color: #241326;
+    font-weight: 800;
+    letter-spacing: -1px;
+}
+
+.shine-reviews-hero-text {
+    max-width: 580px;
+    margin: 22px auto 0;
+    font-size: 18px;
+    line-height: 1.7;
+    color: #6f6170;
+}
+
+.shine-reviews-hero-card-3d {
+    position: absolute;
+    z-index: 1;
+    width: 170px;
+    height: 210px;
+    border-radius: 28px;
+    background: rgba(255, 255, 255, 0.65);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 182, 213, 0.55);
+    box-shadow: 0 25px 60px rgba(255, 105, 180, 0.22);
+    transform-style: preserve-3d;
+}
+
+.shine-reviews-hero-card-3d.shine-reviews-hero-card-left {
+    left: 80px;
+    top: 75px;
+    transform: rotateY(18deg) rotateZ(-8deg);
+}
+
+.shine-reviews-hero-card-3d.shine-reviews-hero-card-right {
+    right: 90px;
+    bottom: 55px;
+    transform: rotateY(-18deg) rotateZ(8deg);
+}
+
+.shine-reviews-hero-card-3d::before {
+    content: "";
+    position: absolute;
+    inset: 18px;
+    border-radius: 22px;
+    background: linear-gradient(135deg, #ff70ad, #ffc4dd);
+    opacity: 0.25;
+}
+
+.shine-reviews-hero-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 30px;
+    padding: 14px 34px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #ff4f9a, #ff9ac7);
+    color: #fff !important;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 16px 35px rgba(255, 79, 154, 0.35);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.shine-reviews-hero-btn:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 22px 45px rgba(255, 79, 154, 0.45);
+    color: #fff !important;
+}
+
+@media (max-width: 768px) {
+    .shine-reviews-hero {
+        margin: 1.5rem 12px 2.5rem;
+        min-height: auto;
+        padding: 3.45rem 1.5rem;
+        border-radius: 26px;
+    }
+
+    .shine-reviews-hero-title {
+        font-size: 36px;
+    }
+
+    .shine-reviews-hero-text {
+        font-size: 15px;
+        line-height: 1.6;
+    }
+
+    .shine-reviews-hero-card-3d {
+        display: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .shine-reviews-hero-btn,
+    .shine-reviews-hero-btn:hover {
+        transition: none;
+        transform: none;
+    }
+
+    .shine-reviews-hero-card-3d.shine-reviews-hero-card-left,
+    .shine-reviews-hero-card-3d.shine-reviews-hero-card-right {
+        transform: none;
+    }
 }

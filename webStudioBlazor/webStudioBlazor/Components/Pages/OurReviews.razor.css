@@ -1,0 +1,112 @@
+.shine-reviews-page {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    background:
+        radial-gradient(ellipse 90% 50% at 50% -10%, rgba(255, 79, 163, 0.12), transparent 55%),
+        linear-gradient(180deg, #fffafc 0%, #faf7fb 45%, #f8f4fa 100%);
+}
+
+.shine-reviews-loading {
+    padding: 2.5rem 1rem;
+}
+
+.shine-reviews-panel {
+    border-radius: var(--shine-radius);
+    border: 1px solid rgba(255, 79, 163, 0.14);
+    background: linear-gradient(165deg, #ffffff 0%, #fff9fc 50%, #fff5f9 100%);
+    box-shadow: var(--shine-shadow);
+}
+
+.shine-reviews-empty {
+    padding: 2.5rem 1.5rem;
+}
+
+.shine-reviews-empty-icon {
+    display: block;
+    font-size: 2rem;
+    color: rgba(255, 79, 163, 0.45);
+    margin-bottom: 1rem;
+}
+
+.shine-reviews-notice {
+    padding: 1rem 1.25rem;
+    text-align: left;
+}
+
+@media (min-width: 576px) {
+    .shine-reviews-notice {
+        padding: 1.15rem 1.5rem;
+    }
+}
+
+.shine-reviews-notice-text {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--shine-graphite);
+}
+
+.shine-reviews-notice-icon {
+    font-size: 1.35rem;
+    color: rgba(255, 79, 163, 0.55);
+}
+
+.shine-reviews-card {
+    transition: box-shadow 0.25s ease, transform 0.22s ease;
+}
+
+.shine-reviews-card:hover {
+    box-shadow: var(--shine-shadow-hover);
+    transform: translateY(-3px);
+}
+
+.shine-reviews-client {
+    font-size: 1rem;
+    color: var(--shine-graphite);
+}
+
+.shine-reviews-service {
+    font-family: "Playfair Display", Georgia, serif;
+    font-weight: 600;
+    color: var(--shine-rose-deep);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(255, 79, 163, 0.25);
+    padding-bottom: 0.1rem;
+    line-height: 1.35;
+}
+
+.shine-reviews-date {
+    color: var(--shine-muted);
+}
+
+.shine-reviews-stars {
+    letter-spacing: 0.12em;
+}
+
+.shine-reviews-star {
+    color: rgba(255, 79, 163, 0.35);
+    font-size: 0.95rem;
+}
+
+.shine-reviews-star-on {
+    color: var(--shine-rose);
+}
+
+.shine-reviews-comment {
+    color: var(--shine-graphite);
+    line-height: 1.55;
+}
+
+.shine-reviews-master {
+    border-top: 1px solid rgba(255, 79, 163, 0.12);
+}
+
+.shine-reviews-master-name {
+    color: var(--shine-graphite);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .shine-reviews-card:hover {
+        transform: none;
+    }
+}

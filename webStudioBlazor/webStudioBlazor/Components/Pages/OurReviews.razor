@@ -1,89 +1,98 @@
 ﻿@page "/our-reviews-for-stududia"
 @using webStudioBlazor.Data
-@using System.Security.Claims
 @inject SeedService _seedService
-@inject NavigationManager NavigationManager
 
+<div class="shine-reviews-page py-4 py-md-5">
+    <section class="shine-reviews-hero px-3 px-md-4" aria-labelledby="shine-reviews-hero-heading">
+        <div class="shine-reviews-hero-card-3d shine-reviews-hero-card-left" aria-hidden="true"></div>
+        <div class="shine-reviews-hero-card-3d shine-reviews-hero-card-right" aria-hidden="true"></div>
 
+        <div class="shine-reviews-hero-content">
+            <div class="shine-reviews-hero-label">SHINE COSMETOLOGY</div>
+            <h1 class="shine-reviews-hero-title" id="shine-reviews-hero-heading">Відгуки клієнтів</h1>
+            <p class="shine-reviews-hero-text">
+                Щирі враження після процедур, турботливого сервісу та професійного догляду.
+                Для нас важлива ваша довіра, комфорт і результат.
+            </p>
+            <a href="/appointment-user" class="shine-reviews-hero-btn text-decoration-none">Записатися</a>
+        </div>
+    </section>
 
-<h3 style="padding-top: 6%;"></h3>
-<h3 class="mb-4 text-center">Відгуки про нас 💬</h3>
-
-@if (reviews == null)
-{
-    <p>Завантаження...</p>
-}
-else if (!reviews.Any())
-{
-    <div class="alert alert-light border rounded-3 d-flex justify-content-between align-items-center">
-        <span>
-            Ви ще не залишали відгуків 🌸
-        </span>              
-    </div>
-
-}
-else
-{
-    <div class="alert border-0 rounded-4 d-flex align-items-center justify-content-between px-4 py-3"
-         style="background: #fff0f6; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
-        <span style="font-size: 0.95rem;">
-            💬 Щоб залишити відгук, будь ласка, увійдіть у свій акаунт 🌸
-        </span>
-        <i class="fa-solid fa-lock" style="color:#f8b7d8;"></i>
-    </div> 
-
-    <div class="row g-3">
-        @foreach (var r in reviews)
+    <div class="container">
+        @if (_loading)
         {
-            <div class="col-12 col-md-6 col-lg-4">
-                <div class="shine-review-card p-4 h-100">
-                        <p class="mb-3 text-center fw-semibold">
-                            @r.Appointment.ClientName
-                        </p>
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <h6 class="fw-bold mb-0" style="color:#f8b7d8;text-decoration: underline;">
-                                @r.TherapyCard?.TitleCard
-                            </h6>
-                            <small class="text-muted">
-                                @r.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy")
-                            </small>
-                        </div>
-                        <div class="mb-2">
-                            @for (int i = 1; i <= 5; i++)
-                            {
-                                if (i <= r.Rating)
-                                {
-                                    <i class="fa-solid fa-star" style="color:#f8b7d8;"></i>
-                                }
-                                else
-                                {
-                                    <i class="fa-regular fa-star" style="color:#f8b7d8;"></i>
-                                }
-                            }
-                        </div>
-                        <p class="small text-dark mb-3">
-                            @r.Comment
-                        </p>
+            <p class="shine-reviews-loading text-center text-muted mb-0">Завантаження…</p>
+        }
+        else if (!reviews.Any())
+        {
+            <div class="shine-reviews-empty shine-reviews-panel text-center">
+                <i class="bi bi-chat-heart shine-reviews-empty-icon" aria-hidden="true"></i>
+                <p class="mb-2 fw-semibold">Поки немає відгуків</p>
+                <p class="small text-muted mb-0">
+                    Після візиту ви зможете залишити відгук у своєму акаунті.
+                </p>
+            </div>
+        }
+        else
+        {
+            <div class="shine-reviews-notice shine-reviews-panel d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3 mb-4">
+                <span class="shine-reviews-notice-text mb-0">
+                    Щоб залишити свій відгук, зареєструйтеся, увійдіть у систему та перейдіть до особистого кабінету.
+                </span>
+                <i class="bi bi-shield-lock shine-reviews-notice-icon flex-shrink-0" aria-hidden="true"></i>
+            </div>
 
-                        <div class="d-flex justify-content-between align-items-center">
-                            <small class="text-muted">
-                                👩‍⚕️ Ваш майстер: <strong>@r.Master?.FullName</strong>
-                            </small>
-                        </div>
-
-                </div>
+            <div class="row g-4">
+                @foreach (var r in reviews)
+                {
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <article class="shine-review-card shine-reviews-card p-4 h-100 d-flex flex-column">
+                            <p class="shine-reviews-client text-center fw-semibold mb-3">
+                                @r.Appointment.ClientName
+                            </p>
+                            <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                                <h3 class="shine-reviews-service h6 mb-0">
+                                    @r.TherapyCard?.TitleCard
+                                </h3>
+                                <time class="shine-reviews-date small flex-shrink-0" datetime="@r.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd")">
+                                    @r.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy")
+                                </time>
+                            </div>
+                            <div class="shine-reviews-stars mb-3" aria-label="Оцінка @r.Rating з 5">
+                                @for (var i = 1; i <= 5; i++)
+                                {
+                                    if (i <= r.Rating)
+                                    {
+                                        <i class="fa-solid fa-star shine-reviews-star shine-reviews-star-on" aria-hidden="true"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="fa-regular fa-star shine-reviews-star" aria-hidden="true"></i>
+                                    }
+                                }
+                            </div>
+                            <p class="shine-reviews-comment small flex-grow-1 mb-3">
+                                @r.Comment
+                            </p>
+                            <div class="shine-reviews-master small mt-auto pt-3">
+                                <span class="text-muted">Майстер:</span>
+                                <strong class="shine-reviews-master-name">@r.Master?.FullName</strong>
+                            </div>
+                        </article>
+                    </div>
+                }
             </div>
         }
     </div>
-
-}
+</div>
 
 @code {
-   
-    private List<Review> reviews = new();       
+    private bool _loading = true;
+    private List<Review> reviews = new();
 
     protected override async Task OnInitializedAsync()
     {
         reviews = await _seedService.GetAllReviewsForUserAsync();
+        _loading = false;
     }
 }
