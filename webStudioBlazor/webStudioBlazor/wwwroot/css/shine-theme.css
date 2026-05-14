@@ -114,6 +114,404 @@ body {
     color: var(--shine-muted);
 }
 
+/* Головна — блок «Послуги»: 3D-картки + рожева гама */
+.shine-home-services {
+    background:
+        radial-gradient(ellipse 100% 70% at 50% -15%, rgba(255, 79, 163, 0.16), transparent 58%),
+        linear-gradient(180deg, #fffafc 0%, #fff5f9 42%, #fef6fb 100%);
+    border-top: 1px solid rgba(255, 79, 163, 0.1);
+    border-bottom: 1px solid rgba(255, 79, 163, 0.08);
+}
+
+.shine-home-services .section-title p {
+    color: var(--shine-muted);
+    max-width: 42rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.shine-home-service-card {
+    position: relative;
+    border-radius: var(--shine-radius);
+    border: 1px solid rgba(255, 79, 163, 0.22);
+    background: linear-gradient(165deg, #ffffff 0%, #fff9fc 42%, #fff2f8 100%);
+    box-shadow:
+        0 2px 4px rgba(43, 34, 48, 0.05),
+        0 10px 26px rgba(255, 79, 163, 0.14),
+        0 26px 52px rgba(43, 34, 48, 0.07),
+        inset 0 1px 0 rgba(255, 255, 255, 0.95);
+    transform-style: preserve-3d;
+    transform: perspective(960px) translateZ(0);
+    transition:
+        transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow 0.45s ease,
+        border-color 0.35s ease;
+    isolation: isolate;
+}
+
+.shine-home-service-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    background: radial-gradient(130% 85% at 50% 0%, rgba(255, 79, 163, 0.2), transparent 62%);
+    z-index: 1;
+}
+
+.shine-home-service-card:hover {
+    transform: perspective(960px) translateY(-14px) translateZ(20px) rotateX(5deg);
+    border-color: rgba(255, 79, 163, 0.48);
+    box-shadow:
+        0 6px 12px rgba(43, 34, 48, 0.07),
+        0 20px 44px rgba(255, 79, 163, 0.26),
+        0 44px 88px rgba(43, 34, 48, 0.11),
+        inset 0 1px 0 rgba(255, 255, 255, 1);
+}
+
+.shine-home-service-card:hover::after {
+    opacity: 1;
+}
+
+.shine-home-service-media {
+    overflow: hidden;
+    border-radius: calc(var(--shine-radius) - 1px) calc(var(--shine-radius) - 1px) 0 0;
+    aspect-ratio: 4 / 3;
+    background: linear-gradient(145deg, #ffe8f2, #fff5fb);
+}
+
+.shine-home-service-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1), filter 0.45s ease;
+    filter: saturate(1.03);
+}
+
+.shine-home-service-media::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(180deg, transparent 35%, rgba(255, 79, 163, 0.14) 100%);
+    opacity: 0.9;
+}
+
+.shine-home-service-card:hover .shine-home-service-img {
+    transform: scale(1.08);
+    filter: saturate(1.1) brightness(1.04);
+}
+
+.shine-home-service-body {
+    position: relative;
+    z-index: 2;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.99) 0%, rgba(255, 249, 252, 0.97) 100%);
+    border-top: 1px solid rgba(255, 79, 163, 0.12);
+    border-radius: 0 0 calc(var(--shine-radius) - 1px) calc(var(--shine-radius) - 1px);
+}
+
+.shine-home-service-body h5 {
+    font-family: "Playfair Display", Georgia, serif;
+    font-weight: 600;
+    color: var(--shine-graphite);
+}
+
+.shine-home-service-body p {
+    color: var(--shine-muted);
+    font-size: 0.9375rem;
+    line-height: 1.55;
+}
+
+.shine-home-services .shine-home-service-card .btn-buy {
+    box-shadow: 0 4px 18px rgba(255, 79, 163, 0.38);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .shine-home-service-card,
+    .shine-home-service-card:hover,
+    .shine-home-service-img {
+        transform: none !important;
+        transition: none;
+    }
+
+    .shine-home-service-card::after {
+        opacity: 0;
+    }
+}
+
+/* Головна — блок «Команда»: той самий 3D + рожева гама, портретне фото */
+.shine-home-team {
+    background:
+        radial-gradient(ellipse 90% 55% at 50% -12%, rgba(255, 79, 163, 0.12), transparent 56%),
+        linear-gradient(180deg, #fffefc 0%, #faf7fb 48%, #fff8fc 100%);
+    border-top: 1px solid rgba(255, 79, 163, 0.08);
+    border-bottom: 1px solid rgba(255, 79, 163, 0.08);
+}
+
+.shine-home-team .section-title p {
+    color: var(--shine-muted);
+    max-width: 40rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.shine-home-team .shine-home-team-card .shine-home-service-media {
+    aspect-ratio: 3 / 4;
+}
+
+/* Головна — блок «Партнери»: luxury glass, градієнт, swipe на мобільних */
+.shine-home-partners {
+    position: relative;
+    overflow: hidden;
+    background:
+        radial-gradient(ellipse 100% 55% at 50% -15%, rgba(255, 79, 163, 0.18), transparent 58%),
+        linear-gradient(180deg, #fff6fa 0%, #fff0f5 48%, #fef8fb 100%);
+    border-top: 1px solid rgba(255, 79, 163, 0.1);
+    border-bottom: 1px solid rgba(255, 79, 163, 0.09);
+}
+
+.shine-home-partners::before {
+    content: "";
+    position: absolute;
+    width: min(520px, 90vw);
+    height: min(520px, 90vw);
+    right: -12%;
+    top: 35%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 182, 213, 0.35) 0%, transparent 68%);
+    pointer-events: none;
+    filter: blur(2px);
+    opacity: 0.4;
+}
+
+.shine-home-partners .container {
+    position: relative;
+    z-index: 1;
+}
+
+.shine-home-partners .section-title p {
+    color: var(--shine-muted);
+    max-width: 44rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.shine-home-partners .section-title h3 {
+    font-family: "Playfair Display", Georgia, serif;
+    font-weight: 600;
+    color: var(--shine-graphite);
+}
+
+/* Горизонтальний snap-скрол на планшетах і мобільних */
+@media (max-width: 991.98px) {
+    .shine-home-partners .shine-home-partners-row {
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        overflow-x: auto;
+        overflow-y: visible;
+        scroll-snap-type: x mandatory;
+        scroll-padding-inline: 1rem;
+        gap: 1rem;
+        padding: 0.35rem 0.75rem 0.85rem;
+        margin-left: calc(-0.5 * var(--bs-gutter-x, 0.75rem));
+        margin-right: calc(-0.5 * var(--bs-gutter-x, 0.75rem));
+        padding-left: max(0.75rem, env(safe-area-inset-left, 0px));
+        padding-right: max(0.75rem, env(safe-area-inset-right, 0px));
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-x: contain;
+    }
+
+    .shine-home-partners .shine-home-partners-row > .shine-home-partner-col {
+        flex: 0 0 min(82vw, 300px) !important;
+        width: min(82vw, 300px) !important;
+        max-width: min(82vw, 300px) !important;
+        scroll-snap-align: center;
+    }
+}
+
+.shine-home-partner-card,
+.shine-brand-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border-radius: calc(var(--shine-radius) + 2px);
+    border: 1px solid rgba(255, 255, 255, 0.75);
+    background: rgba(255, 255, 255, 0.68);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow:
+        0 2px 6px rgba(43, 34, 48, 0.05),
+        0 12px 32px rgba(255, 79, 163, 0.12),
+        0 1px 0 rgba(255, 255, 255, 0.9) inset;
+    transform: translateZ(0) scale(1);
+    transition:
+        transform 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow 0.38s ease,
+        border-color 0.35s ease;
+    isolation: isolate;
+}
+
+.shine-home-partner-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.38s ease;
+    background: radial-gradient(110% 75% at 50% 0%, rgba(255, 182, 193, 0.45), transparent 62%);
+    z-index: 0;
+}
+
+.shine-home-partner-card:hover,
+.shine-brand-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    border-color: rgba(255, 182, 193, 0.85);
+    box-shadow:
+        0 10px 28px rgba(255, 182, 193, 0.38),
+        0 22px 48px rgba(255, 79, 163, 0.18),
+        0 4px 16px rgba(43, 34, 48, 0.06);
+}
+
+.shine-home-partner-card:hover::after {
+    opacity: 1;
+}
+
+.shine-home-partner-card-inner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    flex: 1;
+    padding: 0.35rem 0.5rem 0.65rem;
+}
+
+.shine-home-partner-logo-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.65rem 0.85rem 0.35rem;
+}
+
+.shine-home-partner-logo {
+    width: clamp(100px, 26vw, 120px);
+    height: clamp(100px, 26vw, 120px);
+    object-fit: contain;
+    transition: transform 0.42s cubic-bezier(0.22, 1, 0.36, 1), filter 0.35s ease;
+    filter: drop-shadow(0 2px 8px rgba(43, 34, 48, 0.08));
+}
+
+.shine-home-partner-card:hover .shine-home-partner-logo,
+.shine-brand-card:hover .shine-home-partner-logo {
+    transform: scale(1.08);
+    filter: drop-shadow(0 6px 16px rgba(255, 79, 163, 0.25));
+}
+
+.shine-home-partner-copy {
+    text-align: center;
+    padding: 0.65rem 0.85rem 0.85rem;
+    margin-top: 0.15rem;
+    border-top: 1px solid rgba(255, 79, 163, 0.12);
+}
+
+.shine-home-partner-name {
+    display: block;
+    font-family: "Playfair Display", Georgia, serif;
+    font-weight: 600;
+    font-size: 1.1rem;
+    letter-spacing: 0.04em;
+    color: var(--shine-graphite);
+    margin-bottom: 0.4rem;
+}
+
+.shine-home-partner-tagline {
+    display: block;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: var(--shine-muted);
+}
+
+/* Довіра під брендами */
+.shine-home-partners-trust {
+    max-width: 52rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.shine-home-trust-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+}
+
+@media (min-width: 768px) {
+    .shine-home-trust-list {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.75rem 1.25rem;
+    }
+}
+
+.shine-home-trust-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    font-size: 0.875rem;
+    line-height: 1.45;
+    color: var(--shine-muted);
+    padding: 0.55rem 0.85rem;
+    border-radius: var(--shine-radius-sm);
+    background: rgba(255, 255, 255, 0.55);
+    border: 1px solid rgba(255, 79, 163, 0.12);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+@media (min-width: 768px) {
+    .shine-home-trust-item {
+        flex: 1 1 calc(33.333% - 1rem);
+        min-width: 12rem;
+        max-width: 17rem;
+        justify-content: center;
+        text-align: center;
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+.shine-home-trust-icon {
+    flex-shrink: 0;
+    color: var(--shine-rose);
+    font-size: 1.1rem;
+    line-height: 1;
+}
+
+@media (min-width: 768px) {
+    .shine-home-trust-icon {
+        margin-bottom: 0.15rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .shine-home-partner-card,
+    .shine-brand-card,
+    .shine-home-partner-card:hover,
+    .shine-brand-card:hover,
+    .shine-home-partner-logo {
+        transform: none !important;
+        transition: none;
+    }
+
+    .shine-home-partner-card::after {
+        opacity: 0;
+    }
+}
+
 .shine-page-hero {
     background: linear-gradient(135deg, rgba(255, 79, 163, 0.08), rgba(248, 183, 216, 0.15));
     border-radius: var(--shine-radius);
@@ -136,33 +534,52 @@ body {
     transform: translateY(-2px);
 }
 
-/* 3D hero */
-.shine-3d-hero {
+/* 3D hero — premium beauty (shine-hero-carousel) */
+.shine-3d-hero.shine-hero-carousel {
     position: relative;
     perspective: 1200px;
-    min-height: clamp(220px, 52vw, 480px);
-    border-radius: var(--shine-radius);
+    width: 100%;
+    height: 360px;
+    min-height: 360px;
+    border-radius: 26px;
     overflow: hidden;
-    background: radial-gradient(ellipse at 50% 120%, rgba(255, 79, 163, 0.15), transparent 55%), #1a1520;
+    box-shadow: 0 20px 45px rgba(255, 105, 180, 0.22);
+    background: #1a1520;
+}
+
+.shine-hero-carousel::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    border-radius: inherit;
+    pointer-events: none;
+    background: linear-gradient(
+        90deg,
+        rgba(20, 10, 25, 0.78) 0%,
+        rgba(20, 10, 25, 0.45) 45%,
+        rgba(20, 10, 25, 0.1) 100%
+    );
 }
 
 .shine-3d-stage {
     position: relative;
     width: 100%;
-    height: clamp(220px, 52vw, 480px);
+    height: 360px;
+    min-height: 360px;
     transform-style: preserve-3d;
 }
 
 .shine-3d-slide {
     position: absolute;
     inset: 0;
-    border-radius: var(--shine-radius);
+    border-radius: 26px;
     overflow: hidden;
     opacity: 0;
     transform: rotateY(55deg) translateZ(-180px) scale(0.88);
     transition: opacity 0.55s ease, transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
     pointer-events: none;
-    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
 }
 
 .shine-3d-slide.is-active {
@@ -185,25 +602,73 @@ body {
 }
 
 .shine-3d-slide img {
+    position: relative;
+    z-index: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
-.shine-3d-overlay {
+.shine-3d-overlay.shine-hero-overlay {
     position: absolute;
     inset: 0;
     z-index: 5;
-    background: linear-gradient(105deg, rgba(26, 21, 32, 0.75) 0%, rgba(26, 21, 32, 0.25) 55%, transparent 100%);
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    padding: clamp(1rem, 4vw, 2.5rem);
+    background: none;
     pointer-events: none;
 }
 
-.shine-3d-overlay .shine-3d-cta-wrap {
+.shine-hero-overlay .shine-hero-cta-wrap {
     pointer-events: auto;
+}
+
+.shine-hero-content {
+    color: #fff;
+}
+
+.shine-hero-subtitle {
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    color: #ffd1e5;
+    font-weight: 600;
+}
+
+.shine-hero-title {
+    font-size: 42px;
+    line-height: 1.05;
+    font-weight: 700;
+    margin: 0 0 14px;
+    color: #fff;
+}
+
+.shine-hero-text {
+    font-size: 16px;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.92);
+    margin: 0 0 22px;
+    max-width: 26rem;
+}
+
+.shine-hero-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 13px 30px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #ff5fa2, #ff9cc8);
+    color: #fff !important;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 12px 28px rgba(255, 95, 162, 0.35);
+    border: none;
+    transition: filter 0.2s ease, transform 0.2s ease;
+}
+
+.shine-hero-btn:hover {
+    color: #fff !important;
+    filter: brightness(1.06);
+    transform: translateY(-1px);
 }
 
 .shine-3d-nav-btn {
@@ -211,40 +676,47 @@ body {
     top: 50%;
     transform: translateY(-50%);
     z-index: 6;
-    width: 48px;
-    height: 48px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
     border: none;
-    background: rgba(255, 255, 255, 0.92);
-    color: var(--shine-rose-deep);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    background: rgba(255, 255, 255, 0.9);
+    color: #ff5fa2;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background 0.2s ease, transform 0.15s ease;
+    transition: background 0.2s ease, transform 0.2s ease;
 }
 
 .shine-3d-nav-btn:hover {
     background: #fff;
-    transform: translateY(-50%) scale(1.05);
+    transform: translateY(-50%) scale(1.04);
 }
 
 .shine-3d-nav-btn.prev {
-    left: 0.75rem;
+    left: 18px;
 }
 
 .shine-3d-nav-btn.next {
-    right: 0.75rem;
+    right: 18px;
+}
+
+.shine-3d-nav-btn .bi {
+    font-size: 1.15rem;
+    line-height: 1;
 }
 
 .shine-3d-dots {
     position: absolute;
-    bottom: 1rem;
+    bottom: 18px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 6;
     display: flex;
-    gap: 0.45rem;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: 0;
 }
 
 .shine-3d-dot {
@@ -253,19 +725,105 @@ body {
     border-radius: 50%;
     border: none;
     padding: 0;
-    background: rgba(255, 255, 255, 0.45);
-    transition: transform 0.2s ease, background 0.2s ease;
+    background: #fff;
+    opacity: 0.55;
+    transition: width 0.28s ease, opacity 0.25s ease, border-radius 0.28s ease, background 0.25s ease;
 }
 
 .shine-3d-dot.active {
-    background: var(--shine-rose);
-    transform: scale(1.25);
+    width: 24px;
+    border-radius: 999px;
+    background: #ff5fa2;
+    opacity: 1;
+    transform: none;
+}
+
+@media (min-width: 576px) {
+    .shine-hero-overlay {
+        display: block;
+    }
+
+    .shine-hero-content {
+        position: absolute;
+        left: 34px;
+        top: 50%;
+        transform: translateY(-50%);
+        max-width: 430px;
+    }
 }
 
 @media (max-width: 575.98px) {
+    .shine-3d-hero.shine-hero-carousel {
+        height: 280px;
+        min-height: 280px;
+        border-radius: 18px;
+    }
+
+    .shine-3d-stage {
+        height: 280px;
+        min-height: 280px;
+    }
+
+    .shine-3d-slide {
+        border-radius: 18px;
+    }
+
+    .shine-hero-overlay {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: 0 1.5rem 2.75rem;
+    }
+
+    .shine-hero-content {
+        position: static;
+        transform: none;
+        max-width: 85%;
+    }
+
+    .shine-hero-subtitle {
+        font-size: 10px;
+        letter-spacing: 0.14em;
+        margin-bottom: 8px;
+    }
+
+    .shine-hero-title {
+        font-size: 28px;
+        line-height: 1.1;
+        margin-bottom: 8px;
+    }
+
+    .shine-hero-text {
+        font-size: 13px;
+        line-height: 1.4;
+        max-width: 220px;
+        margin-bottom: 14px;
+    }
+
+    .shine-hero-btn {
+        padding: 10px 22px;
+        font-size: 14px;
+    }
+
     .shine-3d-nav-btn {
-        width: 40px;
-        height: 40px;
+        width: 34px;
+        height: 34px;
+    }
+
+    .shine-3d-nav-btn.prev {
+        left: 10px;
+    }
+
+    .shine-3d-nav-btn.next {
+        right: 10px;
+    }
+
+    .shine-3d-nav-btn .bi {
+        font-size: 1rem !important;
+    }
+
+    .shine-3d-dots {
+        bottom: 14px;
     }
 }
 

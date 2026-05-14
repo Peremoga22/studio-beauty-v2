@@ -1,7 +1,7 @@
 @rendermode InteractiveServer
 @implements IDisposable
 
-<div class="shine-3d-hero">
+<div class="shine-3d-hero shine-hero-carousel">
     <div class="shine-3d-stage">
         @for (var i = 0; i < Slides.Count; i++)
         {
@@ -17,16 +17,14 @@
         }
     </div>
 
-    <div class="shine-3d-overlay text-white">
-        <p class="text-uppercase small mb-1 opacity-75" style="letter-spacing: 0.2em;">SHINE cosmetology</p>
-        <h2 class="display-6 fw-semibold mb-2">Ваша краса — наш пріоритет</h2>
-        <p class="mb-3 opacity-90 col-lg-8 pe-lg-4 small">
-            Професійні процедури, турботливий підхід і сучасні методики в Івано-Франківську.
-        </p>
-        <div class="shine-3d-cta-wrap">
-            <a href="/appointment-user" class="btn btn-primary btn-lg rounded-pill px-4 fw-semibold shadow">
-                Записатися
-            </a>
+    <div class="shine-3d-overlay shine-hero-overlay">
+        <div class="shine-hero-content">
+            <div class="shine-hero-subtitle">SHINE COSMETOLOGY</div>
+            <h1 class="shine-hero-title">Ваша краса — наш пріоритет</h1>
+            <p class="shine-hero-text">Професійний догляд, сучасні методики та індивідуальний підхід.</p>
+            <div class="shine-hero-cta-wrap">
+                <a href="/appointment-user" class="shine-hero-btn">Записатися</a>
+            </div>
         </div>
     </div>
 
