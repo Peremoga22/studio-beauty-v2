@@ -11,6 +11,11 @@
     --shine-radius-sm: 0.75rem;
     --shine-shadow: 0 8px 32px rgba(43, 34, 48, 0.08);
     --shine-shadow-hover: 0 14px 40px rgba(255, 79, 163, 0.18);
+    /* 3D hero — premium (зв’язок з картками послуг) */
+    --shine-hero-radius: calc(var(--shine-radius) + 0.375rem);
+    --shine-hero-radius-sm: calc(var(--shine-radius-sm) + 0.25rem);
+    --shine-hero-perspective: 1180px;
+    --shine-hero-rose-glow: rgba(255, 79, 163, 0.22);
 }
 
 body {
@@ -510,6 +515,26 @@ body {
     .shine-home-partner-card::after {
         opacity: 0;
     }
+
+    .shine-3d-hero:hover .shine-3d-stage,
+    .shine-3d-hero:hover .shine-3d-slide.is-active img {
+        transform: none !important;
+    }
+
+    .shine-3d-slide {
+        transition: opacity 0.35s ease !important;
+    }
+
+    .shine-3d-slide.is-active,
+    .shine-3d-slide.is-prev,
+    .shine-3d-slide.is-next {
+        transform: none !important;
+    }
+
+    .shine-3d-slide.is-prev,
+    .shine-3d-slide.is-next {
+        opacity: 0 !important;
+    }
 }
 
 .shine-page-hero {
@@ -534,19 +559,55 @@ body {
     transform: translateY(-2px);
 }
 
-/* 3D hero — premium beauty (shine-hero-carousel) */
+/* 3D hero — premium beauty (shine-hero-carousel): карусель + тіні як у карток послуг */
 .shine-3d-hero.shine-hero-carousel {
+    --shine-hero-h: clamp(292px, 68vw, 460px);
     position: relative;
-    perspective: 1200px;
+    isolation: isolate;
+    perspective: var(--shine-hero-perspective);
+    perspective-origin: 50% 42%;
     width: 100%;
-    height: 360px;
-    min-height: 360px;
-    border-radius: 26px;
+    height: var(--shine-hero-h);
+    min-height: var(--shine-hero-h);
+    border-radius: var(--shine-hero-radius-sm);
     overflow: hidden;
-    box-shadow: 0 20px 45px rgba(255, 105, 180, 0.22);
-    background: #1a1520;
+    background:
+        radial-gradient(ellipse 85% 55% at 100% 0%, rgba(255, 182, 213, 0.35), transparent 52%),
+        radial-gradient(ellipse 70% 50% at 0% 100%, rgba(255, 79, 163, 0.18), transparent 55%),
+        linear-gradient(165deg, #16141c 0%, #221820 45%, #1a1520 100%);
+    box-shadow:
+        0 2px 4px rgba(43, 34, 48, 0.06),
+        0 12px 32px var(--shine-hero-rose-glow),
+        0 28px 56px rgba(43, 34, 48, 0.12),
+        0 48px 96px rgba(255, 79, 163, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    transition: box-shadow 0.5s ease;
 }
 
+.shine-3d-hero.shine-hero-carousel:hover {
+    box-shadow:
+        0 4px 8px rgba(43, 34, 48, 0.08),
+        0 16px 40px rgba(255, 79, 163, 0.28),
+        0 36px 72px rgba(43, 34, 48, 0.14),
+        0 56px 110px rgba(255, 95, 162, 0.14),
+        inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
+/* Внутрішнє «скло» — рамка-світло */
+.shine-3d-hero.shine-hero-carousel::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    border-radius: inherit;
+    pointer-events: none;
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.22),
+        inset 0 -32px 64px rgba(255, 79, 163, 0.07);
+}
+
+/* Віньєтка + читабельність тексту зліва */
 .shine-hero-carousel::after {
     content: "";
     position: absolute;
@@ -554,51 +615,88 @@ body {
     z-index: 3;
     border-radius: inherit;
     pointer-events: none;
-    background: linear-gradient(
-        90deg,
-        rgba(20, 10, 25, 0.78) 0%,
-        rgba(20, 10, 25, 0.45) 45%,
-        rgba(20, 10, 25, 0.1) 100%
-    );
+    background:
+        radial-gradient(ellipse 95% 85% at 12% 48%, rgba(22, 14, 26, 0.88) 0%, rgba(22, 14, 26, 0.45) 48%, transparent 72%),
+        linear-gradient(
+            103deg,
+            rgba(18, 12, 22, 0.72) 0%,
+            rgba(18, 12, 22, 0.38) 44%,
+            rgba(255, 120, 180, 0.07) 88%,
+            rgba(255, 245, 252, 0.12) 100%
+        );
 }
 
 .shine-3d-stage {
     position: relative;
+    z-index: 0;
     width: 100%;
-    height: 360px;
-    min-height: 360px;
+    height: var(--shine-hero-h);
+    min-height: var(--shine-hero-h);
     transform-style: preserve-3d;
+    transform: translateZ(0);
+    transition: transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.shine-3d-hero.shine-hero-carousel:hover .shine-3d-stage {
+    transform: translateZ(0) rotateX(1.65deg);
 }
 
 .shine-3d-slide {
     position: absolute;
     inset: 0;
-    border-radius: 26px;
+    border-radius: var(--shine-hero-radius-sm);
     overflow: hidden;
     opacity: 0;
-    transform: rotateY(55deg) translateZ(-180px) scale(0.88);
-    transition: opacity 0.55s ease, transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+    transform: rotateY(52deg) translateZ(-200px) translateY(8px) scale(0.86);
+    transform-origin: center center;
+    transition:
+        opacity 0.55s ease,
+        transform 0.72s cubic-bezier(0.22, 1, 0.36, 1),
+        filter 0.5s ease,
+        box-shadow 0.5s ease;
     pointer-events: none;
-    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+    box-shadow:
+        0 8px 24px rgba(0, 0, 0, 0.18),
+        0 28px 64px rgba(0, 0, 0, 0.22);
+    backface-visibility: hidden;
+}
+
+.shine-3d-slide::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    border-radius: inherit;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.16) 0%, transparent 38%, transparent 62%, rgba(0, 0, 0, 0.12) 100%);
+    opacity: 0.85;
 }
 
 .shine-3d-slide.is-active {
     opacity: 1;
-    transform: rotateY(0deg) translateZ(0) scale(1);
+    transform: rotateY(0deg) translateZ(28px) translateY(0) scale(1);
     pointer-events: auto;
     z-index: 2;
+    filter: saturate(1.05) brightness(1.02);
+    box-shadow:
+        0 6px 12px rgba(0, 0, 0, 0.12),
+        0 22px 52px rgba(0, 0, 0, 0.22),
+        0 40px 80px rgba(255, 79, 163, 0.16),
+        inset 0 1px 0 rgba(255, 255, 255, 0.18);
 }
 
 .shine-3d-slide.is-prev {
-    opacity: 0.35;
-    transform: rotateY(-38deg) translateZ(-120px) scale(0.82);
+    opacity: 0.38;
+    transform: rotateY(-40deg) translateZ(-110px) translateY(10px) scale(0.8);
     z-index: 1;
+    filter: brightness(0.9) saturate(0.92);
 }
 
 .shine-3d-slide.is-next {
-    opacity: 0.35;
-    transform: rotateY(38deg) translateZ(-120px) scale(0.82);
+    opacity: 0.38;
+    transform: rotateY(40deg) translateZ(-110px) translateY(10px) scale(0.8);
     z-index: 1;
+    filter: brightness(0.9) saturate(0.92);
 }
 
 .shine-3d-slide img {
@@ -607,6 +705,12 @@ body {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transform: scale(1);
+    transition: transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.shine-3d-hero.shine-hero-carousel:hover .shine-3d-slide.is-active img {
+    transform: scale(1.045);
 }
 
 .shine-3d-overlay.shine-hero-overlay {
@@ -623,30 +727,41 @@ body {
 
 .shine-hero-content {
     color: #fff;
+    text-shadow: 0 1px 18px rgba(0, 0, 0, 0.35);
 }
 
 .shine-hero-subtitle {
-    font-size: 13px;
-    letter-spacing: 0.2em;
+    display: inline-block;
+    font-size: 0.72rem;
+    letter-spacing: 0.26em;
     text-transform: uppercase;
-    margin-bottom: 12px;
-    color: #ffd1e5;
+    margin-bottom: 0.65rem;
+    padding: 0.35rem 0.65rem 0.35rem 0.75rem;
+    border-radius: 999px;
     font-weight: 600;
+    color: rgba(255, 255, 255, 0.95);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
 }
 
 .shine-hero-title {
-    font-size: 42px;
-    line-height: 1.05;
-    font-weight: 700;
-    margin: 0 0 14px;
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: clamp(1.85rem, 4.2vw, 2.75rem);
+    line-height: 1.08;
+    font-weight: 600;
+    margin: 0 0 0.75rem;
     color: #fff;
+    letter-spacing: -0.02em;
 }
 
 .shine-hero-text {
-    font-size: 16px;
-    line-height: 1.5;
-    color: rgba(255, 255, 255, 0.92);
-    margin: 0 0 22px;
+    font-size: clamp(0.9rem, 1.35vw, 1.05rem);
+    line-height: 1.58;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.88);
+    margin: 0 0 1.35rem;
     max-width: 26rem;
 }
 
@@ -654,21 +769,31 @@ body {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 13px 30px;
+    padding: 0.8rem 1.85rem;
     border-radius: 999px;
-    background: linear-gradient(135deg, #ff5fa2, #ff9cc8);
+    background: linear-gradient(145deg, #ff5fa2 0%, #ff7eb8 45%, #ffa8d4 100%);
     color: #fff !important;
     font-weight: 700;
+    font-size: 0.95rem;
     text-decoration: none;
-    box-shadow: 0 12px 28px rgba(255, 95, 162, 0.35);
-    border: none;
-    transition: filter 0.2s ease, transform 0.2s ease;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.35),
+        0 2px 0 rgba(196, 40, 110, 0.35),
+        0 6px 20px rgba(255, 79, 163, 0.45),
+        0 16px 40px rgba(255, 95, 162, 0.28);
+    transition: transform 0.22s ease, filter 0.22s ease, box-shadow 0.22s ease;
 }
 
 .shine-hero-btn:hover {
     color: #fff !important;
-    filter: brightness(1.06);
-    transform: translateY(-1px);
+    filter: brightness(1.05);
+    transform: translateY(-2px);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.45),
+        0 3px 0 rgba(196, 40, 110, 0.28),
+        0 10px 28px rgba(255, 79, 163, 0.5),
+        0 22px 48px rgba(255, 95, 162, 0.32);
 }
 
 .shine-3d-nav-btn {
@@ -676,30 +801,44 @@ body {
     top: 50%;
     transform: translateY(-50%);
     z-index: 6;
-    width: 44px;
-    height: 44px;
+    width: 2.75rem;
+    height: 2.75rem;
     border-radius: 50%;
-    border: none;
-    background: rgba(255, 255, 255, 0.9);
-    color: #ff5fa2;
-    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    background: rgba(255, 255, 255, 0.78);
+    color: var(--shine-rose);
+    box-shadow:
+        0 2px 4px rgba(43, 34, 48, 0.06),
+        0 8px 22px rgba(255, 79, 163, 0.15);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background 0.2s ease, transform 0.2s ease;
+    cursor: pointer;
+    transition: background 0.22s ease, transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
 }
 
 .shine-3d-nav-btn:hover {
-    background: #fff;
-    transform: translateY(-50%) scale(1.04);
+    background: rgba(255, 255, 255, 0.95);
+    border-color: rgba(255, 255, 255, 0.75);
+    transform: translateY(-50%) scale(1.06);
+    box-shadow:
+        0 4px 10px rgba(43, 34, 48, 0.08),
+        0 12px 28px rgba(255, 79, 163, 0.22);
+}
+
+.shine-3d-nav-btn:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.9);
+    outline-offset: 3px;
 }
 
 .shine-3d-nav-btn.prev {
-    left: 18px;
+    left: clamp(0.65rem, 2.5vw, 1.15rem);
 }
 
 .shine-3d-nav-btn.next {
-    right: 18px;
+    right: clamp(0.65rem, 2.5vw, 1.15rem);
 }
 
 .shine-3d-nav-btn .bi {
@@ -709,33 +848,60 @@ body {
 
 .shine-3d-dots {
     position: absolute;
-    bottom: 18px;
+    bottom: clamp(0.85rem, 2.5vw, 1.15rem);
     left: 50%;
     transform: translateX(-50%);
     z-index: 6;
     display: flex;
     align-items: center;
-    gap: 0.4rem;
-    margin-bottom: 0;
+    gap: 0.45rem;
+    padding: 0.35rem 0.55rem;
+    border-radius: 999px;
+    background: rgba(22, 14, 26, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
 }
 
 .shine-3d-dot {
-    width: 9px;
-    height: 9px;
+    width: 0.5rem;
+    height: 0.5rem;
     border-radius: 50%;
     border: none;
     padding: 0;
-    background: #fff;
-    opacity: 0.55;
-    transition: width 0.28s ease, opacity 0.25s ease, border-radius 0.28s ease, background 0.25s ease;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.55);
+    opacity: 0.75;
+    transition: width 0.3s ease, opacity 0.25s ease, border-radius 0.3s ease, background 0.25s ease, transform 0.2s ease;
+}
+
+.shine-3d-dot:hover {
+    opacity: 1;
+    transform: scale(1.08);
 }
 
 .shine-3d-dot.active {
-    width: 24px;
+    width: 1.65rem;
     border-radius: 999px;
-    background: #ff5fa2;
+    background: linear-gradient(90deg, #ff5fa2, #ffb8dc);
     opacity: 1;
-    transform: none;
+    box-shadow: 0 0 14px rgba(255, 95, 162, 0.55);
+}
+
+.shine-3d-dot:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.85);
+    outline-offset: 2px;
+}
+
+@media (min-width: 768px) {
+    .shine-3d-hero.shine-hero-carousel {
+        --shine-hero-h: clamp(380px, 38vw, 540px);
+        border-radius: var(--shine-hero-radius);
+    }
+
+    .shine-3d-slide {
+        border-radius: var(--shine-hero-radius);
+    }
 }
 
 @media (min-width: 576px) {
@@ -745,77 +911,71 @@ body {
 
     .shine-hero-content {
         position: absolute;
-        left: 34px;
+        left: clamp(1.25rem, 3.5vw, 2.25rem);
         top: 50%;
         transform: translateY(-50%);
-        max-width: 430px;
+        max-width: min(28rem, 46vw);
+        padding: clamp(1.1rem, 2.2vw, 1.5rem) clamp(1.25rem, 2.5vw, 1.75rem);
+        border-radius: calc(var(--shine-hero-radius-sm) + 2px);
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        -webkit-backdrop-filter: blur(14px);
+        backdrop-filter: blur(14px);
+        box-shadow:
+            0 4px 24px rgba(0, 0, 0, 0.12),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
     }
 }
 
 @media (max-width: 575.98px) {
     .shine-3d-hero.shine-hero-carousel {
-        height: 280px;
-        min-height: 280px;
-        border-radius: 18px;
-    }
-
-    .shine-3d-stage {
-        height: 280px;
-        min-height: 280px;
-    }
-
-    .shine-3d-slide {
-        border-radius: 18px;
+        --shine-hero-h: clamp(268px, 78vw, 320px);
+        border-radius: var(--shine-hero-radius-sm);
     }
 
     .shine-hero-overlay {
         display: flex;
         flex-direction: column;
         justify-content: flex-end;
-        padding: 0 1.5rem 2.75rem;
+        padding: 0 1.25rem 2.65rem;
     }
 
     .shine-hero-content {
         position: static;
         transform: none;
-        max-width: 85%;
+        max-width: 92%;
+        padding: 0;
+        background: transparent;
+        border: none;
+        box-shadow: none;
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
     }
 
     .shine-hero-subtitle {
-        font-size: 10px;
-        letter-spacing: 0.14em;
-        margin-bottom: 8px;
+        font-size: 0.62rem;
+        letter-spacing: 0.18em;
+        margin-bottom: 0.45rem;
+        padding: 0.28rem 0.5rem 0.28rem 0.55rem;
     }
 
     .shine-hero-title {
-        font-size: 28px;
-        line-height: 1.1;
-        margin-bottom: 8px;
+        margin-bottom: 0.45rem;
     }
 
     .shine-hero-text {
-        font-size: 13px;
-        line-height: 1.4;
-        max-width: 220px;
-        margin-bottom: 14px;
+        max-width: 19rem;
+        margin-bottom: 0.85rem;
     }
 
     .shine-hero-btn {
-        padding: 10px 22px;
-        font-size: 14px;
+        padding: 0.62rem 1.35rem;
+        font-size: 0.875rem;
     }
 
     .shine-3d-nav-btn {
-        width: 34px;
-        height: 34px;
-    }
-
-    .shine-3d-nav-btn.prev {
-        left: 10px;
-    }
-
-    .shine-3d-nav-btn.next {
-        right: 10px;
+        width: 2.2rem;
+        height: 2.2rem;
     }
 
     .shine-3d-nav-btn .bi {
@@ -823,7 +983,8 @@ body {
     }
 
     .shine-3d-dots {
-        bottom: 14px;
+        bottom: 0.65rem;
+        padding: 0.28rem 0.45rem;
     }
 }
 
