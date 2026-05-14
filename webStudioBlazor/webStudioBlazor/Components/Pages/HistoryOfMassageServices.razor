@@ -1,91 +1,93 @@
 ﻿@page "/history-of-massage-services/{CurrentUserId}"
 @inject SeedService _seedService
 
-<h3 style="padding-top: 4%;"></h3>
-<section class="container">
+<section class="shine-history-page">
+    <div class="shine-history-inner">
+        <header class="shine-history-header text-center">
+            <span class="shine-history-kicker">Масажна терапія</span>
+            <h1 class="shine-history-title">Історія ваших масажних процедур</h1>
+            <p class="shine-history-lead mb-0">
+                Тут відображаються всі процедури, які ви проходили у нашій студії.
+            </p>
+        </header>
 
-    <h1 class="text-center fw-bold mb-4" style="color:#f8b7d8;">
-        Історія ваших масажних процедур
-    </h1>
-
-    <p class="text-center text-muted mb-5">
-        Тут відображаються всі процедури, які ви проходили у нашій студії.
-    </p>
-    <div class="container">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb bg-white p-2 mb-5 rounded shadow-sm">
-                <li class="breadcrumb-item"><a href="/account/profile" style="color: #f8b7d8;">Особистий кабінет</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Масажна терапія мої записи</li>
-            </ol>
+        <nav class="shine-history-breadcrumb mb-4" aria-label="Навігаційна стежка">
+            <a href="/account/profile" class="shine-history-breadcrumb-link">Особистий кабінет</a>
+            <span class="shine-history-breadcrumb-sep" aria-hidden="true">/</span>
+            <span class="shine-history-breadcrumb-current">Масажна терапія — мої записи</span>
         </nav>
-    </div>
-    @if (IsLoading)
-    {
-        <div class="text-center mt-5">
-            <div class="spinner-border" style="color:#f8b7d8;" role="status"></div>
-        </div>
-    }
-    else if (сosmetologyHistories == null || !сosmetologyHistories.Any())
-    {
-        <div class="text-center mt-5">
-            <p class="text-muted">Записів поки немає.</p>
-        </div>
-    }
-    else
-    {
-        <div class="row g-4">
-            @foreach (var item in сosmetologyHistories.Where(a=>a.CategoryId ==2))
-            {
-                <div class="col-12 col-sm-6 col-lg-4">
-                    <div class="card appointment-card border-0 shadow-sm h-100">
 
-                        <!-- Video -->
-                        <div class="position-relative">
-                            <div class="ratio ratio-16x9">
-                                <lite-youtube class="card-img-top object-fit-cover" videoid="@item.ImageUrl" style="width: 100%; height: auto;" title="@item.ImageUrl"></lite-youtube>
-                            </div>                                                        
-                        </div>
-
-                        <!-- CONTENT -->
-                        <div class="card-body d-flex flex-column">
-
-                            <h5 class="fw-bold text-center service-title">
-                                @item.ServiceName
-                            </h5>
-
-                            <p class="text-secondary small mb-1">
-                                <i class="fa-solid fa-user-nurse me-1"></i>
-                                Майстер: <span class="fw-semibold">@item.MasterFullName</span>
-                            </p>
-                            <p class="text-muted small mb-1">
-                                Дата відвідування: @item.AppointmentDate.ToString("dd.MM.yyyy")
-                            </p>
-                            <p class="text-muted small description">
-                                @item.Description
-                            </p>
-
+        @if (IsLoading)
+        {
+            <div class="shine-history-loading text-center py-5">
+                <div class="spinner-border shine-history-spinner" role="status" aria-label="Завантаження">
+                    <span class="visually-hidden">Завантаження…</span>
+                </div>
+            </div>
+        }
+        else if (massageHistory is null || !massageHistory.Any())
+        {
+            <div class="shine-history-empty text-center">
+                <div class="shine-history-empty-card">
+                    <i class="fa-solid fa-spa shine-history-empty-icon" aria-hidden="true"></i>
+                    <p class="shine-history-empty-title mb-2">Записів поки немає</p>
+                    <p class="shine-history-empty-text mb-0">
+                        Після візиту до студії ваші процедури з’являться тут автоматично.
+                    </p>
+                    <a href="/appointment-user" class="shine-history-empty-cta text-decoration-none mt-4 d-inline-flex align-items-center justify-content-center">
+                        Записатися онлайн
+                    </a>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="row g-4">
+                @foreach (var item in massageHistory.Where(a => a.CategoryId == 2))
+                {
+                    <div class="col-12 col-sm-6 col-lg-4">
+                        <div class="card appointment-card border-0 h-100 shine-history-card">
+                            <div class="position-relative shine-history-img-wrap shine-history-media">
+                                <div class="ratio ratio-16x9">
+                                    <lite-youtube class="shine-history-youtube"
+                                                  videoid="@item.ImageUrl"
+                                                  title="@item.ServiceName"></lite-youtube>
+                                </div>
+                            </div>
+                            <div class="card-body d-flex flex-column p-4">
+                                <h2 class="h5 fw-bold text-center shine-history-service-title mb-3">
+                                    @item.ServiceName
+                                </h2>
+                                <p class="shine-history-meta mb-2">
+                                    <i class="fa-solid fa-user-nurse me-2 opacity-75" aria-hidden="true"></i>
+                                    Майстер: <span class="fw-semibold">@item.MasterFullName</span>
+                                </p>
+                                <p class="shine-history-meta mb-2">
+                                    <i class="fa-regular fa-calendar me-2 opacity-75" aria-hidden="true"></i>
+                                    @item.AppointmentDate.ToString("dd.MM.yyyy")
+                                </p>
+                                <p class="shine-history-description small mb-0 flex-grow-1">
+                                    @item.Description
+                                </p>
+                            </div>
                         </div>
                     </div>
-                </div>
-            }
-        </div>
-    }
+                }
+            </div>
+        }
+    </div>
 </section>
 
 @code {
-    [Parameter] public string CurrentUserId { get; set; }
+    [Parameter] public string CurrentUserId { get; set; } = string.Empty;
 
     private bool IsLoading = true;
 
-    // Список історії (DTO)
-    private List<AppointmentWithDetailsDto> сosmetologyHistories { get; set; } = new();
+    private List<AppointmentWithDetailsDto> massageHistory { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
-
-        сosmetologyHistories = await _seedService.GetAppointmentsByUserIdAsync(CurrentUserId);
-
+        massageHistory = await _seedService.GetAppointmentsByUserIdAsync(CurrentUserId);
         IsLoading = false;
     }
-
 }

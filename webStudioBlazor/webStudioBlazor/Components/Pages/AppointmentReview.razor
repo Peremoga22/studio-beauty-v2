@@ -1,114 +1,125 @@
 ﻿@page "/appointment-reviews/{AppointmentId}"
 @using webStudioBlazor.Data
 @using System.Security.Claims
+@using Microsoft.AspNetCore.Components.Authorization
 @inject SeedService _seedService
 @inject NavigationManager NavigationManager
 @attribute [Authorize]
 
+<section class="shine-history-page">
+    <div class="shine-history-inner">
+        <header class="shine-history-header text-center">
+            <span class="shine-history-kicker">Відгуки</span>
+            <h1 class="shine-history-title">Мої відгуки</h1>
+            <p class="shine-history-lead mb-0">
+                Поділіться враженнями після візиту — це допомагає нам ставати кращими.
+            </p>
+        </header>
 
-<h3 style="padding-top: 7%;"></h3>
-<h3 class="mb-4">Мої відгуки 💬</h3>
-<nav aria-label="breadcrumb">
-    <ol class="breadcrumb bg-white rounded shadow-sm">
-        <li class="breadcrumb-item"><a href="/account/profile" style="color: #f8b7d8;">Особистий кабінет</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Мої відгуки</li>
-    </ol>
-</nav>
+        <nav class="shine-history-breadcrumb mb-4" aria-label="Навігаційна стежка">
+            <a href="/account/profile" class="shine-history-breadcrumb-link">Особистий кабінет</a>
+            <span class="shine-history-breadcrumb-sep" aria-hidden="true">/</span>
+            <span class="shine-history-breadcrumb-current">Мої відгуки</span>
+        </nav>
 
-@if (reviews == null)
-{
-    <p>Завантаження...</p>
-}
-else if (!reviews.Any())
-{
-    <div class="alert alert-light border rounded-3 d-flex justify-content-between align-items-center">
-        <span>
-            Ви ще не залишали відгуків 🌸
-        </span>
-
-        <a href="@($"/add-appointment-review/{AppointmentId}")"
-           class="btn btn-sm rounded-pill px-3"
-           style="background-color:#f8b7d8;color:white;">
-            Залишити відгук →
-        </a>
-    </div>
-
-}
-else
-{
-    <div class="alert alert-light border rounded-3 d-flex justify-content-between align-items-center">
-        <span>Додати ще відгук 🌸</span>
-
-        <a href="@($"/add-appointment-review/{AppointmentId}")"
-           class="btn btn-sm rounded-pill"
-           style="background-color:#f8b7d8;color:white;">
-            <i class="fa-solid fa-face-smile-beam me-1"></i>Залишити відгук
-        </a>
-    </div>
-    <div class="row g-3">
-        @foreach (var r in reviews)
+        @if (isLoading)
         {
-            <div class="col-12 col-md-6 col-lg-4">
-                <div class="card shadow-sm border-2 h-100" style="border-radius: 16px;">
-                    <div class="card-body">
-                        <p class="mb-3 text-center">
-                            @r.Appointment.ClientName
-                        </p>                       
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <h6 class="fw-bold mb-0" style="color:#f8b7d8;text-decoration: underline;">
-                                @r.TherapyCard?.TitleCard
-                            </h6>
-                            <small class="text-muted">
-                                @r.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy")
-                            </small>
-                        </div>                                            
-                        <div class="mb-2">
-                            @for (int i = 1; i <= 5; i++)
-                            {
-                                if (i <= r.Rating)
-                                {
-                                    <i class="fa-solid fa-star" style="color:#f8b7d8;"></i>
-                                }
-                                else
-                                {
-                                    <i class="fa-regular fa-star" style="color:#f8b7d8;"></i>
-                                }
-                            }                        
-                        </div>                                              
-                        <p class="small text-dark mb-3">
-                            @r.Comment
-                        </p>
-
-                        <div class="d-flex justify-content-between align-items-center">
-                            <small class="text-muted">
-                                👩‍⚕️ Ваш майстер: <strong>@r.Master?.FullName</strong>
-                            </small>
-                        </div>
-
-                    </div>
+            <div class="shine-history-loading text-center py-5">
+                <div class="spinner-border shine-history-spinner" role="status" aria-label="Завантаження">
+                    <span class="visually-hidden">Завантаження…</span>
                 </div>
             </div>
         }
-    </div>
+        else if (!reviews.Any())
+        {
+            <div class="shine-history-empty text-center mb-4">
+                <div class="shine-history-empty-card">
+                    <i class="fa-solid fa-comment-dots shine-history-empty-icon" aria-hidden="true"></i>
+                    <p class="shine-history-empty-title mb-2">Ви ще не залишали відгуків</p>
+                    <p class="shine-history-empty-text mb-0">
+                        Розкажіть про свій досвід — нам важливо почути вас.
+                    </p>
+                    <a href="@($"/add-appointment-review/{AppointmentId}")"
+                       class="shine-history-empty-cta text-decoration-none mt-4 d-inline-flex align-items-center justify-content-center">
+                        Залишити відгук
+                    </a>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="shine-history-review-banner d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-between gap-3 mb-4">
+                <span class="shine-history-review-banner-text">Хочете додати ще один відгук?</span>
+                <a href="@($"/add-appointment-review/{AppointmentId}")"
+                   class="shine-history-review-banner-btn text-decoration-none text-center">
+                    <i class="fa-solid fa-face-smile-beam me-2" aria-hidden="true"></i>Залишити відгук
+                </a>
+            </div>
 
-}
+            <div class="row g-4">
+                @foreach (var r in reviews)
+                {
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <div class="card border-0 h-100 shine-history-review-card">
+                            <div class="card-body p-4 d-flex flex-column">
+                                <p class="shine-history-review-client text-center mb-3 mb-md-0">
+                                    @r.Appointment.ClientName
+                                </p>
+                                <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                                    <h2 class="h6 fw-bold mb-0 shine-history-review-service">
+                                        @r.TherapyCard?.TitleCard
+                                    </h2>
+                                    <time class="shine-history-review-date flex-shrink-0" datetime="@r.CreatedAt.ToString("yyyy-MM-dd")">
+                                        @r.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy")
+                                    </time>
+                                </div>
+                                <div class="shine-history-stars mb-3" aria-label="Оцінка @r.Rating з 5">
+                                    @for (var i = 1; i <= 5; i++)
+                                    {
+                                        if (i <= r.Rating)
+                                        {
+                                            <i class="fa-solid fa-star shine-history-star-on" aria-hidden="true"></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="fa-regular fa-star shine-history-star-off" aria-hidden="true"></i>
+                                        }
+                                    }
+                                </div>
+                                <p class="shine-history-review-comment small flex-grow-1 mb-3">
+                                    @r.Comment
+                                </p>
+                                <div class="shine-history-review-master small mt-auto">
+                                    <span class="text-muted">Майстер:</span>
+                                    <strong class="ms-1">@r.Master?.FullName</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</section>
 
 @code {
-    [Parameter]
-    public string AppointmentId { get; set; }
+    [Parameter] public string AppointmentId { get; set; } = string.Empty;
+
     private List<Review> reviews = new();
+    private bool isLoading = true;
 
     [CascadingParameter]
-    private Task<AuthenticationState> AuthStateTask { get; set; }
+    private Task<AuthenticationState> AuthStateTask { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {
-        var authState = await AuthStateTask;
-       
+        _ = await AuthStateTask;
 
         if (!string.IsNullOrEmpty(AppointmentId))
         {
             reviews = await _seedService.GetReviewsForUserAsync(AppointmentId);
         }
+
+        isLoading = false;
     }
 }

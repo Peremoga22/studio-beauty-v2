@@ -2,155 +2,171 @@
 @inject GiftCertificateService _giftCertificateService
 @rendermode InteractiveServer
 
-<h3 style="padding-top: 4%;"></h3>
-<div class="container">
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb bg-white p-2 mb-3 rounded shadow-sm">
-            <li class="breadcrumb-item"><a href="/account/profile" style="color: #f8b7d8;">Особистий кабінет</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Подарункові сертифікати</li>
-        </ol>
-    </nav>
-</div>
-<div class="container py-0">
-    <div class="cert-wrapper mx-auto">
-               
-        <div class="card border-1 shadow-sm text-center p-5 mb-4 cert-create-block">
-            <h2 class="fw-bold mb-3" style="color:#f8b7d8;">
-                ✨ Подарунковий сертифікат
-            </h2>
-
-            <p class="text-muted fs-5 mb-4">
-                Ви можете створити тут подарунковий сертифікат для близької людини
+<section class="shine-history-page">
+    <div class="shine-history-inner">
+        <header class="shine-history-header text-center">
+            <span class="shine-history-kicker">Подарунки</span>
+            <h1 class="shine-history-title">Подарункові сертифікати</h1>
+            <p class="shine-history-lead mb-0">
+                Створіть сертифікат для близької людини та переглядайте історію своїх подарунків.
             </p>
+        </header>
 
-            <a href="@($"/history-of-create-gift-sertificate-services/{CurrentUserId}")"
-               class="btn px-5 py-2 text-white fw-semibold"
-               style="background-color:#f8b7d8; border-radius: 50px; font-size: 18px;">
-                ➕ Створити сертифікат
-            </a>
-        </div>
-              
-        <div class="text-center mb-4">
-            <div class="cert-section-title text-muted">
-                мої подарункові сертифікати
+        <nav class="shine-history-breadcrumb shine-history-breadcrumb--wrap mb-4" aria-label="Навігаційна стежка">
+            <a href="/account/profile" class="shine-history-breadcrumb-link">Особистий кабінет</a>
+            <span class="shine-history-breadcrumb-sep" aria-hidden="true">/</span>
+            <span class="shine-history-breadcrumb-current">Подарункові сертифікати</span>
+        </nav>
+
+        @if (isLoading)
+        {
+            <div class="shine-history-loading text-center py-5">
+                <div class="spinner-border shine-history-spinner" role="status" aria-label="Завантаження">
+                    <span class="visually-hidden">Завантаження…</span>
+                </div>
             </div>
-            <h3 class="fw-bold mt-2" style="color:#f8b7d8;">
-                🎀 Історія сертифікатів
-            </h3>
-        </div>
-             
-        @if (Certificates == null)
-        {
-            <p class="text-center text-muted">Завантаження сертифікатів...</p>
-        }
-        else if (!Certificates.Any())
-        {
-            <p class="text-center text-muted">
-                У вас поки що немає створених сертифікатів.
-            </p>
         }
         else
         {
-            <div class="row g-4">
-                @foreach (var cert in Certificates)
-                {
-                    <div class="col-md-6">
-                        <div class="cert-card border-2 h-100">                           
-                            <div class="cert-card-ribbon"></div>
-                            <div class="cert-card-content">                             
-                                <div class="cert-header d-flex justify-content-between align-items-center mb-3">                                 
-                                    <div class="d-flex align-items-center gap-3">
-                                        <img src="img/logo-new.png"
-                                             alt="Логотип"
-                                             class="cert-logo rounded-circle shadow-sm">
-                                        <div>
-                                            <div class="cert-brand">Shine Cosmetology</div>
-                                            <div class="cert-brand-sub">Подарунковий сертифікат</div>
-                                        </div>
-                                    </div>                                                                       
-                                    <div>
-                                        @if (!cert.IsApproved)
-                                        {
-                                            <div class="cert-status cert-status-pending">
-                                                ⏳ Очікує оплату
-                                            </div>
-                                        }
-                                        else
-                                        {
-                                            <div class="cert-status cert-status-approved">
-                                                ✅ Оплачено
-                                            </div>
-                                        }
-                                    </div>
-                                                                    </div>                               
-                                <div class="text-center mb-2">
-                                    <div class="cert-title-main">ПОДАРУНКОВИЙ СЕРТИФІКАТ</div>
-                                </div>
-                                <div class="cert-line"></div>                                                              
-                                <div class="cert-row mb-2 d-flex justify-content-between gap-3">
-                                    <div class="cert-left">
-                                        <div class="cert-label">Отримувач</div>
-                                        <div class="cert-value fw-semibold">@cert.RecipientName</div>
-                                        @if (!string.IsNullOrWhiteSpace(cert.Message))
-                                        {
-                                            <div class="cert-value fst-italic text-muted mt-1">
-                                                💌 @cert.Message
-                                            </div>
-                                        }
-                                    </div>
-                                    <div class="cert-right text-end">
-                                        <div class="cert-label">Номінал</div>
-                                        <div class="cert-amount">@cert.Amount.ToString("N0") грн</div>
-                                    </div>
-                                </div>                             
-                                <div class="cert-row mb-2 d-flex justify-content-between gap-3">
-                                    <div class="cert-left">
-                                        <div class="cert-label">Сертифікат №</div>
-                                        <div class="cert-value">#@cert.Id</div>
-                                    </div>
+            <div class="shine-history-gift-cert-wrap mx-auto">
+                <div class="shine-history-gift-create-card text-center mb-4">
+                    <h2 class="shine-history-gift-create-title mb-3">Подарунковий сертифікат</h2>
+                    <p class="shine-history-gift-create-lead mb-4">
+                        Ви можете створити тут подарунковий сертифікат для близької людини.
+                    </p>
+                    <a href="@($"/history-of-create-gift-sertificate-services/{CurrentUserId}")"
+                       class="shine-history-empty-cta text-decoration-none d-inline-flex align-items-center justify-content-center px-5 py-2">
+                        Створити сертифікат
+                    </a>
+                </div>
 
-                                    <div class="cert-right text-end">
-                                        <div class="cert-label">Термін дії</div>
-                                        <div class="cert-value">3 місяці</div>
-                                    </div>
-                                </div>                                                               
-                                <div class="cert-footer cert-footer-admin">
-                                    <span>Створено: @cert.CreatedAt.ToString("dd.MM.yyyy")</span>
-                                    <span>Студія краси «Shine Cosmetology»</span>
-                                </div>
-                                @if (cert.IsApproved)
-                                {
-                                    <div class="text-center mt-3">
-                                        <a @onclick="() => DownloadPdf(cert.Id)"
-                                           class="btn btn-sm fw-semibold cert-download-btn px-4 py-2">
-                                            ⬇ Завантажити сертифікат
-                                        </a>
-                                    </div>
-                                }
-                            </div>
+                <div class="text-center mb-4">
+                    <div class="shine-history-gift-section-kicker">Мої подарункові сертифікати</div>
+                    <h3 class="shine-history-gift-section-title mt-2 mb-0">Історія сертифікатів</h3>
+                </div>
+
+                @if (!Certificates.Any())
+                {
+                    <div class="shine-history-empty text-center mb-4">
+                        <div class="shine-history-empty-card shine-history-gift-empty-wide">
+                            <i class="bi bi-gift shine-history-empty-icon d-block" aria-hidden="true"></i>
+                            <p class="shine-history-empty-title mb-2">Сертифікатів поки немає</p>
+                            <p class="shine-history-empty-text mb-0">
+                                Після створення та оплати вони з’являться тут — зможете завантажити PDF.
+                            </p>
                         </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="row g-4">
+                        @foreach (var cert in Certificates)
+                        {
+                            <div class="col-md-6">
+                                <div class="cert-card border-2 h-100">
+                                    <div class="cert-card-ribbon"></div>
+                                    <div class="cert-card-content">
+                                        <div class="cert-header d-flex justify-content-between align-items-center mb-3">
+                                            <div class="d-flex align-items-center gap-3">
+                                                <img src="img/logo-new.png"
+                                                     alt="Логотип"
+                                                     class="cert-logo rounded-circle shadow-sm">
+                                                <div>
+                                                    <div class="cert-brand">Shine Cosmetology</div>
+                                                    <div class="cert-brand-sub">Подарунковий сертифікат</div>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                @if (!cert.IsApproved)
+                                                {
+                                                    <div class="cert-status cert-status-pending">
+                                                        Очікує оплату
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="cert-status cert-status-approved">
+                                                        Оплачено
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                        <div class="text-center mb-2">
+                                            <div class="cert-title-main">ПОДАРУНКОВИЙ СЕРТИФІКАТ</div>
+                                        </div>
+                                        <div class="cert-line"></div>
+                                        <div class="cert-row mb-2 d-flex justify-content-between gap-3">
+                                            <div class="cert-left">
+                                                <div class="cert-label">Отримувач</div>
+                                                <div class="cert-value fw-semibold">@cert.RecipientName</div>
+                                                @if (!string.IsNullOrWhiteSpace(cert.Message))
+                                                {
+                                                    <div class="cert-value fst-italic text-muted mt-1">
+                                                        @cert.Message
+                                                    </div>
+                                                }
+                                            </div>
+                                            <div class="cert-right text-end">
+                                                <div class="cert-label">Номінал</div>
+                                                <div class="cert-amount">@cert.Amount.ToString("N0") грн</div>
+                                            </div>
+                                        </div>
+                                        <div class="cert-row mb-2 d-flex justify-content-between gap-3">
+                                            <div class="cert-left">
+                                                <div class="cert-label">Сертифікат №</div>
+                                                <div class="cert-value">#@cert.Id</div>
+                                            </div>
+
+                                            <div class="cert-right text-end">
+                                                <div class="cert-label">Термін дії</div>
+                                                <div class="cert-value">3 місяці</div>
+                                            </div>
+                                        </div>
+                                        <div class="cert-footer cert-footer-admin">
+                                            <span>Створено: @cert.CreatedAt.ToString("dd.MM.yyyy")</span>
+                                            <span>Студія краси «Shine Cosmetology»</span>
+                                        </div>
+                                        @if (cert.IsApproved)
+                                        {
+                                            <div class="text-center mt-3">
+                                                <button type="button"
+                                                        @onclick="() => DownloadPdf(cert.Id)"
+                                                        class="btn btn-sm fw-semibold cert-download-btn px-4 py-2 border-0">
+                                                    Завантажити сертифікат
+                                                </button>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
                     </div>
                 }
             </div>
         }
     </div>
-</div>
+</section>
 
 @code {
     [Parameter] public string CurrentUserId { get; set; } = string.Empty;
-    private List<GiftCertificate>? Certificates;
+
+    private List<GiftCertificate> Certificates { get; set; } = new();
+    private bool isLoading = true;
     private Appointment appointment = new();
 
     protected override async Task OnInitializedAsync()
     {
         Certificates = await _giftCertificateService.GetGiftCertificatesByUserIdAsync(CurrentUserId);
+
         var result = await _giftCertificateService.GetAppointmentOwnerByEmail(CurrentUserId);
         if (result != null)
         {
             appointment = result;
         }
-    }    
-    
+
+        isLoading = false;
+    }
+
     private async Task DownloadPdf(int id)
     {
         var result = await _giftCertificateService.DownloadGiftCertificatePdfAsync(id, appointment);

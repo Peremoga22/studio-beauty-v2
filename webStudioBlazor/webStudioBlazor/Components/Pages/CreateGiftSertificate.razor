@@ -4,53 +4,46 @@
 @inject AppointmentNotifier _notification
 @rendermode InteractiveServer
 
+<section class="shine-history-page">
+    <div class="shine-history-inner">
+        <header class="shine-history-header text-center">
+            <span class="shine-history-kicker">Подарунки</span>
+            <h1 class="shine-history-title">Створення подарункового сертифіката</h1>
+            <p class="shine-history-lead mb-0">
+                Оберіть номінал, вкажіть ім’я отримувача та додайте персональне привітання — подарунок буде особливим.
+            </p>
+        </header>
 
-<h3 style="padding-top: 4%;"></h3>
-<div class="container">
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb bg-white p-2 mb-3 rounded shadow-sm">
-            <li class="breadcrumb-item"><a href="@($"/history-of-gift-sertificate-services/{CurrentUserId}")" style="color: #f8b7d8;">Особистий кабінет</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Подарункові сертифікати</li>
-        </ol>
-    </nav>
-</div>
-<div class="container py-0">
-    <div class="row justify-content-center">
-        <div class="col-lg-9 col-xl-8">
-                      
-            <div class="text-center mb-5">
-                <h1 class="fw-bold" style="color:#f8b7d8; font-size: 2.5rem;">
-                    🎁 Створення подарункового сертифіката
-                </h1>
-                <p class="text-muted fs-5 mt-3">
-                    Створіть унікальний подарунковий сертифікат для рідних та близьких.
-                    Ви можете обрати суму, послугу та додати персональне привітання.
-                </p>
-            </div>
-                   
-            <div class="card border-0 shadow-lg p-4 p-md-5"
-                 style="border-radius: 30px; background: linear-gradient(135deg, #fff, #fff0f7);">
+        <nav class="shine-history-breadcrumb shine-history-breadcrumb--wrap mb-4" aria-label="Навігаційна стежка">
+            <a href="/account/profile" class="shine-history-breadcrumb-link">Особистий кабінет</a>
+            <span class="shine-history-breadcrumb-sep" aria-hidden="true">/</span>
+            <a href="@($"/history-of-gift-sertificate-services/{CurrentUserId}")"
+               class="shine-history-breadcrumb-link">Подарункові сертифікати</a>
+            <span class="shine-history-breadcrumb-sep" aria-hidden="true">/</span>
+            <span class="shine-history-breadcrumb-current">Створення</span>
+        </nav>
 
-                <h4 class="fw-semibold text-center mb-4" style="color:#333;">
-                    ✨ Заповніть дані для сертифіката
-                </h4>
+        <div class="shine-history-gift-form-wrap mx-auto">
+            <div class="shine-history-gift-form-card">
+                <h2 class="shine-history-gift-form-section-title text-center mb-4">
+                    Заповніть дані для сертифіката
+                </h2>
 
-                <EditForm class="gift-form" Model="@Model" OnValidSubmit="CreateCertificate">
+                <EditForm class="gift-form shine-history-gift-form" Model="@Model" OnValidSubmit="CreateCertificate">
                     <DataAnnotationsValidator />
-                    <ValidationSummary />
+                    <ValidationSummary class="shine-history-validation-summary mb-4" />
 
                     <div class="row g-4">
-                    
                         <div class="col-md-6">
-                            <label class="form-label fw-semibold">Ім'я отримувача</label>
+                            <label class="form-label fw-semibold shine-history-gift-label">Ім’я отримувача</label>
                             <InputText class="form-control"
                                        @bind-Value="Model.RecipientName"
                                        placeholder="Наприклад: Марія" />
                             <ValidationMessage For="@(() => Model.RecipientName)" class="text-danger small" />
                         </div>
-                                               
+
                         <div class="col-md-6">
-                            <label class="form-label fw-semibold">Сума сертифіката (грн)</label>
+                            <label class="form-label fw-semibold shine-history-gift-label">Сума сертифіката (грн)</label>
                             <InputSelect class="form-select" @bind-Value="Model.Amount">
                                 <option value="">Оберіть суму</option>
                                 <option value="1000">1000 грн</option>
@@ -59,72 +52,67 @@
                                 <option value="10000">10 000 грн</option>
                             </InputSelect>
                             <ValidationMessage For="@(() => Model.Amount)" class="text-danger small" />
-                        </div>                                            
+                        </div>
 
-                       
                         <div class="col-md-6">
-                            <label class="form-label fw-semibold">Термін дії</label>
-                            <input type="text" class="form-control" value="Сертифікат дійсний 3 місяці!" readonly />
+                            <label class="form-label fw-semibold shine-history-gift-label">Термін дії</label>
+                            <input type="text" class="form-control" value="Сертифікат дійсний 3 місяці" readonly />
                             <small class="text-muted">Термін встановлено автоматично.</small>
                         </div>
-                                              
+
                         <div class="col-12">
-                            <label class="form-label fw-semibold">Персональне побажання</label>
+                            <label class="form-label fw-semibold shine-history-gift-label">Персональне побажання</label>
                             <InputTextArea class="form-control"
                                            rows="4"
                                            @bind-Value="Model.Message"
-                                           placeholder="Напишіть теплі слова для особливої людини..."></InputTextArea>
+                                           placeholder="Напишіть теплі слова для особливої людини…" />
                             <ValidationMessage For="@(() => Model.Message)" class="text-danger small" />
                         </div>
 
-                     
-                        <div class="col-12 text-center mt-4">
-                            <button type="submit" class="btn-buy">
-                                💖 Створити сертифікат
+                        <div class="col-12 text-center mt-2">
+                            <button type="submit" class="shine-history-gift-submit">
+                                Створити сертифікат
                             </button>
                         </div>
-
                     </div>
                 </EditForm>
-                               
-                <div class="alert alert-danger text-center mt-5" style="border-radius:20px;">
-                    <small class="fw-semibold text-danger">
-                        Після створення сертифіката потрібно оплатити його в студії, після чого ви зможете його завантажити та надіслати отримувачу ❤️
-                    </small>
-                </div>
 
+                <div class="shine-history-gift-notice mt-4" role="note">
+                    <p class="shine-history-gift-notice-text mb-0">
+                        Після створення сертифіката потрібно оплатити його в студії; після оплати ви зможете завантажити PDF і надіслати його отримувачу.
+                    </p>
+                </div>
             </div>
         </div>
     </div>
-</div>
-
+</section>
 
 @code {
     [Parameter] public string CurrentUserId { get; set; } = string.Empty;
     private GiftCertificate Model { get; set; } = new();
 
     private async Task CreateCertificate()
-    {    
+    {
         var entity = new GiftCertificate
         {
             UserId = CurrentUserId,
             RecipientName = Model.RecipientName,
             Amount = Model.Amount,
-            CreatedAt = DateTime.Now,          
+            CreatedAt = DateTime.Now,
             Message = Model.Message,
-            IsApproved = false 
+            IsApproved = false
         };
 
         await _giftCertificateService.SaveGiftCertificateAsync(entity);
         var userAppointment = await _giftCertificateService.GetCustomerFullNameByUserIdAsync(CurrentUserId);
 
         await SendGiftCertificateApprovedNotificationAsync(userAppointment, entity);
-                   
+
         _nav.NavigateTo($"/history-of-gift-sertificate-services/{CurrentUserId}", forceLoad: true);
     }
 
-    private async Task SendGiftCertificateApprovedNotificationAsync(Appointment? userAppointment,GiftCertificate entity)
-    {        
+    private async Task SendGiftCertificateApprovedNotificationAsync(Appointment? userAppointment, GiftCertificate entity)
+    {
         await _notification.NotifyGiftCertificateApprovedAsync(
             recipientName: userAppointment?.ClientName ?? string.Empty,
             buyerName: entity.RecipientName,

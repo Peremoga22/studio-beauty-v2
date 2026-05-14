@@ -1,104 +1,101 @@
 ﻿@page "/history-of-sales-services/{CurrentUserId}"
 @inject SeedService _seedService
 
-<h3 style="padding-top: 4%;"></h3>
+<section class="shine-history-page">
+    <div class="shine-history-inner">
+        <header class="shine-history-header text-center">
+            <span class="shine-history-kicker">Наш магазин</span>
+            <h1 class="shine-history-title">Історія ваших покупок</h1>
+            <p class="shine-history-lead mb-0">
+                Тут відображаються всі покупки, які ви здійснили у нашій студії.
+            </p>
+        </header>
 
-<section class="container">
-
-    <h1 class="text-center fw-bold mb-4" style="color:#f8b7d8;">
-        Історія ваших покупок
-    </h1>
-
-    <p class="text-center text-muted mb-5">
-        Тут відображаються всі покупки, які ви здійснили у нашій студії.
-    </p>
-
-    <div class="container">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb bg-white p-2 mb-5 rounded shadow-sm">
-                <li class="breadcrumb-item">
-                    <a href="/account/profile" style="color: #f8b7d8;">Особистий кабінет</a>
-                </li>
-                <li class="breadcrumb-item active" aria-current="page">
-                    Історія ваших покупок
-                </li>
-            </ol>
+        <nav class="shine-history-breadcrumb mb-4" aria-label="Навігаційна стежка">
+            <a href="/account/profile" class="shine-history-breadcrumb-link">Особистий кабінет</a>
+            <span class="shine-history-breadcrumb-sep" aria-hidden="true">/</span>
+            <span class="shine-history-breadcrumb-current">Мої покупки</span>
         </nav>
-    </div>
 
-    @if (IsLoading)
-    {
-        <div class="text-center mt-5">
-            <div class="spinner-border" style="color:#f8b7d8;" role="status"></div>
-        </div>
-    }
-    else if (clientOrders == null || !clientOrders.Any())
-    {
-        <div class="text-center mt-5">
-            <p class="text-muted">Покупок поки немає.</p>
-        </div>
-    }
-    else
-    {
-        <div class="row g-4">
-        @foreach (var order in clientOrders)
+        @if (IsLoading)
         {
-            <div class="col-12 col-md-6">
-                <div class="card mb-3 shadow-sm rounded-4 p-3 h-100">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h6 class="fw-bold mb-0">Замовлення №@order.Id</h6>
-                        <small class="text-muted">
-                            @order.AppointmentDate.ToString("dd.MM.yyyy")
-                        </small>
-                    </div>
-
-                    @foreach (var item in order.Items)
-                    {
-                        <div class="d-flex align-items-center mt-2">
-                            @if (!string.IsNullOrEmpty(item.ImageUrl))
-                            {
-                                <img src="@item.ImageUrl"
-                                     style="width:50px;height:50px;object-fit:cover;border-radius:8px;" />
-                            }
-                            <div class="ms-2">
-                                <div class="fw-semibold">
-                                    @item.ServiceName
-
-                                    @if (item.Quantity >= 1)
-                                    {
-                                        <span class="ms-2 badge rounded-pill"
-                                              style="background:#f8b7d8;">
-                                            x @item.Quantity
-                                        </span>
-                                    }
-                                </div>
-                                <small class="text-muted">@item.ServiceDescription</small>
-                            </div>
-                        </div>
-                    }
-
-                    <div class="mt-3 d-flex justify-content-between align-items-center">
-                        <span class="fw-semibold">
-                            Разом: @order.Price.ToString("0.##") грн
-                        </span>
-                    </div>
+            <div class="shine-history-loading text-center py-5">
+                <div class="spinner-border shine-history-spinner" role="status" aria-label="Завантаження">
+                    <span class="visually-hidden">Завантаження…</span>
                 </div>
             </div>
         }
-        </div>
-
-    }
+        else if (clientOrders is null || !clientOrders.Any())
+        {
+            <div class="shine-history-empty text-center">
+                <div class="shine-history-empty-card">
+                    <i class="bi bi-bag-heart shine-history-empty-icon d-block" aria-hidden="true"></i>
+                    <p class="shine-history-empty-title mb-2">Покупок поки немає</p>
+                    <p class="shine-history-empty-text mb-0">
+                        Оформлені замовлення з’являться тут після оплати та обробки.
+                    </p>
+                    <a href="/sales" class="shine-history-empty-cta text-decoration-none mt-4 d-inline-flex align-items-center justify-content-center">
+                        Перейти в магазин
+                    </a>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="row g-4">
+                @foreach (var order in clientOrders)
+                {
+                    <div class="col-12 col-md-6">
+                        <div class="card border-0 h-100 shine-history-order-card">
+                            <div class="shine-history-order-head d-flex justify-content-between align-items-center">
+                                <span class="shine-history-order-id">Замовлення №@order.Id</span>
+                                <time class="shine-history-order-date" datetime="@order.AppointmentDate.ToString("yyyy-MM-dd")">
+                                    @order.AppointmentDate.ToString("dd.MM.yyyy")
+                                </time>
+                            </div>
+                            <div class="shine-history-order-body">
+                                @foreach (var item in order.Items)
+                                {
+                                    <div class="shine-history-order-line d-flex align-items-center gap-3">
+                                        @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                        {
+                                            <img src="@item.ImageUrl"
+                                                 class="shine-history-order-thumb flex-shrink-0"
+                                                 alt="" />
+                                        }
+                                        <div class="min-w-0 flex-grow-1">
+                                            <div class="fw-semibold shine-history-order-name text-truncate">
+                                                @item.ServiceName
+                                                @if (item.Quantity >= 1)
+                                                {
+                                                    <span class="shine-history-qty ms-2">×@item.Quantity</span>
+                                                }
+                                            </div>
+                                            <small class="shine-history-order-desc d-block text-truncate">@item.ServiceDescription</small>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                            <div class="shine-history-order-foot d-flex justify-content-between align-items-center">
+                                <span class="shine-history-order-total">Разом: @order.Price.ToString("0.##") грн</span>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
 </section>
 
 @code {
     [Parameter] public string CurrentUserId { get; set; } = string.Empty;
 
     private bool IsLoading = true;
-        
+
     private List<ClientOrderWithDetailsDto> clientOrders { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
-    {       
+    {
         if (string.IsNullOrWhiteSpace(CurrentUserId))
         {
             IsLoading = false;

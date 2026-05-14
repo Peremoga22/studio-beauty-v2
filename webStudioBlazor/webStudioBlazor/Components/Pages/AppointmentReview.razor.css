@@ -1,0 +1,257 @@
+/* Мої відгуки — SHINE */
+.shine-history-page {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    padding: 0.5rem 0 2.75rem;
+    background:
+        radial-gradient(ellipse 88% 48% at 50% -12%, rgba(255, 79, 163, 0.11), transparent 58%),
+        linear-gradient(180deg, #fffafc 0%, #faf7fb 52%, #f6f2f7 100%);
+}
+
+.shine-history-inner {
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 0 0.75rem;
+}
+
+@media (min-width: 768px) {
+    .shine-history-inner {
+        padding: 0 1.25rem;
+    }
+}
+
+.shine-history-header {
+    margin-bottom: 1.75rem;
+    padding: 1.75rem 1rem 1.25rem;
+}
+
+.shine-history-kicker {
+    display: inline-block;
+    margin-bottom: 0.65rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #ff4f9a;
+    font-weight: 800;
+}
+
+.shine-history-title {
+    margin: 0 0 0.85rem;
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: clamp(1.55rem, 4.2vw, 2.35rem);
+    line-height: 1.12;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    background: linear-gradient(120deg, #c2185b 0%, #ff4f9a 45%, #d63384 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+@supports not (background-clip: text) {
+    .shine-history-title {
+        color: #c2185b;
+        -webkit-text-fill-color: unset;
+        background: none;
+    }
+}
+
+.shine-history-lead {
+    max-width: 36rem;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 0.98rem;
+    line-height: 1.65;
+    color: #6f5f70;
+}
+
+.shine-history-breadcrumb {
+    padding: 0.95rem 1.2rem;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid rgba(255, 182, 213, 0.4);
+    box-shadow:
+        0 12px 32px rgba(40, 20, 35, 0.06),
+        inset 0 1px 0 rgba(255, 255, 255, 0.95);
+    font-size: 0.92rem;
+    color: #7b6c7a;
+}
+
+.shine-history-breadcrumb-link {
+    color: #ff5fa2;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.shine-history-breadcrumb-link:hover {
+    color: #d63384;
+    text-decoration: underline;
+}
+
+.shine-history-breadcrumb-sep {
+    margin: 0 0.4rem;
+    opacity: 0.55;
+}
+
+.shine-history-breadcrumb-current {
+    font-weight: 600;
+    color: #4a3d4a;
+}
+
+.shine-history-spinner {
+    width: 2.75rem;
+    height: 2.75rem;
+    border-width: 0.2rem;
+    color: #ff4f9a;
+}
+
+.shine-history-empty-card {
+    max-width: 440px;
+    margin: 0 auto;
+    padding: 2.25rem 1.75rem;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid rgba(255, 182, 213, 0.42);
+    box-shadow:
+        0 18px 48px rgba(255, 105, 180, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.98);
+}
+
+.shine-history-empty-icon {
+    font-size: 2.25rem;
+    color: #ff5fa2;
+    margin-bottom: 1rem;
+    opacity: 0.9;
+}
+
+.shine-history-empty-title {
+    font-family: "Playfair Display", Georgia, serif;
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: #2a1f2e;
+}
+
+.shine-history-empty-text {
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: #7b6c7a;
+}
+
+.shine-history-empty-cta {
+    border-radius: 999px;
+    padding: 0.65rem 1.5rem;
+    font-weight: 700;
+    font-size: 0.92rem;
+    color: #fff !important;
+    background: linear-gradient(135deg, #ff4f9a, #ff9ac7);
+    box-shadow: 0 10px 28px rgba(255, 79, 163, 0.28);
+    transition: transform 0.18s ease, box-shadow 0.2s ease;
+}
+
+.shine-history-empty-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 36px rgba(255, 79, 163, 0.35);
+    color: #fff !important;
+}
+
+.shine-history-review-banner {
+    padding: 1.1rem 1.35rem;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid rgba(255, 182, 213, 0.42);
+    box-shadow: 0 10px 28px rgba(255, 105, 180, 0.1);
+}
+
+.shine-history-review-banner-text {
+    font-weight: 600;
+    color: #5c4f5c;
+    font-size: 0.95rem;
+}
+
+.shine-history-review-banner-btn {
+    border-radius: 999px;
+    padding: 0.55rem 1.35rem;
+    font-weight: 700;
+    font-size: 0.88rem;
+    color: #fff !important;
+    background: linear-gradient(135deg, #ff4f9a, #ff9ac7);
+    white-space: nowrap;
+    transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.shine-history-review-banner-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 22px rgba(255, 79, 163, 0.3);
+    color: #fff !important;
+}
+
+.shine-history-review-card {
+    border-radius: 22px !important;
+    overflow: hidden;
+    border: 1px solid rgba(255, 182, 213, 0.38) !important;
+    background: rgba(255, 255, 255, 0.97) !important;
+    box-shadow:
+        0 14px 40px rgba(255, 105, 180, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.96);
+    transition: transform 0.28s ease, box-shadow 0.28s ease;
+}
+
+.shine-history-review-card:hover {
+    transform: translateY(-3px);
+    box-shadow:
+        0 22px 52px rgba(255, 105, 180, 0.16),
+        inset 0 1px 0 rgba(255, 255, 255, 1);
+}
+
+.shine-history-review-client {
+    font-size: 0.88rem;
+    color: #7b6c7a;
+    font-weight: 600;
+}
+
+.shine-history-review-service {
+    font-family: "Playfair Display", Georgia, serif;
+    color: #c2185b;
+    text-decoration: underline;
+    text-decoration-color: rgba(255, 79, 163, 0.45);
+    text-underline-offset: 0.2em;
+}
+
+.shine-history-review-date {
+    font-size: 0.78rem;
+    color: #9a8494;
+}
+
+.shine-history-star-on {
+    color: #ff4f9a;
+    margin-right: 0.12rem;
+}
+
+.shine-history-star-off {
+    color: rgba(255, 79, 163, 0.35);
+    margin-right: 0.12rem;
+}
+
+.shine-history-review-comment {
+    color: #3d343d;
+    line-height: 1.55;
+}
+
+.shine-history-review-master {
+    color: #6f5f70;
+    border-top: 1px solid rgba(255, 182, 213, 0.35);
+    padding-top: 0.85rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .shine-history-review-card,
+    .shine-history-review-card:hover,
+    .shine-history-empty-cta,
+    .shine-history-empty-cta:hover,
+    .shine-history-review-banner-btn,
+    .shine-history-review-banner-btn:hover {
+        transition: none;
+        transform: none;
+    }
+}
