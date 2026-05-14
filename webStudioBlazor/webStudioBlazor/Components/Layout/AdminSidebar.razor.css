@@ -1,0 +1,68 @@
+/* Той самий візуальний ряд, що ShineSidebar — окремий scope для адмінки */
+.shine-sidebar-shell {
+    width: 0;
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+@media (min-width: 992px) {
+    .shine-sidebar-shell {
+        width: var(--shine-sidebar-width, 17.5rem);
+        background: linear-gradient(105deg, #16141c 0%, #2a1822 42%, #1a1620 100%);
+        border-right: 1px solid rgba(255, 79, 163, 0.15);
+        box-shadow: 4px 0 28px rgba(0, 0, 0, 0.22);
+    }
+}
+
+.shine-sidebar {
+    position: sticky;
+    top: 0;
+    align-self: flex-start;
+    width: var(--shine-sidebar-width, 17.5rem);
+    min-height: 100vh;
+    background: transparent;
+}
+
+.shine-sidebar-brand {
+    flex-shrink: 0;
+    border-bottom: 1px solid rgba(255, 79, 163, 0.12);
+}
+
+.shine-sidebar-brand a {
+    color: rgba(255, 255, 255, 0.95) !important;
+}
+
+.shine-sidebar-brand-title {
+    font-family: "Playfair Display", Georgia, serif;
+    font-weight: 600;
+    font-size: 1.35rem;
+    letter-spacing: 0.08em;
+    color: #fff;
+}
+
+.shine-sidebar-brand-tag {
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.shine-nav-offcanvas {
+    --bs-offcanvas-width: 100%;
+    width: 100%;
+    max-width: 100%;
+    background: linear-gradient(105deg, #16141c 0%, #2a1822 42%, #1a1620 100%);
+}
+
+.shine-nav-offcanvas .offcanvas-header {
+    border-bottom-color: rgba(255, 79, 163, 0.15) !important;
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.shine-nav-offcanvas .offcanvas-header .btn-close {
+    filter: invert(1) grayscale(100%) brightness(2);
+    opacity: 0.8;
+}

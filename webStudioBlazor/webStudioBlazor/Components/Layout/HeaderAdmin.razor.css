@@ -4,136 +4,33 @@
     box-sizing: border-box;
 }
 
-.shine-admin-navbar {
-    background:
-        radial-gradient(ellipse 100% 120% at 12% -20%, rgba(255, 79, 163, 0.22), transparent 42%),
-        linear-gradient(165deg, #16141c 0%, #1f1822 42%, #151018 100%);
-    border-bottom: 1px solid rgba(255, 79, 163, 0.22);
-    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+.shine-admin-header-chrome {
+    position: sticky;
+    top: 0;
+    z-index: 1020;
 }
 
-.shine-admin-brand {
-    text-decoration: none;
+.shine-admin-header-brand:hover .shine-admin-header-title {
+    color: var(--shine-rose-deep, #c2185b);
 }
 
-.shine-admin-brand:hover .shine-admin-brand-text {
-    color: #ffc8e4;
-}
-
-.shine-admin-brand-logo {
-    width: 48px;
-    height: 48px;
-    object-fit: cover;
-}
-
-.shine-admin-brand-text {
+.shine-admin-header-title {
     font-family: "Playfair Display", Georgia, serif;
-    font-size: 1.15rem;
     font-weight: 700;
+    font-size: 1rem;
     letter-spacing: 0.02em;
-    color: rgba(255, 255, 255, 0.95);
+    color: #2b2230;
 }
 
-.shine-admin-toggler {
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 0.5rem;
-}
-
-.shine-admin-nav {
-    row-gap: 0.2rem;
-    column-gap: 0.15rem;
-}
-
-@media (min-width: 992px) {
-    .shine-admin-nav {
-        flex-wrap: wrap;
-        justify-content: flex-end;
-        row-gap: 0.35rem;
-        column-gap: 0.25rem;
-        max-width: min(100%, 72rem);
-    }
-}
-
-.shine-admin-navbar ::deep .shine-admin-nav-link {
-    color: rgba(255, 255, 255, 0.88) !important;
-    font-size: 0.8125rem;
+.shine-admin-header-sub {
+    font-size: 0.68rem;
     font-weight: 600;
-    padding: 0.45rem 0.65rem !important;
-    transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #6b5a66;
 }
 
-@media (min-width: 992px) {
-    .shine-admin-navbar ::deep .shine-admin-nav-link {
-        white-space: nowrap;
-    }
-}
-
-.shine-admin-navbar ::deep .shine-admin-nav-link:hover {
-    color: #fff !important;
-    background: rgba(255, 79, 163, 0.18);
-}
-
-.shine-admin-navbar ::deep .shine-admin-nav-link.active.shine-admin-nav-active {
-    color: #fff !important;
-    background: linear-gradient(135deg, #ff4f9a 0%, #d63384 100%) !important;
-    box-shadow: 0 4px 16px rgba(255, 79, 163, 0.35);
-}
-
-.shine-admin-navbar ::deep .shine-admin-nav-site {
-    color: #ffe08a !important;
-}
-
-.shine-admin-navbar ::deep .shine-admin-nav-site:hover {
-    color: #fff6cf !important;
-    background: rgba(255, 224, 138, 0.12);
-}
-
-.shine-admin-navbar ::deep .shine-admin-nav-site.active.shine-admin-nav-active {
-    color: #1a1520 !important;
-    background: linear-gradient(135deg, #ffe08a, #ffc857) !important;
-    box-shadow: 0 4px 14px rgba(255, 200, 87, 0.35);
-}
-
-.shine-admin-navbar ::deep .shine-admin-logout-btn {
-    color: #ffb4c4 !important;
-    font-size: 0.8125rem;
-    font-weight: 600;
-    padding: 0.45rem 0.65rem !important;
-}
-
-.shine-admin-navbar ::deep .shine-admin-logout-btn:hover {
-    color: #fff !important;
-    background: rgba(220, 53, 69, 0.35);
-}
-
-.shine-admin-navbar .navbar-toggler {
+.shine-menu-btn {
     min-width: 44px;
     min-height: 44px;
-    border-radius: 0.5rem;
-}
-
-@media (max-width: 991.98px) {
-    .admin-navbar-collapse {
-        border-top: 1px solid rgba(255, 255, 255, 0.12);
-        margin-top: 0.5rem;
-    }
-
-    .shine-admin-navbar ::deep .navbar-nav .nav-link {
-        min-height: 44px;
-        display: flex;
-        align-items: center;
-        padding: 0.65rem 0.75rem !important;
-    }
-
-    .shine-admin-navbar ::deep .admin-logout-btn {
-        min-height: 44px;
-        padding: 0.65rem 0.75rem !important;
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .shine-admin-navbar ::deep .shine-admin-nav-link,
-    .shine-admin-navbar ::deep .shine-admin-logout-btn {
-        transition: none;
-    }
 }

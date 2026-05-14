@@ -1,0 +1,89 @@
+<ul class="nav flex-column gap-1 @CssClass" role="navigation">
+    <li class="nav-item">
+        <NavLink href="/admin-clients" class="shine-nav-link nav-link" Match="NavLinkMatch.All" activeClass="active">
+            <i class="bi bi-calendar-check me-2 opacity-75" aria-hidden="true"></i>Запис клієнтів
+        </NavLink>
+    </li>
+    <li class="nav-item">
+        <NavLink href="/admin-order-clients" class="shine-nav-link nav-link" Match="NavLinkMatch.All" activeClass="active">
+            <i class="bi bi-receipt me-2 opacity-75" aria-hidden="true"></i>Замовлення клієнтів
+        </NavLink>
+    </li>
+    <li class="nav-item">
+        <NavLink href="/admin-our-reviews-for-stududia" class="shine-nav-link nav-link" activeClass="active">
+            <i class="bi bi-chat-heart me-2 opacity-75" aria-hidden="true"></i>Відгуки
+        </NavLink>
+    </li>
+    <li class="nav-item">
+        <NavLink href="/admin-us-clients" class="shine-nav-link nav-link" activeClass="active">
+            <i class="bi bi-people me-2 opacity-75" aria-hidden="true"></i>Наші клієнти
+        </NavLink>
+    </li>
+    <li class="nav-item">
+        <NavLink href="/admin-customer-orders" class="shine-nav-link nav-link" activeClass="active">
+            <i class="bi bi-bag-check me-2 opacity-75" aria-hidden="true"></i>Наші покупці
+        </NavLink>
+    </li>
+    <li class="nav-item">
+        <NavLink href="/analytics" class="shine-nav-link nav-link" Match="NavLinkMatch.All" activeClass="active">
+            <i class="bi bi-graph-up-arrow me-2 opacity-75" aria-hidden="true"></i>Аналітика
+        </NavLink>
+    </li>
+    <li class="nav-item">
+        <NavLink href="/admin-cosmetology" class="shine-nav-link nav-link" activeClass="active">
+            <i class="bi bi-stars me-2 opacity-75" aria-hidden="true"></i>Косметологія
+        </NavLink>
+    </li>
+    <li class="nav-item">
+        <NavLink href="/admin-massage-therapy" class="shine-nav-link nav-link" activeClass="active">
+            <i class="bi bi-hand-index-thumb me-2 opacity-75" aria-hidden="true"></i>Масажна терапія
+        </NavLink>
+    </li>
+    <li class="nav-item">
+        <NavLink href="/admin-sales" class="shine-nav-link nav-link" activeClass="active">
+            <i class="bi bi-shop me-2 opacity-75" aria-hidden="true"></i>Наш магазин
+        </NavLink>
+    </li>
+    <li class="nav-item">
+        <NavLink href="/admin-history-of-gift-sertificate-services" class="shine-nav-link nav-link" activeClass="active">
+            <i class="bi bi-gift me-2 opacity-75" aria-hidden="true"></i>Подарункові сертифікати
+        </NavLink>
+    </li>
+    <li class="nav-item">
+        <NavLink href="/admin-seed" class="shine-nav-link nav-link" activeClass="active">
+            <i class="bi bi-grid-3x3-gap me-2 opacity-75" aria-hidden="true"></i>Наповнення категорії
+        </NavLink>
+    </li>
+
+    <li class="nav-item mt-2 pt-2 shine-nav-divider">
+        <NavLink href="/" class="shine-nav-link nav-link fw-semibold" Match="NavLinkMatch.All" activeClass="active">
+            <i class="bi bi-house-door me-2 opacity-75" aria-hidden="true"></i>На сайт
+        </NavLink>
+    </li>
+
+    <AuthorizeView>
+        <Authorized>
+            <li class="nav-item">
+                <form action="Account/Logout" method="post" class="m-0">
+                    <AntiforgeryToken />
+                    <input type="hidden" name="ReturnUrl" value="@CurrentUrl" />
+                    <button type="submit" class="shine-nav-link nav-link text-start w-100 border-0 bg-transparent shine-sidebar-logout admin-logout-btn">
+                        <i class="bi bi-box-arrow-left me-2 opacity-75" aria-hidden="true"></i>Вийти
+                    </button>
+                </form>
+            </li>
+        </Authorized>
+        <NotAuthorized>
+            <li class="nav-item">
+                <NavLink href="Account/Login" class="shine-nav-link nav-link" activeClass="active">
+                    <i class="bi bi-person me-2 opacity-75" aria-hidden="true"></i>Логін
+                </NavLink>
+            </li>
+        </NotAuthorized>
+    </AuthorizeView>
+</ul>
+
+@code {
+    [Parameter] public string? CssClass { get; set; }
+    [Parameter] public string? CurrentUrl { get; set; }
+}

@@ -1307,3 +1307,310 @@ section {
         transition: none;
     }
 }
+
+/* =============================================================================
+   Адмінка — premium «3D hero»: mesh-фон, скляна панель, картки з глибиною
+   (розмітка: .shine-admin-main + .shine-admin-3d-glass на .card)
+   ============================================================================= */
+
+.admin-app-root .shine-admin-main {
+    position: relative;
+    isolation: isolate;
+    background:
+        radial-gradient(ellipse 88% 55% at 50% -18%, rgba(255, 79, 163, 0.14), transparent 58%),
+        radial-gradient(ellipse 50% 42% at 100% 20%, rgba(255, 200, 230, 0.45), transparent 52%),
+        radial-gradient(ellipse 45% 38% at 0% 80%, rgba(255, 182, 213, 0.22), transparent 48%),
+        linear-gradient(180deg, #fffafc 0%, #faf5fb 42%, #f3ecf7 100%);
+}
+
+.admin-app-root .shine-admin-main::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.55;
+    background:
+        radial-gradient(circle at 20% 30%, rgba(255, 79, 163, 0.06) 0%, transparent 42%),
+        radial-gradient(circle at 85% 70%, rgba(194, 24, 91, 0.05) 0%, transparent 40%);
+}
+
+/* Сторінка: kicker + заголовок-градієнт */
+.shine-admin-3d-page {
+    max-width: 1040px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.shine-admin-page-hero {
+    padding: 0.5rem 0.25rem 0;
+}
+
+.shine-admin-page-kicker {
+    display: inline-block;
+    margin-bottom: 0.5rem;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #ff4f9a;
+}
+
+.shine-admin-page-title {
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: clamp(1.65rem, 4vw, 2.35rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    margin: 0;
+    background: linear-gradient(118deg, #c2185b 0%, #ff4f9a 48%, #d63384 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+@supports not (background-clip: text) {
+    .shine-admin-page-title {
+        color: #c2185b;
+        -webkit-text-fill-color: unset;
+        background: none;
+    }
+}
+
+.shine-admin-page-lead {
+    max-width: 36rem;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: #6f5f70;
+}
+
+@media (min-width: 992px) {
+    .shine-admin-page-lead {
+        margin-left: 0;
+    }
+}
+
+/* Головна скляна панель — 3D «плаваюча» картка */
+.admin-app-root .shine-admin-3d-glass.card {
+    position: relative;
+    overflow: visible;
+    transform-style: preserve-3d;
+    transform: perspective(var(--shine-hero-perspective, 1180px)) translateZ(0) rotateX(0.6deg);
+    border-radius: clamp(1.25rem, 2.2vw, 1.85rem) !important;
+    border: 1px solid rgba(255, 182, 213, 0.48) !important;
+    background:
+        linear-gradient(
+            148deg,
+            rgba(255, 255, 255, 0.88) 0%,
+            rgba(255, 248, 252, 0.72) 42%,
+            rgba(255, 252, 254, 0.86) 100%
+        ) !important;
+    backdrop-filter: blur(18px) saturate(1.2);
+    -webkit-backdrop-filter: blur(18px) saturate(1.2);
+    box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.95) inset,
+        0 28px 56px rgba(255, 79, 163, 0.14),
+        0 12px 32px rgba(43, 34, 48, 0.08),
+        0 0 0 1px rgba(255, 255, 255, 0.55) inset;
+    transition:
+        transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow 0.45s ease,
+        border-color 0.35s ease;
+}
+
+.admin-app-root .shine-admin-3d-glass.card::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 0;
+    background: linear-gradient(
+        125deg,
+        rgba(255, 255, 255, 0.5) 0%,
+        transparent 38%,
+        transparent 62%,
+        rgba(255, 79, 163, 0.08) 100%
+    );
+    opacity: 0.85;
+}
+
+.admin-app-root .shine-admin-3d-glass.card > * {
+    position: relative;
+    z-index: 1;
+}
+
+.admin-app-root .shine-admin-3d-glass--lift.card:hover {
+    transform: perspective(var(--shine-hero-perspective, 1180px)) translateY(-6px) translateZ(16px) rotateX(1.4deg);
+    border-color: rgba(255, 143, 190, 0.65) !important;
+    box-shadow:
+        0 1px 0 rgba(255, 255, 255, 1) inset,
+        0 36px 72px rgba(255, 79, 163, 0.2),
+        0 18px 40px rgba(194, 24, 91, 0.12),
+        0 0 48px rgba(255, 79, 163, 0.12),
+        0 0 0 1px rgba(255, 255, 255, 0.65) inset;
+}
+
+.shine-admin-card-header.card__header {
+    padding-top: clamp(1.35rem, 3vw, 1.85rem);
+    padding-bottom: clamp(1.1rem, 2.5vw, 1.5rem);
+}
+
+.shine-admin-card-title.title {
+    font-family: "Playfair Display", Georgia, serif;
+    font-weight: 700;
+    font-size: clamp(1.25rem, 2.4vw, 1.65rem);
+    letter-spacing: -0.02em;
+    color: #2a1f2e !important;
+}
+
+.shine-admin-card-subtitle.subtitle {
+    color: #7b6c7a !important;
+    font-size: 0.92rem !important;
+    line-height: 1.5;
+}
+
+.shine-admin-divider.divider {
+    height: 2px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 79, 163, 0.35),
+        rgba(255, 255, 255, 0.85),
+        rgba(255, 79, 163, 0.35),
+        transparent
+    ) !important;
+    opacity: 1;
+}
+
+.shine-admin-entry-grid.cards {
+    gap: 1.1rem;
+    padding: clamp(1rem, 2.5vw, 1.5rem) clamp(1rem, 2.5vw, 1.75rem) clamp(1.35rem, 3vw, 2rem) !important;
+}
+
+/* Картка запису — мікро-3D */
+.admin-app-root .shine-admin-entry.entry {
+    position: relative;
+    transform-style: preserve-3d;
+    transform: perspective(880px) translateZ(0);
+    border-radius: 1.125rem !important;
+    border: 1px solid rgba(255, 182, 213, 0.42) !important;
+    background: linear-gradient(
+        155deg,
+        rgba(255, 255, 255, 0.94) 0%,
+        rgba(255, 250, 253, 0.88) 55%,
+        rgba(255, 245, 250, 0.92) 100%
+    ) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.9) inset,
+        0 10px 28px rgba(255, 79, 163, 0.08),
+        0 4px 14px rgba(43, 34, 48, 0.06);
+    transition:
+        transform 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow 0.38s ease,
+        border-color 0.3s ease;
+}
+
+.admin-app-root .shine-admin-entry.entry::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    background: radial-gradient(120% 80% at 10% 0%, rgba(255, 79, 163, 0.12), transparent 55%);
+}
+
+.admin-app-root .shine-admin-entry.entry:hover {
+    transform: perspective(880px) translateY(-8px) translateZ(18px) rotateX(3.5deg) rotateY(-0.8deg);
+    border-color: rgba(255, 143, 190, 0.55) !important;
+    box-shadow:
+        0 1px 0 rgba(255, 255, 255, 1) inset,
+        0 22px 44px rgba(255, 79, 163, 0.16),
+        0 8px 22px rgba(194, 24, 91, 0.1);
+}
+
+.admin-app-root .shine-admin-entry.entry:hover::after {
+    opacity: 1;
+}
+
+.admin-app-root .shine-admin-3d-glass .client a {
+    color: #c2185b !important;
+    text-decoration: none;
+    font-weight: 700;
+    transition: color 0.2s ease, text-shadow 0.2s ease;
+}
+
+.admin-app-root .shine-admin-3d-glass .client a:hover {
+    color: #ff4f9a !important;
+    text-shadow: 0 0 20px rgba(255, 79, 163, 0.35);
+}
+
+.admin-app-root .shine-admin-3d-glass .btn-outline-danger {
+    border-width: 1.5px;
+    border-color: rgba(220, 53, 69, 0.55);
+    color: #c82333 !important;
+    font-weight: 600;
+    transition:
+        transform 0.22s ease,
+        box-shadow 0.22s ease,
+        background 0.22s ease,
+        border-color 0.22s ease,
+        color 0.22s ease;
+}
+
+.admin-app-root .shine-admin-3d-glass .btn-outline-danger:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(135deg, rgba(255, 79, 163, 0.12), rgba(220, 53, 69, 0.12)) !important;
+    border-color: rgba(220, 53, 69, 0.85);
+    color: #a71d2a !important;
+    box-shadow: 0 8px 22px rgba(220, 53, 69, 0.2);
+}
+
+.admin-app-root .shine-admin-3d-glass .btn-outline-info {
+    border-width: 1.5px;
+    border-color: rgba(255, 79, 163, 0.45);
+    color: #c2185b !important;
+    font-weight: 600;
+    transition:
+        transform 0.22s ease,
+        box-shadow 0.22s ease,
+        background 0.22s ease,
+        border-color 0.22s ease,
+        color 0.22s ease;
+}
+
+.admin-app-root .shine-admin-3d-glass .btn-outline-info:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(135deg, rgba(255, 79, 163, 0.18), rgba(255, 182, 213, 0.35)) !important;
+    border-color: rgba(255, 79, 163, 0.75);
+    color: #8a0f45 !important;
+    box-shadow: 0 8px 24px rgba(255, 79, 163, 0.22);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .admin-app-root .shine-admin-3d-glass.card,
+    .admin-app-root .shine-admin-3d-glass--lift.card:hover {
+        transform: none !important;
+        transition: none !important;
+    }
+
+    .admin-app-root .shine-admin-entry.entry,
+    .admin-app-root .shine-admin-entry.entry:hover,
+    .admin-app-root .shine-admin-3d-glass .btn-outline-danger,
+    .admin-app-root .shine-admin-3d-glass .btn-outline-danger:hover,
+    .admin-app-root .shine-admin-3d-glass .btn-outline-info,
+    .admin-app-root .shine-admin-3d-glass .btn-outline-info:hover {
+        transition: none;
+        transform: none !important;
+    }
+
+    .admin-app-root .shine-admin-entry.entry:hover::after {
+        opacity: 0;
+    }
+}

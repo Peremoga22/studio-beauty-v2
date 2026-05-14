@@ -1,130 +1,27 @@
-﻿@implements IDisposable
-@using Microsoft.AspNetCore.Components.Routing
-@inject NavigationManager NavigationManager
-
-<header class="admin-header-root w-100 min-w-0">
-    <nav class="navbar navbar-expand-lg navbar-dark shine-admin-navbar sticky-top px-3 px-lg-4 py-2">
-        <div class="container-fluid px-0">
-            <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                <a href="/" class="navbar-brand shine-admin-brand d-flex align-items-center gap-2 py-1 mb-0 min-w-0">
-                    <img src="img/logo-new.png" alt="Логотип SHINE" class="shine-admin-brand-logo rounded-circle shadow-sm flex-shrink-0">
-                    <span class="shine-admin-brand-text text-truncate">Адмінка</span>
-                </a>
-
-                <button class="navbar-toggler shine-admin-toggler flex-shrink-0 py-2 px-3" type="button"
-                        data-bs-toggle="collapse" data-bs-target="#adminNavbarCollapse"
-                        aria-controls="adminNavbarCollapse" aria-expanded="false"
+﻿<header class="admin-header-root w-100 min-w-0">
+    <div class="shine-admin-header-chrome border-bottom bg-white shadow-sm">
+        <div class="container-fluid px-2 px-sm-3 py-2 d-flex align-items-center justify-content-between gap-2">
+            <div class="d-flex align-items-center gap-2 min-w-0">
+                <button type="button"
+                        class="btn btn-light border rounded-3 d-lg-none shine-menu-btn"
+                        data-bs-toggle="offcanvas"
+                        data-bs-target="#adminNavDrawer"
+                        aria-controls="adminNavDrawer"
                         aria-label="Відкрити меню">
-                    <span class="navbar-toggler-icon"></span>
+                    <i class="bi bi-list fs-4" aria-hidden="true"></i>
                 </button>
+                <a href="/admin-clients" class="shine-admin-header-brand d-flex align-items-center gap-2 text-decoration-none min-w-0">
+                    <img src="img/logo-new.png" alt="SHINE" width="40" height="40" class="rounded-circle shadow-sm flex-shrink-0">
+                    <span class="d-flex flex-column lh-sm min-w-0">
+                        <span class="shine-admin-header-title text-truncate">Адмінка</span>
+                        <span class="shine-admin-header-sub text-truncate d-none d-sm-inline">SHINE cosmetology</span>
+                    </span>
+                </a>
             </div>
-
-            <div class="collapse navbar-collapse admin-navbar-collapse pt-2 pt-lg-0" id="adminNavbarCollapse">
-                <ul class="navbar-nav shine-admin-nav ms-lg-auto flex-column flex-lg-row align-items-stretch align-items-lg-center w-100 w-lg-auto">
-                    <li class="nav-item">
-                        <NavLink href="/admin-clients" class="nav-link shine-admin-nav-link rounded-3" Match="NavLinkMatch.All" activeClass="active shine-admin-nav-active">
-                            Запис клієнтів
-                        </NavLink>
-                    </li>
-                    <li class="nav-item">
-                        <NavLink href="/admin-order-clients" class="nav-link shine-admin-nav-link rounded-3" Match="NavLinkMatch.All" activeClass="active shine-admin-nav-active">
-                            Замовлення клієнтів
-                        </NavLink>
-                    </li>
-                    <li class="nav-item">
-                        <NavLink href="/admin-our-reviews-for-stududia" class="nav-link shine-admin-nav-link rounded-3" activeClass="active shine-admin-nav-active">
-                            Відгуки
-                        </NavLink>
-                    </li>
-                    <li class="nav-item">
-                        <NavLink href="/admin-us-clients" class="nav-link shine-admin-nav-link rounded-3" activeClass="active shine-admin-nav-active">
-                            Наші клієнти
-                        </NavLink>
-                    </li>
-                    <li class="nav-item">
-                        <NavLink href="/admin-customer-orders" class="nav-link shine-admin-nav-link rounded-3" activeClass="active shine-admin-nav-active">
-                            Наші покупці
-                        </NavLink>
-                    </li>
-                    <li class="nav-item">
-                        <NavLink href="/analytics" class="nav-link shine-admin-nav-link rounded-3" Match="NavLinkMatch.All" activeClass="active shine-admin-nav-active">
-                            Аналітика
-                        </NavLink>
-                    </li>
-                    <li class="nav-item">
-                        <NavLink href="/admin-cosmetology" class="nav-link shine-admin-nav-link rounded-3" activeClass="active shine-admin-nav-active">
-                            Косметологія
-                        </NavLink>
-                    </li>
-                    <li class="nav-item">
-                        <NavLink href="/admin-massage-therapy" class="nav-link shine-admin-nav-link rounded-3" activeClass="active shine-admin-nav-active">
-                            Масажна терапія
-                        </NavLink>
-                    </li>
-                    <li class="nav-item">
-                        <NavLink href="/admin-sales" class="nav-link shine-admin-nav-link rounded-3" activeClass="active shine-admin-nav-active">
-                            Наш магазин
-                        </NavLink>
-                    </li>
-                    <li class="nav-item">
-                        <NavLink href="/admin-history-of-gift-sertificate-services" class="nav-link shine-admin-nav-link rounded-3" activeClass="active shine-admin-nav-active">
-                            Подарункові сертифікати
-                        </NavLink>
-                    </li>
-                    <li class="nav-item">
-                        <NavLink href="/admin-seed" class="nav-link shine-admin-nav-link rounded-3" activeClass="active shine-admin-nav-active">
-                            Наповнення категорії
-                        </NavLink>
-                    </li>
-
-                    <AuthorizeView>
-                        <Authorized>
-                            <li class="nav-item">
-                                <NavLink class="nav-link shine-admin-nav-link shine-admin-nav-site rounded-3" href="/" Match="NavLinkMatch.All" activeClass="active shine-admin-nav-active">
-                                    На сайт
-                                </NavLink>
-                            </li>
-                            <li class="nav-item">
-                                <form action="Account/Logout" method="post" class="m-0">
-                                    <AntiforgeryToken />
-                                    <input type="hidden" name="ReturnUrl" value="@currentUrl" />
-                                    <button type="submit" class="nav-link shine-admin-nav-link shine-admin-logout-btn border-0 bg-transparent w-100 text-lg-start rounded-3 admin-logout-btn">
-                                        <span class="bi bi-box-arrow-left me-1" aria-hidden="true"></span>Вийти
-                                    </button>
-                                </form>
-                            </li>
-                        </Authorized>
-                        <NotAuthorized>
-                            <li class="nav-item">
-                                <NavLink href="Account/Login" class="nav-link shine-admin-nav-link rounded-3">
-                                    <i class="bi bi-person me-1" aria-hidden="true"></i>Логін
-                                </NavLink>
-                            </li>
-                        </NotAuthorized>
-                    </AuthorizeView>
-                </ul>
-            </div>
+            <a href="/" class="btn btn-sm btn-outline-secondary rounded-pill d-none d-md-inline-flex align-items-center gap-1">
+                <i class="bi bi-house-door" aria-hidden="true"></i>
+                <span>На сайт</span>
+            </a>
         </div>
-    </nav>
+    </div>
 </header>
-
-@code {
-    private string? currentUrl;
-
-    protected override void OnInitialized()
-    {
-        currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
-        NavigationManager.LocationChanged += OnLocationChanged;
-    }
-
-    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
-    {
-        currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
-        StateHasChanged();
-    }
-
-    public void Dispose()
-    {
-        NavigationManager.LocationChanged -= OnLocationChanged;
-    }
-}

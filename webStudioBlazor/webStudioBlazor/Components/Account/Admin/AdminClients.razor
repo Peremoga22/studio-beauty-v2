@@ -10,24 +10,24 @@
 @attribute [Authorize(Roles = "Admin,Manicure")]
 @rendermode InteractiveServer
 
-<h3 style="padding-top: 2%;"></h3>
-<div class="container mt-4">
-    <h3 style="color:hotpink">Записи клієнтів</h3>
-</div>
-<main class="container">
-    @* @if (User.IsInRole("Manicure")) { ... } *@
+<div class="container shine-admin-3d-page pb-4">
+    <header class="shine-admin-page-hero text-center text-lg-start mb-4">
+        <span class="shine-admin-page-kicker">Календар</span>
+        <h1 class="shine-admin-page-title mb-0">Записи клієнтів</h1>
+        <p class="shine-admin-page-lead mb-0 mt-2">Керуйте записами в преміум-інтерфейсі студії SHINE.</p>
+    </header>
 
-    <section class="card card--elevated">
-        <header class="card__header">
+    <section class="card card--elevated shine-admin-3d-glass shine-admin-3d-glass--lift">
+        <header class="card__header shine-admin-card-header">
             <div>
-                <h1 class="title">Календар записів</h1>
-                <p class="subtitle">Оберіть день і перегляньте всі записи за послугами</p>
+                <h2 class="title shine-admin-card-title">Календар записів</h2>
+                <p class="subtitle shine-admin-card-subtitle">Оберіть день і перегляньте всі записи за послугами</p>
             </div>
         </header>
 
-        <div class="divider"></div>
+        <div class="divider shine-admin-divider"></div>
 
-        <section aria-label="Список записів" class="cards">
+        <section aria-label="Список записів" class="cards shine-admin-entry-grid">
             @if (rows.Count == 0)
             {
                 <div class="text-muted py-3">Немає записів</div>
@@ -36,7 +36,7 @@
             {
                 @foreach (var row in rows)
                 {
-                    <article class="entry">
+                    <article class="entry shine-admin-entry">
                         <div class="entry__row">
                             <span class="badge badge--massage">
                                 @row.CategoryName
@@ -95,9 +95,8 @@
 
             }
         </section>
-     </section>
-
-</main>
+    </section>
+</div>
 
 
 

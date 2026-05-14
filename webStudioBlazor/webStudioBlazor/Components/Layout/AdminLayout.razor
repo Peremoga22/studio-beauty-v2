@@ -56,28 +56,29 @@
     <script src="js/main.js"></script>
 </HeadContent>
 
-<div class="main site-shell d-flex flex-column min-vh-100 w-100 min-w-0">
-    <!-- Header -->
-    <HeaderAdmin />
+<div class="admin-app-root shine-app-root main site-shell d-flex min-vh-100 w-100 min-w-0">
+    <AdminSidebar />
 
-    <!-- Main content -->
-    <main class="flex-grow-1 content px-2 px-sm-3 py-3 w-100 min-w-0">
-        @Body
-    </main>
+    <div class="shine-app-column flex-grow-1 d-flex flex-column min-w-0">
+        <HeaderAdmin />
 
-    <!-- Footer -->
-    <FooterAdmin />
+        <main class="flex-grow-1 content shine-admin-main px-2 px-sm-3 py-3 w-100 min-w-0">
+            @Body
+        </main>
+
+        <FooterAdmin />
+    </div>
 </div>
 
 <script>
 (function () {
-  const COLLAPSE_ID = 'adminNavbarCollapse';
-  function hideNavbar() {
-    const el = document.getElementById(COLLAPSE_ID);
+  const DRAWER_ID = 'adminNavDrawer';
+  function hideDrawer() {
+    const el = document.getElementById(DRAWER_ID);
     if (!el) return;
-    if (window.bootstrap && bootstrap.Collapse) {
-      const inst = bootstrap.Collapse.getOrCreateInstance(el, { toggle: false });
-      inst.hide();
+    if (window.bootstrap && bootstrap.Offcanvas) {
+      const inst = bootstrap.Offcanvas.getInstance(el);
+      if (inst) inst.hide();
     } else {
       el.classList.remove('show');
     }
@@ -96,20 +97,14 @@
     }
     return e.target.closest(selector);
   }
-  const selector = [
-    '#'+COLLAPSE_ID+' a.nav-link',
-    '#'+COLLAPSE_ID+' a[href]',
-    '#'+COLLAPSE_ID+' button.nav-link',
-    '#'+COLLAPSE_ID+' .admin-logout-btn',
-    '#'+COLLAPSE_ID+' form button'
-  ].join(',');
+  const selector = '#' + DRAWER_ID + ' a, #' + DRAWER_ID + ' button[type="submit"]';
   function maybeHide(e) {
-    if (findInPath(e, selector)) setTimeout(hideNavbar, 0);
+    if (findInPath(e, selector)) setTimeout(hideDrawer, 0);
   }
   document.addEventListener('click', maybeHide, true);
   document.addEventListener('pointerup', maybeHide, true);
   document.addEventListener('touchend', maybeHide, true);
-  window.addEventListener('popstate', hideNavbar);
+  window.addEventListener('popstate', hideDrawer);
 })();
 </script>
 

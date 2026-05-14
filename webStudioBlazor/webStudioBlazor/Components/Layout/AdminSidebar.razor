@@ -1,0 +1,53 @@
+@implements IDisposable
+@inject NavigationManager NavigationManager
+
+<div class="shine-sidebar-shell flex-shrink-0">
+    <aside class="shine-sidebar d-none d-lg-flex flex-column" aria-label="Адміністративне меню">
+        <div class="shine-sidebar-brand px-3 py-4">
+            <a href="/admin-clients" class="shine-sidebar-brand-link text-decoration-none d-flex align-items-center gap-3">
+                <img src="img/logo-new.png" alt="SHINE" width="48" height="48" class="rounded-circle shadow-sm flex-shrink-0" />
+                <span class="d-flex flex-column lh-sm min-w-0">
+                    <span class="shine-sidebar-brand-title text-truncate">SHINE</span>
+                    <span class="shine-sidebar-brand-tag text-truncate">Адмінка</span>
+                </span>
+            </a>
+        </div>
+        <nav class="shine-sidebar-nav flex-grow-1 px-2 pb-3 overflow-auto">
+            <AdminNavMenu CssClass="shine-sidebar-nav-inner" CurrentUrl="currentUrl" />
+        </nav>
+    </aside>
+
+    <div class="offcanvas offcanvas-start shine-nav-offcanvas d-lg-none" tabindex="-1" id="adminNavDrawer" aria-labelledby="adminNavDrawerLabel">
+        <div class="offcanvas-header border-bottom align-items-center">
+            <div class="d-flex align-items-center gap-2 min-w-0 text-white" id="adminNavDrawerLabel">
+                <img src="img/logo-new.png" alt="" width="40" height="40" class="rounded-circle flex-shrink-0" />
+                <span class="fw-semibold text-truncate">SHINE — адмінка</span>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Закрити"></button>
+        </div>
+        <div class="offcanvas-body pt-3">
+            <AdminNavMenu CurrentUrl="currentUrl" />
+        </div>
+    </div>
+</div>
+
+@code {
+    private string? currentUrl;
+
+    protected override void OnInitialized()
+    {
+        currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        NavigationManager.LocationChanged += OnLocationChanged;
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
+}
