@@ -1,9 +1,11 @@
 ﻿@page "/appointment-success"
+@page "/appointment-success/"
 @page "/appointment-success/{Id:int}"
+@page "/appointment-success/{Id:int}/"
 @using webStudioBlazor.BL
 
 @inject AppointmentNotifier _notification
-@inject IConfiguration _сonfig
+@inject IConfiguration _configuration
 @inject SeedService _seedService
 @inject NavigationManager _navigationManager
 @rendermode InteractiveServer
@@ -20,21 +22,26 @@
                     </span>
                 </div>
                 <h1 class="display-5 mb-3">Дякуємо! Запис створено</h1>
-                <p class="lead">@clientUser.ClientName - ми зв’яжемося з вами для підтвердження деталей найближчим часом.</p>              
+                @if (!string.IsNullOrWhiteSpace(clientUser.ClientName))
+                {
+                    <p class="lead">@clientUser.ClientName — ми зв’яжемося з вами для підтвердження деталей найближчим часом.</p>
+                }
+                else
+                {
+                    <p class="lead">Ми зв’яжемося з вами для підтвердження деталей найближчим часом.</p>
+                }
                 <div class="d-grid gap-2 d-md-flex justify-content-md-center mt-4">
                     <a href="/" class="btn btn-outline-primary rounded-pill w-100 w-md-auto">
                         На головну
                     </a>
                     <a href="/appointment-user" class="btn btn-primary rounded-pill text-white w-100 w-md-auto">
                         Новий запис
-                    </a>                   
+                    </a>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-
 
 @code {
     [Parameter]
@@ -44,51 +51,61 @@
     private List<Master> masters = new();
     private List<Category> categories = new();
     private List<PageTherapy> pageTherapies = new();
-    private string? DeepLink;      
+    private string? DeepLink;
     private bool _didRun;
-    // private bool firstRender;
 
-    protected override async Task OnInitializedAsync()    
-    {       
-        clientUser = await _seedService.GetClientAppointmentId(Id);
+    protected override async Task OnInitializedAsync()
+    {
+        var appt = Id > 0 ? await _seedService.GetClientAppointmentId(Id) : null;
+        clientUser = appt ?? new Appointment();
         masters = await _seedService.GetAllMasterListAsync();
         categories = await _seedService.GetAllCategoryListAsync();
-        pageTherapies = await _seedService.GetAllPageTherapyListAsync();               
+        pageTherapies = await _seedService.GetAllPageTherapyListAsync();
     }
-       
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!firstRender || _didRun) return; 
+        if (!firstRender || _didRun) return;
         _didRun = true;
-       
-         await EnsureLinkAndNotifyOnceAsync();
+
+        await EnsureLinkAndNotifyOnceAsync();
     }
 
     private async Task EnsureLinkAndNotifyOnceAsync()
     {
-        string botUsername = _сonfig["Telegram:BotUsername"];
-        string baseLink = _сonfig["Telegram:BaseLink"];
+        if (Id <= 0)
+        {
+            return;
+        }
+
+        var botUsername = _configuration["Telegram:BotUsername"];
+        var baseLink = _configuration["Telegram:BaseLink"];
         if (!string.IsNullOrWhiteSpace(botUsername) && !string.IsNullOrWhiteSpace(baseLink))
         {
             DeepLink = $"{baseLink.TrimEnd('/')}/{botUsername}?start={Id}";
-           
-            await SendMessageAsync();
         }
+
+        await SendMessageAsync();
     }
 
-    private async Task SendMessageAsync()    
-    {       
+    private async Task SendMessageAsync()
+    {
+        if (Id <= 0 || string.IsNullOrWhiteSpace(clientUser.ClientName))
+        {
+            return;
+        }
+
         categories = await _seedService.GetAllCategoryListAsync();
+        var therapyCards = await _seedService.GetAllTherapyCardListAsync();
         var category = categories.FirstOrDefault(c => c.Id == clientUser.CategoryId);
         var categoryName = category?.NameCategory;
-        var procedureName = category.TherapyCards.FirstOrDefault(c => c.Id == clientUser.TherapyId);
-        var serviceName = clientUser.ClientName;
+        var procedure = therapyCards.FirstOrDefault(t => t.Id == clientUser.TherapyId);
 
         await _notification.NotifyNewAsync(
             clientName: clientUser.ClientName,
             phone: clientUser.ClientPhone,
-            serviceName: categoryName,
-            procedureName: procedureName?.TitleCard,
+            serviceName: categoryName ?? string.Empty,
+            procedureName: procedure?.TitleCard ?? string.Empty,
             date: clientUser.AppointmentDate,
             time: clientUser.SetHour
         );

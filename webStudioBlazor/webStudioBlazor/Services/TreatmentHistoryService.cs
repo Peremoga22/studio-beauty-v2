@@ -217,6 +217,90 @@ namespace webStudioBlazor.Services
             return true;
         }
 
+        /// <summary>Видаляє всі картки візитів і фото на диску для вказаного ClientId (наприклад guest:123).</summary>
+        public async Task<int> DeleteAllForClientAsync(string clientId, CancellationToken ct = default)
+        {
+            if (string.IsNullOrWhiteSpace(clientId))
+            {
+                return 0;
+            }
+
+            await using var db = await _dbFactory.CreateDbContextAsync(ct);
+            var ids = await db.TreatmentHistories
+                .AsNoTracking()
+                .Where(h => h.ClientId == clientId)
+                .Select(h => h.Id)
+                .ToListAsync(ct);
+
+            var removed = 0;
+            foreach (var id in ids)
+            {
+                if (await DeleteAsync(id, ct))
+                {
+                    removed++;
+                }
+            }
+
+            TryDeleteEmptyClientUploadsFolder(clientId);
+            return removed;
+        }
+
+        /// <summary>
+        /// Видаляє картки візитів користувача, у яких дата візиту збігається з календарною датою запису (для каскаду після видалення останньої послуги в Appointment).
+        /// </summary>
+        public async Task<int> DeleteAllForClientOnVisitDateAsync(string userId, DateOnly visitDate, CancellationToken ct = default)
+        {
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return 0;
+            }
+
+            var dayStartLocal = visitDate.ToDateTime(TimeOnly.MinValue);
+            var dayEndLocal = visitDate.ToDateTime(TimeOnly.MaxValue);
+            var utcStart = DateTime.SpecifyKind(dayStartLocal, DateTimeKind.Local).ToUniversalTime();
+            var utcEnd = DateTime.SpecifyKind(dayEndLocal, DateTimeKind.Local).ToUniversalTime();
+
+            await using var db = await _dbFactory.CreateDbContextAsync(ct);
+            var ids = await db.TreatmentHistories
+                .AsNoTracking()
+                .Where(h => h.ClientId == userId && h.VisitDate >= utcStart && h.VisitDate <= utcEnd)
+                .Select(h => h.Id)
+                .ToListAsync(ct);
+
+            var removed = 0;
+            foreach (var id in ids)
+            {
+                if (await DeleteAsync(id, ct))
+                {
+                    removed++;
+                }
+            }
+
+            TryDeleteEmptyClientUploadsFolder(userId);
+            return removed;
+        }
+
+        private void TryDeleteEmptyClientUploadsFolder(string clientId)
+        {
+            var parent = Path.Combine(_env.WebRootPath, "uploads", "treatments", SanitizeClientFolder(clientId));
+            try
+            {
+                if (!Directory.Exists(parent))
+                {
+                    return;
+                }
+
+                if (!Directory.EnumerateFileSystemEntries(parent).Any())
+                {
+                    Directory.Delete(parent, recursive: true);
+                }
+            }
+            catch
+            {
+                // ignore
+            }
+        }
+
         public async Task<bool> DeletePhotoAsync(int photoId, CancellationToken ct = default)
         {
             await using var db = await _dbFactory.CreateDbContextAsync(ct);

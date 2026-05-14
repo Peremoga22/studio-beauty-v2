@@ -17,10 +17,12 @@ namespace webStudioBlazor.Services
     public class SeedService
     {
         private readonly IDbContextFactory<ApplicationDbContext> _dbFactory;
+        private readonly TreatmentHistoryService _treatmentHistoryService;
 
-        public SeedService(IDbContextFactory<ApplicationDbContext> dbFactory)
+        public SeedService(IDbContextFactory<ApplicationDbContext> dbFactory, TreatmentHistoryService treatmentHistoryService)
         {
             _dbFactory = dbFactory;
+            _treatmentHistoryService = treatmentHistoryService;
         }
 
         // ===== CREATE / UPDATE =====
@@ -288,24 +290,83 @@ namespace webStudioBlazor.Services
             await using var db = await _dbFactory.CreateDbContextAsync(ct);
 
             var entity = await db.AppointmentServices
+                .Include(x => x.Appointment)
                 .FirstOrDefaultAsync(x => x.Id == appointmentServiceId, ct);
 
-            if (entity is null) return;
+            if (entity is null)
+            {
+                return;
+            }
+
+            var appointment = entity.Appointment;
+            var appointmentId = appointment?.Id ?? 0;
 
             db.AppointmentServices.Remove(entity);
             await db.SaveChangesAsync(ct);
+
+            if (appointmentId == 0)
+            {
+                return;
+            }
+
+            var remainingServices = await db.AppointmentServices
+                .CountAsync(x => x.AppointmentId == appointmentId, ct);
+
+            if (remainingServices > 0)
+            {
+                return;
+            }
+
+            if (appointment is not null)
+            {
+                if (string.IsNullOrEmpty(appointment.UserId))
+                {
+                    var guestKey = TreatmentHistoryService.BuildClientId(appointment);
+                    await _treatmentHistoryService.DeleteAllForClientAsync(guestKey, ct);
+                }
+                else
+                {
+                    await _treatmentHistoryService.DeleteAllForClientOnVisitDateAsync(
+                        appointment.UserId,
+                        appointment.AppointmentDate,
+                        ct);
+                }
+            }
+
+            var orphanAppointment = await db.Appointments.FirstOrDefaultAsync(a => a.Id == appointmentId, ct);
+            if (orphanAppointment is not null)
+            {
+                db.Appointments.Remove(orphanAppointment);
+                await db.SaveChangesAsync(ct);
+            }
         }
 
         public async Task DeleteAppointmentAsync(int appointmentId, CancellationToken ct = default)
         {
             await using var db = await _dbFactory.CreateDbContextAsync(ct);
-                        
-            var appointment = await db.Appointments              
+
+            var appointment = await db.Appointments
                 .FirstOrDefaultAsync(a => a.Id == appointmentId, ct);
 
             if (appointment is null)
-                return;                      
-           
+            {
+                return;
+            }
+
+            if (string.IsNullOrEmpty(appointment.UserId))
+            {
+                await _treatmentHistoryService.DeleteAllForClientAsync(
+                    TreatmentHistoryService.BuildClientId(appointment),
+                    ct);
+            }
+            else
+            {
+                await _treatmentHistoryService.DeleteAllForClientOnVisitDateAsync(
+                    appointment.UserId,
+                    appointment.AppointmentDate,
+                    ct);
+            }
+
             db.Appointments.Remove(appointment);
             await db.SaveChangesAsync(ct);
         }
