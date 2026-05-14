@@ -69,6 +69,13 @@
     opacity: 0.8;
 }
 
+/* Кнопка запису — той самий рожевий преміум-стиль, що .shine-hero-btn (див. shine-theme.css) */
 ::deep .shine-sidebar-cta {
-    box-shadow: 0 6px 18px rgba(255, 79, 163, 0.35);
+    box-sizing: border-box;
+    min-height: 2.75rem;
+}
+
+::deep .shine-sidebar-cta:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.92);
+    outline-offset: 3px;
 }
