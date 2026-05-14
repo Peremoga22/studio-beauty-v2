@@ -1,17 +1,63 @@
 ﻿@inherits LayoutComponentBase
 @layout webStudioBlazor.Components.Layout.MainLayout
 
-<h1>Manage your account</h1>
+<div class="manage-account-shell container-lg px-2 px-sm-3 py-3 py-md-4">
+    <header class="mb-3 mb-md-4">
+        <h1 class="h3 fw-semibold mb-1">Налаштування облікового запису</h1>
+        <p class="text-body-secondary mb-0 small">Профіль, безпека та персональні дані</p>
+    </header>
 
-<div>
-    <h2>Change your account settings</h2>
-    <hr />
-    <div class="row">
-        <div class="col-lg-3">
+    <button class="btn btn-outline-primary d-lg-none w-100 mb-3 d-inline-flex align-items-center justify-content-center gap-2 py-3 rounded-3"
+            type="button"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#manageNavOffcanvas"
+            aria-controls="manageNavOffcanvas">
+        <i class="bi bi-list" aria-hidden="true"></i>
+        <span>Меню розділів</span>
+    </button>
+
+    <div class="offcanvas offcanvas-start bg-light" tabindex="-1" id="manageNavOffcanvas" aria-labelledby="manageNavOffcanvasLabel">
+        <div class="offcanvas-header border-bottom">
+            <h2 class="offcanvas-title h5 mb-0" id="manageNavOffcanvasLabel">Розділи</h2>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Закрити"></button>
+        </div>
+        <div class="offcanvas-body pt-3">
             <ManageNavMenu />
         </div>
-        <div class="col-lg-9">
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-3 d-none d-lg-block">
+            <nav class="manage-nav-sidebar rounded-3 border bg-light p-3 shadow-sm">
+                <ManageNavMenu />
+            </nav>
+        </div>
+        <div class="col-lg-9 min-w-0">
             @Body
         </div>
     </div>
 </div>
+
+<script>
+(function () {
+    const id = 'manageNavOffcanvas';
+    function hide() {
+        var el = document.getElementById(id);
+        if (!el) return;
+        if (window.bootstrap && bootstrap.Offcanvas) {
+            var inst = bootstrap.Offcanvas.getInstance(el);
+            if (inst) inst.hide();
+        } else {
+            el.classList.remove('show');
+        }
+    }
+    document.addEventListener('click', function (e) {
+        var a = e.target && e.target.closest && e.target.closest('#manageNavOffcanvas a.nav-link');
+        if (a) setTimeout(hide, 0);
+    }, true);
+    document.addEventListener('touchend', function (e) {
+        var a = e.target && e.target.closest && e.target.closest('#manageNavOffcanvas a.nav-link');
+        if (a) setTimeout(hide, 0);
+    }, true);
+})();
+</script>

@@ -61,13 +61,57 @@
     <HeaderAdmin />
 
     <!-- Main content -->
-    <main class="flex-grow-1 content px-2 py-3 w-100">
+    <main class="flex-grow-1 content px-2 px-sm-3 py-3 w-100 min-w-0">
         @Body
     </main>
 
     <!-- Footer -->
     <FooterAdmin />
 </div>
+
+<script>
+(function () {
+  const COLLAPSE_ID = 'adminNavbarCollapse';
+  function hideNavbar() {
+    const el = document.getElementById(COLLAPSE_ID);
+    if (!el) return;
+    if (window.bootstrap && bootstrap.Collapse) {
+      const inst = bootstrap.Collapse.getOrCreateInstance(el, { toggle: false });
+      inst.hide();
+    } else {
+      el.classList.remove('show');
+    }
+  }
+  function findInPath(e, selector) {
+    if (typeof e.composedPath === 'function') {
+      const path = e.composedPath();
+      for (const n of path) {
+        if (n && n.nodeType === 1 && n.matches && n.matches(selector)) return n;
+        if (n && n.nodeType === 1 && n.closest) {
+          const c = n.closest(selector);
+          if (c) return c;
+        }
+      }
+      return null;
+    }
+    return e.target.closest(selector);
+  }
+  const selector = [
+    '#'+COLLAPSE_ID+' a.nav-link',
+    '#'+COLLAPSE_ID+' a[href]',
+    '#'+COLLAPSE_ID+' button.nav-link',
+    '#'+COLLAPSE_ID+' .admin-logout-btn',
+    '#'+COLLAPSE_ID+' form button'
+  ].join(',');
+  function maybeHide(e) {
+    if (findInPath(e, selector)) setTimeout(hideNavbar, 0);
+  }
+  document.addEventListener('click', maybeHide, true);
+  document.addEventListener('pointerup', maybeHide, true);
+  document.addEventListener('touchend', maybeHide, true);
+  window.addEventListener('popstate', hideNavbar);
+})();
+</script>
 
 
 

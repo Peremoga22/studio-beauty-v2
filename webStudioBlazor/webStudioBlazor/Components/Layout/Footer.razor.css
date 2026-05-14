@@ -1,0 +1,26 @@
+.shine-footer {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    background: linear-gradient(105deg, #16141c 0%, #2a1822 42%, #1a1620 100%);
+    border-top: 1px solid rgba(255, 79, 163, 0.15);
+    color: rgba(255, 255, 255, 0.88);
+}
+
+.shine-footer a.text-light {
+    color: rgba(255, 255, 255, 0.82) !important;
+    transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+.shine-footer a.text-light:hover {
+    color: #fff !important;
+}
+
+.shine-footer p {
+    color: rgba(255, 255, 255, 0.78);
+}
+
+.shine-footer .border-light {
+    border-color: rgba(255, 255, 255, 0.18) !important;
+}

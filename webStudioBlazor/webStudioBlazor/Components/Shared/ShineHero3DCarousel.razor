@@ -1,0 +1,117 @@
+@rendermode InteractiveServer
+@implements IDisposable
+
+<div class="shine-3d-hero">
+    <div class="shine-3d-stage">
+        @for (var i = 0; i < Slides.Count; i++)
+        {
+            var slide = Slides[i];
+            var rel = (i - _active + Slides.Count) % Slides.Count;
+            var cls = rel == 0 ? "is-active"
+                : rel == 1 && Slides.Count > 2 ? "is-next"
+                : rel == Slides.Count - 1 && Slides.Count > 2 ? "is-prev"
+                : "";
+            <div class="shine-3d-slide @cls" aria-hidden="@(rel != 0)">
+                <img src="@slide.Src" alt="@slide.Alt" loading="@(i == 0 ? "eager" : "lazy")" decoding="async" />
+            </div>
+        }
+    </div>
+
+    <div class="shine-3d-overlay text-white">
+        <p class="text-uppercase small mb-1 opacity-75" style="letter-spacing: 0.2em;">SHINE cosmetology</p>
+        <h2 class="display-6 fw-semibold mb-2">Ваша краса — наш пріоритет</h2>
+        <p class="mb-3 opacity-90 col-lg-8 pe-lg-4 small">
+            Професійні процедури, турботливий підхід і сучасні методики в Івано-Франківську.
+        </p>
+        <div class="shine-3d-cta-wrap">
+            <a href="/appointment-user" class="btn btn-primary btn-lg rounded-pill px-4 fw-semibold shadow">
+                Записатися
+            </a>
+        </div>
+    </div>
+
+    @if (Slides.Count > 1)
+    {
+        <button type="button" class="shine-3d-nav-btn prev" aria-label="Попередній слайд" @onclick="Prev">
+            <i class="bi bi-chevron-left fs-5" aria-hidden="true"></i>
+        </button>
+        <button type="button" class="shine-3d-nav-btn next" aria-label="Наступний слайд" @onclick="Next">
+            <i class="bi bi-chevron-right fs-5" aria-hidden="true"></i>
+        </button>
+        <div class="shine-3d-dots" role="tablist" aria-label="Слайди">
+            @for (var i = 0; i < Slides.Count; i++)
+            {
+                var idx = i;
+                <button type="button"
+                        class="shine-3d-dot @(idx == _active ? "active" : null)"
+                        aria-selected="@(idx == _active)"
+                        aria-label="Слайд @(idx + 1)"
+                        @onclick="() => Go(idx)"></button>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    public record HeroSlide(string Src, string Alt);
+
+    [Parameter]
+    public List<HeroSlide> Slides { get; set; } = new();
+
+    private int _active;
+    private System.Timers.Timer? _timer;
+
+    protected override void OnParametersSet()
+    {
+        if (Slides.Count == 0)
+        {
+            Slides = new List<HeroSlide>
+            {
+                new("img/foto002.jpeg", "Студія SHINE"),
+                new("img/saloncrasu2.jpg", "Інтер'єр салону"),
+                new("img/foto35.jpeg", "Косметологічні процедури")
+            };
+        }
+    }
+
+    private bool _timerStarted;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (!firstRender || Slides.Count <= 1 || _timerStarted) return;
+        _timerStarted = true;
+        _timer = new System.Timers.Timer(6000);
+        _timer.AutoReset = true;
+        _timer.Elapsed += (_, _) =>
+        {
+            InvokeAsync(() =>
+            {
+                Next();
+                StateHasChanged();
+            });
+        };
+        _timer.Start();
+    }
+
+    private void Prev()
+    {
+        _active = (_active - 1 + Slides.Count) % Slides.Count;
+    }
+
+    private void Next()
+    {
+        _active = (_active + 1) % Slides.Count;
+    }
+
+    private void Go(int index)
+    {
+        if (index >= 0 && index < Slides.Count)
+            _active = index;
+    }
+
+    public void Dispose()
+    {
+        _timer?.Stop();
+        _timer?.Dispose();
+    }
+}

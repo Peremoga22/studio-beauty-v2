@@ -1,0 +1,105 @@
+/* SHINE — сучасна адаптивна база: touch targets, таблиці, типографіка */
+:root {
+    --ui-touch-min: 44px;
+    --ui-radius: 0.75rem;
+    --ui-radius-sm: 0.5rem;
+    --ui-content-max: 72rem;
+}
+
+/* Типографіка: комфортна щільність на вузьких екранах */
+@media (max-width: 575.98px) {
+    html {
+        font-size: 15px;
+    }
+}
+
+/* Форми та кнопки — мінімальна зона дотику на телефонах / планшетах */
+@media (max-width: 767.98px) {
+    .form-control:not(textarea),
+    .form-select {
+        min-height: var(--ui-touch-min);
+        padding-top: 0.55rem;
+        padding-bottom: 0.55rem;
+        border-radius: var(--ui-radius-sm);
+    }
+
+    textarea.form-control {
+        min-height: 6rem;
+    }
+
+    .btn:not(.btn-sm):not(.btn-link):not(.btn-close):not(.navbar-toggler) {
+        min-height: var(--ui-touch-min);
+        padding-left: 1rem;
+        padding-right: 1rem;
+        border-radius: var(--ui-radius-sm);
+    }
+
+    .input-group > .btn {
+        min-height: var(--ui-touch-min);
+    }
+
+    .btn-sm {
+        min-height: 40px;
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+    }
+
+    .form-check-input {
+        width: 1.15rem;
+        height: 1.15rem;
+    }
+
+    .form-check-label {
+        padding-top: 0.15rem;
+        padding-left: 0.25rem;
+    }
+}
+
+/* Таблиці: горизонтальний скрол там, де вже є обгортка */
+.table-responsive {
+    -webkit-overflow-scrolling: touch;
+    max-width: 100%;
+}
+
+.table-responsive .table {
+    margin-bottom: 0;
+}
+
+/* Клітинки не ламають макет на вузьких екранах */
+@media (max-width: 767.98px) {
+    .table td,
+    .table th {
+        white-space: nowrap;
+    }
+
+    .table.allow-wrap td,
+    .table.allow-wrap th {
+        white-space: normal;
+    }
+}
+
+/* Кабінет керування акаунтом */
+.manage-account-shell {
+    max-width: var(--ui-content-max);
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.manage-nav-sidebar .nav-link {
+    border-radius: var(--ui-radius-sm);
+}
+
+@media (max-width: 991.98px) {
+    #manageNavOffcanvas .nav-link {
+        min-height: var(--ui-touch-min);
+        display: flex;
+        align-items: center;
+    }
+}
+
+/* Посилання в параграфах — зручніший tap */
+@media (max-width: 767.98px) {
+    main.content a:not(.btn):not(.nav-link):not(.navbar-brand):not(.page-link) {
+        text-underline-offset: 0.2em;
+    }
+}

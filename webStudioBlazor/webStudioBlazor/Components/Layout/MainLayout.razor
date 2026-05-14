@@ -55,17 +55,18 @@
     <script src="js/main.js"></script>
 </HeadContent>
 
-<div class="main site-shell d-flex flex-column min-vh-100 w-100 min-w-0">
-    <!-- Header -->
-    <Header />
+<div class="shine-app-root main site-shell d-flex min-vh-100 w-100 min-w-0">
+    <ShineSidebar />
 
-    <!-- Main content -->
-    <main class="flex-grow-1 content px-2 py-3 w-100">
-        @Body
-    </main>
+    <div class="shine-app-column flex-grow-1 d-flex flex-column min-w-0">
+        <Header />
 
-    <!-- Footer -->
-    <Footer />
+        <main class="flex-grow-1 content px-2 px-sm-3 py-3 w-100 min-w-0">
+            @Body
+        </main>
+
+        <Footer />
+    </div>
 </div>
 
 
@@ -77,76 +78,45 @@
 
 <script>
 (function () {
-  const COLLAPSE_ID = 'navbarCollapse';
+  const DRAWER_ID = 'shineNavDrawer';
 
-  function hideNavbar() {
-    const el = document.getElementById(COLLAPSE_ID);
+  function hideDrawer() {
+    var el = document.getElementById(DRAWER_ID);
     if (!el) return;
-
-    if (window.bootstrap && bootstrap.Collapse) {
-      const inst = bootstrap.Collapse.getOrCreateInstance(el, { toggle: false });
-      inst.hide();
+    if (window.bootstrap && bootstrap.Offcanvas) {
+      var inst = bootstrap.Offcanvas.getInstance(el);
+      if (inst) inst.hide();
     } else {
       el.classList.remove('show');
     }
   }
 
-  // узагальнений пошук таргету по шляху події
   function findInPath(e, selector) {
     if (typeof e.composedPath === 'function') {
-      const path = e.composedPath();
-      for (const n of path) {
-        if (n && n.nodeType === 1 && n.matches && n.matches(selector)) {
-          return n;
-        }
+      var path = e.composedPath();
+      for (var i = 0; i < path.length; i++) {
+        var n = path[i];
+        if (n && n.nodeType === 1 && n.matches && n.matches(selector)) return n;
         if (n && n.nodeType === 1 && n.closest) {
-          const c = n.closest(selector);
+          var c = n.closest(selector);
           if (c) return c;
         }
       }
       return null;
     }
-    // fallback
-    return e.target.closest(selector);
+    return e.target && e.target.closest ? e.target.closest(selector) : null;
   }
 
-  const selector = [
-    '#'+COLLAPSE_ID+' a.nav-link',
-    '#'+COLLAPSE_ID+' a[href]',
-    '#'+COLLAPSE_ID+' button.nav-link',
-    '#'+COLLAPSE_ID+' .btn-logout',
-    '#'+COLLAPSE_ID+' form button'
-  ].join(',');
+  var sel = '#' + DRAWER_ID + ' a, #' + DRAWER_ID + ' button[type="submit"]';
 
   function maybeHide(e) {
-    const el = findInPath(e, selector);
-    if (el) {
-      // даємо Blazor/Bootstrap відпрацювати навігацію — потім ховаємо
-      setTimeout(hideNavbar, 0);
-    }
+    if (findInPath(e, sel)) setTimeout(hideDrawer, 0);
   }
 
-  // Кліки + тач + pointer-події
   document.addEventListener('click', maybeHide, true);
   document.addEventListener('pointerup', maybeHide, true);
   document.addEventListener('touchend', maybeHide, true);
-
-  // Клавіатура (Enter/Space) на пунктах меню
-  document.addEventListener('keydown', function (e) {
-    if ((e.key === 'Enter' || e.key === ' ') && findInPath(e, selector)) {
-      setTimeout(hideNavbar, 0);
-    }
-  }, true);
-
-  // історія/якорі
-  window.addEventListener('popstate', hideNavbar);
-  window.addEventListener('hashchange', hideNavbar);
-
-  // про всяк — ховаємо після завершення навігації Blazor
-  window.addEventListener('blur', function () {
-    // якщо відкрито і пішла навігація — сховати
-    setTimeout(hideNavbar, 50);
-  });
+  window.addEventListener('popstate', hideDrawer);
 })();
 </script>
 

@@ -2780,11 +2780,11 @@
     resize: none;
 }
 
-/* Full viewport width; avoid white gutter on mobile (overflow + flex min-width) */
+/* Full viewport width; avoid horizontal overflow / white gutter */
 html {
     width: 100%;
     max-width: 100%;
-    overflow-x: clip;
+    overflow-x: hidden;
 }
 
 body {
@@ -2792,7 +2792,7 @@ body {
     max-width: 100%;
     margin: 0;
     padding: 0;
-    overflow-x: clip;
+    overflow-x: hidden;
 }
 
 .layout-root {
@@ -2800,7 +2800,7 @@ body {
     max-width: 100%;
     min-width: 0;
     box-sizing: border-box;
-    overflow-x: clip;
+    overflow-x: hidden;
 }
 
 .site-shell > main.content {
@@ -2819,7 +2819,7 @@ body {
 
 @media (max-width: 991.98px) {
     .site-shell {
-        overflow-x: clip;
+        overflow-x: hidden;
     }
 
     .site-shell > header,

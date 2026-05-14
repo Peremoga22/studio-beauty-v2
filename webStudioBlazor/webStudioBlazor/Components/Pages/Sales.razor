@@ -5,7 +5,6 @@
 @rendermode InteractiveServer
 
 
-<h3 style="padding-top: 7%;"></h3>
 @if (_showAlert)
 {
     <div class="@AlertCss" role="alert" style="z-index:1080;">
@@ -16,11 +15,11 @@
 }
 @{
     var page = pageTherapies.FirstOrDefault(p => p.TitlePage == @selectedStore);
-    <section class="text-center pt-32 pb-12 px-4">
-        <h1 class="text-4xl font-extrabold mb-4" style="color: #f8b7d8;">
+    <section class="shine-page-hero text-center mb-4 mx-2 mx-md-0">
+        <h1 class="display-6 fw-semibold mb-3" style="color: var(--shine-rose-deep);">
             @(page?.TitlePage ?? "Без сторінки")
         </h1>
-        <p class="text-gray-700 text-lg max-w-2xl mx-auto">
+        <p class="text-muted mb-0 mx-auto" style="max-width: 40rem;">
             @(page?.DescriptionPage ?? "Без сторінки")
         </p>
     </section>
@@ -36,24 +35,27 @@
 <section class="pt-3">
     <div class="container">   
         <figure class="figure m-0">
-            <div class="row g-3">
+            <div class="row g-4">
                 @foreach (var item in salesTherapyCards.Where(x => x.CategoryId == page.CategoryId))
                 {
                     <div class="col-12 col-sm-6 col-lg-4">
-                        <div class="card h-100 shadow-sm">
-                            <img src="@item.ImagePath" class="card-img-top" alt="@item.TitleCard">
-                            <div class="card-body d-flex flex-column">
-                                <h5 class="card-title fw-bold" style="color: #f8b7d8;">
+                        <div class="shine-service-card d-flex flex-column h-100">
+                            <img src="@item.ImagePath" class="shine-service-img" alt="@item.TitleCard" loading="lazy" decoding="async">
+                            <div class="p-4 d-flex flex-column flex-grow-1">
+                                <h5 class="fw-semibold mb-2" style="color: var(--shine-rose-deep);">
                                     @item.TitleCard
                                 </h5>
-                                <p class="card-text">@item.DescriptionCard</p>
-                                <div class="card-footer bg-transparent border-0 text-center mt-auto">
-                                    <i class="bi bi-cash-stack me-1"></i>
+                                <p class="small text-muted flex-grow-1 mb-3">@item.DescriptionCard</p>
+                                <div class="shine-service-meta mb-3">
+                                    <i class="bi bi-cash-stack me-1 text-primary"></i>
                                     @item.Price.ToString("C0", new System.Globalization.CultureInfo("uk-UA"))
                                 </div>
-                                <button class="btn-buy" @onclick="() => AddToCart(item.Id)">
-                                    <i class="bi bi-bag-plus me-1"></i> Додати в корзину
-                                </button>
+                                <div class="d-grid gap-2 mt-auto">
+                                    <button type="button" class="btn btn-primary rounded-pill" @onclick="() => AddToCart(item.Id)">
+                                        <i class="bi bi-bag-plus me-1"></i> Додати в кошик
+                                    </button>
+                                    <a href="/appointment-user" class="btn btn-outline-primary rounded-pill">Деталі / консультація</a>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -62,20 +64,6 @@
         </figure>
     </div>
 </section>
-<a href="/cart"
-   class="btn text-white position-fixed rounded-circle shadow-sm cart-fab"
-   style="background-color:#f8b7d8;">
-    <i class="bi bi-cart3 fs-4"></i>
-
-    @if (cartCount > 0)
-    {
-        <span class="position-absolute top-0 start-100 translate-middle
-                         badge rounded-pill bg-danger small shadow-sm"
-              style="font-size:0.75rem; min-width:22px;">
-            @cartCount
-        </span>
-    }
-</a>
 
 @code {
     private string selectedStore = "Наш магазин";

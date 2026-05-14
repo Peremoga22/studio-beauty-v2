@@ -1,0 +1,346 @@
+/* SHINE — ТЗ: ніжна рожева гама, мінімалізм, картки, плавні переходи */
+:root {
+    --shine-rose: #ff4fa3;
+    --shine-rose-deep: #c2185b;
+    --shine-powder: #fff5fb;
+    --shine-blush: #ffe8f2;
+    --shine-graphite: #2b2230;
+    --shine-muted: #6b5a66;
+    --shine-sidebar-width: 17.5rem;
+    --shine-radius: 1rem;
+    --shine-radius-sm: 0.75rem;
+    --shine-shadow: 0 8px 32px rgba(43, 34, 48, 0.08);
+    --shine-shadow-hover: 0 14px 40px rgba(255, 79, 163, 0.18);
+}
+
+body {
+    background: linear-gradient(180deg, #fffafd 0%, #faf7fb 40%, #f6f2f7 100%);
+    color: var(--shine-graphite);
+}
+
+.shine-app-root {
+    --bs-primary: var(--shine-rose);
+    --bs-primary-rgb: 255, 79, 163;
+}
+
+/* Бічне меню — пункти */
+.shine-nav-link.nav-link {
+    border-radius: var(--shine-radius-sm);
+    color: var(--shine-graphite) !important;
+    font-weight: 500;
+    padding: 0.65rem 0.85rem !important;
+    transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease;
+}
+
+.shine-nav-link.nav-link:hover {
+    background: rgba(255, 79, 163, 0.08);
+    color: var(--shine-rose-deep) !important;
+}
+
+.shine-nav-link.nav-link.active {
+    background: linear-gradient(135deg, rgba(255, 79, 163, 0.2), rgba(248, 183, 216, 0.38)) !important;
+    color: #6b0a3d !important;
+    box-shadow: 0 2px 12px rgba(255, 79, 163, 0.18);
+}
+
+.shine-sidebar-logout:hover {
+    background: rgba(220, 53, 69, 0.08) !important;
+}
+
+.shine-menu-btn {
+    min-width: 44px;
+    min-height: 44px;
+}
+
+.shine-nav-divider {
+    border-top: 1px solid rgba(43, 34, 48, 0.08);
+}
+
+/* Бічне меню та мобільний drawer — контраст як у верхнього бару хедера */
+.shine-sidebar .shine-nav-link.nav-link,
+.shine-nav-offcanvas .shine-nav-link.nav-link {
+    color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.shine-sidebar .shine-nav-link.nav-link:hover,
+.shine-nav-offcanvas .shine-nav-link.nav-link:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff !important;
+}
+
+.shine-sidebar .shine-nav-link.nav-link.active,
+.shine-nav-offcanvas .shine-nav-link.nav-link.active {
+    background: rgba(255, 79, 163, 0.32) !important;
+    color: #fff !important;
+    box-shadow: 0 2px 14px rgba(0, 0, 0, 0.25);
+}
+
+.shine-sidebar .shine-sidebar-logout:hover,
+.shine-nav-offcanvas .shine-sidebar-logout:hover {
+    background: rgba(220, 53, 69, 0.22) !important;
+    color: #fff !important;
+}
+
+.shine-sidebar .shine-nav-divider,
+.shine-nav-offcanvas .shine-nav-divider {
+    border-top-color: rgba(255, 255, 255, 0.14);
+}
+
+
+/* Картки послуг / товарів */
+.shine-service-card {
+    border: 1px solid rgba(255, 79, 163, 0.12);
+    border-radius: var(--shine-radius);
+    overflow: hidden;
+    background: #fff;
+    box-shadow: var(--shine-shadow);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    height: 100%;
+}
+
+.shine-service-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shine-shadow-hover);
+}
+
+.shine-service-card .shine-service-img {
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    width: 100%;
+}
+
+.shine-service-meta {
+    font-size: 0.85rem;
+    color: var(--shine-muted);
+}
+
+.shine-page-hero {
+    background: linear-gradient(135deg, rgba(255, 79, 163, 0.08), rgba(248, 183, 216, 0.15));
+    border-radius: var(--shine-radius);
+    padding: clamp(1.5rem, 4vw, 2.5rem);
+    margin-bottom: 1.5rem;
+}
+
+/* Відгуки */
+.shine-review-card {
+    border-radius: var(--shine-radius);
+    border: 1px solid rgba(255, 79, 163, 0.1);
+    background: #fff;
+    box-shadow: var(--shine-shadow);
+    transition: box-shadow 0.25s ease, transform 0.2s ease;
+    height: 100%;
+}
+
+.shine-review-card:hover {
+    box-shadow: var(--shine-shadow-hover);
+    transform: translateY(-2px);
+}
+
+/* 3D hero */
+.shine-3d-hero {
+    position: relative;
+    perspective: 1200px;
+    min-height: clamp(220px, 52vw, 480px);
+    border-radius: var(--shine-radius);
+    overflow: hidden;
+    background: radial-gradient(ellipse at 50% 120%, rgba(255, 79, 163, 0.15), transparent 55%), #1a1520;
+}
+
+.shine-3d-stage {
+    position: relative;
+    width: 100%;
+    height: clamp(220px, 52vw, 480px);
+    transform-style: preserve-3d;
+}
+
+.shine-3d-slide {
+    position: absolute;
+    inset: 0;
+    border-radius: var(--shine-radius);
+    overflow: hidden;
+    opacity: 0;
+    transform: rotateY(55deg) translateZ(-180px) scale(0.88);
+    transition: opacity 0.55s ease, transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+}
+
+.shine-3d-slide.is-active {
+    opacity: 1;
+    transform: rotateY(0deg) translateZ(0) scale(1);
+    pointer-events: auto;
+    z-index: 2;
+}
+
+.shine-3d-slide.is-prev {
+    opacity: 0.35;
+    transform: rotateY(-38deg) translateZ(-120px) scale(0.82);
+    z-index: 1;
+}
+
+.shine-3d-slide.is-next {
+    opacity: 0.35;
+    transform: rotateY(38deg) translateZ(-120px) scale(0.82);
+    z-index: 1;
+}
+
+.shine-3d-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.shine-3d-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    background: linear-gradient(105deg, rgba(26, 21, 32, 0.75) 0%, rgba(26, 21, 32, 0.25) 55%, transparent 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: clamp(1rem, 4vw, 2.5rem);
+    pointer-events: none;
+}
+
+.shine-3d-overlay .shine-3d-cta-wrap {
+    pointer-events: auto;
+}
+
+.shine-3d-nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 6;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.92);
+    color: var(--shine-rose-deep);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.shine-3d-nav-btn:hover {
+    background: #fff;
+    transform: translateY(-50%) scale(1.05);
+}
+
+.shine-3d-nav-btn.prev {
+    left: 0.75rem;
+}
+
+.shine-3d-nav-btn.next {
+    right: 0.75rem;
+}
+
+.shine-3d-dots {
+    position: absolute;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 6;
+    display: flex;
+    gap: 0.45rem;
+}
+
+.shine-3d-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    border: none;
+    padding: 0;
+    background: rgba(255, 255, 255, 0.45);
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.shine-3d-dot.active {
+    background: var(--shine-rose);
+    transform: scale(1.25);
+}
+
+@media (max-width: 575.98px) {
+    .shine-3d-nav-btn {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+/* ========= Горизонтальний overflow (підсилення + типові винуватці) =========
+   Розкоментуйте на 1 хвилину, щоб побачити блок, що вилазить:
+   * { outline: 1px solid red !important; }
+*/
+html,
+body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+/* .container / .navbar не обрізаємо — ламає .table-responsive і випадаючі меню */
+.page,
+.main,
+.content,
+.hero,
+.hero-slider,
+.carousel,
+.carousel-inner,
+.carousel-item,
+.layout-root,
+.site-shell,
+.shine-app-root,
+.shine-app-column,
+main.content {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+section {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+.hero-slider,
+.carousel,
+.carousel-inner,
+.carousel-item {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.carousel img,
+.hero-slider img {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+.shine-3d-hero,
+.shine-3d-stage {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+.shine-3d-slide img {
+    max-width: 100%;
+}
+
+/* Offcanvas кабінету користувача — теж без 100vw */
+#manageNavOffcanvas.offcanvas-start {
+    --bs-offcanvas-width: 100%;
+    width: 100%;
+    max-width: 100%;
+}

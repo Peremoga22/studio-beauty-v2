@@ -12,59 +12,61 @@
 }
 else
 {
-    <table class="table table-striped">
-        <thead>
+    <div class="table-responsive rounded-3 border shadow-sm">
+        <table class="table table-striped align-middle mb-0 allow-wrap">
+        <thead class="table-light">
             <tr>
-                <th>Email</th>
-                <th>Ролі</th>
-                <th>Дії</th>
+                <th scope="col">Email</th>
+                <th scope="col">Ролі</th>
+                <th scope="col">Дії</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var user in users)
             {
                 <tr>
-                    <td>@user.Email</td>
+                    <td class="text-break">@user.Email</td>
                     <td>
                         @string.Join(", ", user.Roles)
                     </td>
                     <td>
-                        <!-- Кнопки для ролі Manicure -->
+                        <div class="d-flex flex-column flex-sm-row flex-wrap gap-2">
                         @if (user.Roles.Contains("Manicure"))
                         {
-                            <button class="btn btn-sm btn-outline-danger"
+                            <button type="button" class="btn btn-outline-danger"
                                     @onclick="() => RemoveRole(user.UserId, ManicureRoleName)">
                                 Забрати Manicure
                             </button>
                         }
                         else
                         {
-                            <button class="btn btn-sm btn-outline-success"
+                            <button type="button" class="btn btn-outline-success"
                                     @onclick="() => AddRole(user.UserId, ManicureRoleName)">
                                 Додати Manicure
                             </button>
                         }
 
-                        <!-- Приклад для Admin -->
                         @if (user.Roles.Contains("Admin"))
                         {
-                            <button class="btn btn-sm btn-outline-secondary ms-2"
+                            <button type="button" class="btn btn-outline-secondary"
                                     @onclick="() => RemoveRole(user.UserId, AdminRoleName)">
                                 Забрати Admin
                             </button>
                         }
                         else
                         {
-                            <button class="btn btn-sm btn-outline-primary ms-2"
+                            <button type="button" class="btn btn-outline-primary"
                                     @onclick="() => AddRole(user.UserId, AdminRoleName)">
                                 Додати Admin
                             </button>
                         }
+                        </div>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
+    </div>
 }
 
 @code {

@@ -4,29 +4,10 @@
 <!-- Головний контейнер -->
 <div class="container-fluid p-0">
 
-    <!-- ==== Карусель ==== -->
-    <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
-        <div class="carousel-inner">
-            <div class="carousel-item active">
-                <img src="img/foto002.jpeg" class="d-block w-100" alt="фото студії краси">
-            </div>
-            <div class="carousel-item">
-                <img src="img/saloncrasu2.jpg" class="d-block w-100" alt="фото інтер'єру">
-            </div>
-            <div class="carousel-item">
-                <img src="img/foto35.jpeg" class="d-block w-100" alt="фото процедури">
-            </div>
-        </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Попереднє</span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Наступне</span>
-        </button>
+    <div class="px-2 px-md-3 pt-2">
+        <ShineHero3DCarousel Slides="_heroSlides" />
     </div>
-    <!-- ==== Кінець Каруселі ==== -->
+
     <!-- ==== Послуги ==== -->
     <div class="container py-5">
         <div class="section-title mb-5 text-center wow fadeInUp" data-wow-delay="0.2s">
@@ -134,3 +115,12 @@
     <!-- ==== Кінець Партнерів ==== -->
    
 </div>
+
+@code {
+    private readonly List<ShineHero3DCarousel.HeroSlide> _heroSlides = new()
+    {
+        new("img/foto002.jpeg", "Фото студії краси SHINE"),
+        new("img/saloncrasu2.jpg", "Інтер'єр салону"),
+        new("img/foto35.jpeg", "Косметологічні процедури")
+    };
+}

@@ -1,0 +1,41 @@
+.admin-header-root {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.admin-header-navbar .navbar-toggler {
+    min-width: 44px;
+    min-height: 44px;
+    border-radius: 0.5rem;
+}
+
+@media (max-width: 991.98px) {
+    .admin-navbar-collapse {
+        border-top: 1px solid rgba(255, 255, 255, 0.12);
+        margin-top: 0.5rem;
+    }
+
+    .admin-header-navbar ::deep .navbar-nav .nav-link {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        padding: 0.65rem 0.75rem !important;
+    }
+
+    .admin-header-navbar ::deep .admin-logout-btn {
+        min-height: 44px;
+        padding: 0.65rem 0.75rem !important;
+    }
+}
+
+@media (min-width: 992px) {
+    .admin-header-navbar ::deep .navbar-nav .nav-link {
+        padding-left: 0.65rem !important;
+        padding-right: 0.65rem !important;
+    }
+}
+
+.admin-header-navbar ::deep .nav-link.active.bg-primary {
+    color: #fff !important;
+}

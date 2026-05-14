@@ -1,16 +1,13 @@
 ﻿@page "/massage-therapy"
 
 @inject SeedService _seedService
-@rendermode InteractiveServer
-
-<h3 style="padding-top: 7%;"></h3>
 @{
     var page = pageTherapies.FirstOrDefault(p => p.TitlePage == @selectedMassage);
-    <section class="text-center pt-32 pb-12 px-4">
-        <h1 class="text-4xl font-extrabold mb-4" style="color: #f8b7d8;">
+    <section class="shine-page-hero text-center mb-4 mx-2 mx-md-0">
+        <h1 class="display-6 fw-semibold mb-3" style="color: var(--shine-rose-deep);">
             @(page?.TitlePage ?? "Без сторінки")
         </h1>
-        <p class="text-gray-700 text-lg max-w-2xl mx-auto">
+        <p class="text-muted mb-0 mx-auto" style="max-width: 40rem;">
             @(page?.DescriptionPage ?? "Без сторінки")
         </p>
     </section>
@@ -26,23 +23,24 @@
 <section class="pt-3">
     <div class="container">
         <figure class="figure m-0">
-            <div class="row g-3">
+            <div class="row g-4">
                 @foreach (var item in massageTherapyCards.Where(x => x.CategoryId == page.CategoryId))
                 {
                     <div class="col-12 col-sm-6 col-lg-4">
-                        <div class="card h-100 shadow-sm">
-                            <div class="ratio ratio-16x9">
-                                <lite-youtube class="card-img-top object-fit-cover" videoid="@item.ImagePath" style="width: 100%; height: auto;" title="@item.ImagePath"></lite-youtube>
+                        <div class="shine-service-card d-flex flex-column h-100">
+                            <div class="ratio ratio-16x9 bg-dark">
+                                <lite-youtube class="object-fit-cover" videoid="@item.ImagePath" title="@item.TitleCard"></lite-youtube>
                             </div>
-                            <div class="card-body d-flex flex-column">
-                                <h5 class="card-title fw-bold" style="color: #f8b7d8;">
+                            <div class="p-4 d-flex flex-column flex-grow-1">
+                                <h5 class="fw-semibold mb-2" style="color: var(--shine-rose-deep);">
                                     @item.TitleCard
                                 </h5>
-                                <p class="card-text">@item.DescriptionCard</p>
-                                <div class="card-footer bg-transparent border-0 text-center mt-auto">
-                                    <i class="bi bi-cash-stack me-1"></i>
-                                    @item.Price.ToString("C0", new System.Globalization.CultureInfo("uk-UA"))
+                                <p class="small text-muted flex-grow-1 mb-3">@item.DescriptionCard</p>
+                                <div class="shine-service-meta d-flex flex-wrap gap-3 mb-3">
+                                    <span><i class="bi bi-clock me-1 text-primary"></i>Тривалість: за домовленістю</span>
+                                    <span><i class="bi bi-cash-stack me-1 text-primary"></i>@item.Price.ToString("C0", new System.Globalization.CultureInfo("uk-UA"))</span>
                                 </div>
+                                <a href="/appointment-user" class="btn btn-primary rounded-pill w-100 mt-auto">Записатися</a>
                             </div>
                         </div>
                     </div>

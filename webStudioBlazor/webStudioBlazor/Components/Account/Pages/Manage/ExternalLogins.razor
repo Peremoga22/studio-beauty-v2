@@ -16,7 +16,8 @@
 @if (currentLogins?.Count > 0)
 {
     <h3>Registered Logins</h3>
-    <table class="table">
+    <div class="table-responsive">
+    <table class="table align-middle mb-0">
         <tbody>
             @foreach (var login in currentLogins)
             {
@@ -43,6 +44,7 @@
             }
         </tbody>
     </table>
+    </div>
 }
 @if (otherLogins?.Count > 0)
 {
@@ -51,14 +53,14 @@
     <form class="form-horizontal" action="Account/Manage/LinkExternalLogin" method="post">
         <AntiforgeryToken />
         <div>
-            <p>
+            <div class="d-flex flex-column flex-sm-row flex-wrap gap-2">
                 @foreach (var provider in otherLogins)
                 {
                     <button type="submit" class="btn btn-primary" name="Provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">
                         @provider.DisplayName
                     </button>
                 }
-            </p>
+            </div>
         </div>
     </form>
 }

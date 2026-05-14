@@ -1,0 +1,94 @@
+<ul class="nav flex-column gap-1 @CssClass" role="menubar">
+    <li class="nav-item">
+        <NavLink href="/" class="shine-nav-link nav-link" Match="NavLinkMatch.All" activeClass="active">
+            <i class="bi bi-house-door me-2 opacity-75" aria-hidden="true"></i>Домашня
+        </NavLink>
+    </li>
+    <li class="nav-item">
+        <NavLink href="/our-reviews-for-stududia" class="shine-nav-link nav-link" activeClass="active">
+            <i class="bi bi-chat-heart me-2 opacity-75" aria-hidden="true"></i>Наші відгуки
+        </NavLink>
+    </li>
+    <li class="nav-item">
+        <NavLink href="/cosmetology" class="shine-nav-link nav-link" activeClass="active">
+            <i class="bi bi-stars me-2 opacity-75" aria-hidden="true"></i>Косметологія
+        </NavLink>
+    </li>
+    <li class="nav-item">
+        <NavLink href="/massage-therapy" class="shine-nav-link nav-link" activeClass="active">
+            <i class="bi bi-hand-index-thumb me-2 opacity-75" aria-hidden="true"></i>Масажна терапія
+        </NavLink>
+    </li>
+    <li class="nav-item">
+        <NavLink href="/sales" class="shine-nav-link nav-link" activeClass="active">
+            <i class="bi bi-bag-heart me-2 opacity-75" aria-hidden="true"></i>Наш магазин
+        </NavLink>
+    </li>
+    <li class="nav-item">
+        <NavLink href="/event-list" class="shine-nav-link nav-link" activeClass="active">
+            <i class="bi bi-calendar-event me-2 opacity-75" aria-hidden="true"></i>Події
+        </NavLink>
+    </li>
+    <li class="nav-item">
+        <NavLink href="/about-us" class="shine-nav-link nav-link" activeClass="active">
+            <i class="bi bi-info-circle me-2 opacity-75" aria-hidden="true"></i>Про нас
+        </NavLink>
+    </li>
+    @if (IsAuthenticated)
+    {
+        <li class="nav-item">
+            <NavLink href="/personal-account" class="shine-nav-link nav-link" activeClass="active">
+                <i class="bi bi-person-circle me-2 opacity-75" aria-hidden="true"></i>Особистий кабінет
+            </NavLink>
+        </li>
+    }
+    <AuthorizeView>
+        <Authorized Context="auth">
+            @if (auth.User.IsInRole("Admin") || auth.User.IsInRole("Manicure"))
+            {
+                <li class="nav-item">
+                    <NavLink href="/admin-clients" class="shine-nav-link nav-link fw-semibold" activeClass="active">
+                        <i class="bi bi-shield-lock me-2 opacity-75" aria-hidden="true"></i>Адмінка
+                    </NavLink>
+                </li>
+            }
+            <li class="nav-item">
+                <form action="Account/Logout" method="post" class="m-0">
+                    <AntiforgeryToken />
+                    <input type="hidden" name="ReturnUrl" value="@CurrentUrl" />
+                    <button type="submit" class="shine-nav-link nav-link text-start w-100 border-0 bg-transparent shine-sidebar-logout">
+                        <i class="bi bi-box-arrow-right me-2 opacity-75" aria-hidden="true"></i>Вийти
+                    </button>
+                </form>
+            </li>
+        </Authorized>
+        <NotAuthorized>
+            <li class="nav-item">
+                <NavLink href="Account/Login" class="shine-nav-link nav-link" activeClass="active">
+                    <i class="bi bi-box-arrow-in-right me-2 opacity-75" aria-hidden="true"></i>Логін
+                </NavLink>
+            </li>
+        </NotAuthorized>
+    </AuthorizeView>
+    <li class="nav-item mt-2 pt-2 shine-nav-divider">
+        <a href="/cart" class="shine-nav-link nav-link d-flex align-items-center justify-content-between shine-sidebar-cart" aria-label="Кошик">
+            <span><i class="bi bi-cart3 me-2 opacity-75" aria-hidden="true"></i>Кошик</span>
+            @if (CartCount > 0)
+            {
+                <span class="badge rounded-pill bg-danger">@CartCount</span>
+            }
+        </a>
+    </li>
+    <li class="nav-item mt-2">
+        <a href="/appointment-user" class="btn btn-primary w-100 rounded-pill fw-semibold shine-sidebar-cta">
+            Записатися
+        </a>
+    </li>
+</ul>
+
+@code {
+    [Parameter] public string? CssClass { get; set; }
+    [Parameter] public int CartCount { get; set; }
+    [Parameter] public bool IsAuthenticated { get; set; }
+    [Parameter] public string? CurrentUrl { get; set; }
+}

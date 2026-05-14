@@ -1,0 +1,90 @@
+@implements IDisposable
+@inject NavigationManager NavigationManager
+@inject CartService CartService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@rendermode InteractiveServer
+
+<div class="shine-sidebar-shell flex-shrink-0">
+    <aside class="shine-sidebar d-none d-lg-flex flex-column" aria-label="Головне меню">
+        <div class="shine-sidebar-brand px-3 py-4">
+            <a href="/" class="shine-sidebar-brand-link text-decoration-none d-flex align-items-center gap-3">
+                <img src="img/logo-new.png" alt="SHINE" width="48" height="48" class="rounded-circle shadow-sm flex-shrink-0" />
+                <span class="d-flex flex-column lh-sm min-w-0">
+                    <span class="shine-sidebar-brand-title text-truncate">SHINE</span>
+                    <span class="shine-sidebar-brand-tag text-truncate">cosmetology</span>
+                </span>
+            </a>
+        </div>
+        <nav class="shine-sidebar-nav flex-grow-1 px-2 pb-3 overflow-auto">
+            <ShineNavMenu CssClass="shine-sidebar-nav-inner" CartCount="cartCount" IsAuthenticated="isAuthenticated" CurrentUrl="currentUrl" />
+        </nav>
+    </aside>
+
+    <div class="offcanvas offcanvas-start shine-nav-offcanvas d-lg-none" tabindex="-1" id="shineNavDrawer" aria-labelledby="shineNavDrawerLabel">
+        <div class="offcanvas-header border-bottom align-items-center">
+            <div class="d-flex align-items-center gap-2 min-w-0 text-white" id="shineNavDrawerLabel">
+                <img src="img/logo-new.png" alt="" width="40" height="40" class="rounded-circle flex-shrink-0" />
+                <span class="fw-semibold text-truncate">SHINE cosmetology</span>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Закрити"></button>
+        </div>
+        <div class="offcanvas-body pt-3">
+            <ShineNavMenu CartCount="cartCount" IsAuthenticated="isAuthenticated" CurrentUrl="currentUrl" />
+        </div>
+    </div>
+</div>
+
+@code {
+    private string? currentUrl;
+    private int cartCount;
+    private bool isAuthenticated;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        isAuthenticated = authState.User.Identity?.IsAuthenticated ?? false;
+        AuthenticationStateProvider.AuthenticationStateChanged += OnAuthChanged;
+        CartService.CartCountChanged += OnCartCountChanged;
+        await CartService.NotifyCountChangedAsync();
+        currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        NavigationManager.LocationChanged += OnLocationChanged;
+    }
+
+    private void OnAuthChanged(Task<AuthenticationState> task)
+    {
+        _ = HandleAuthChangedAsync(task);
+    }
+
+    private async Task HandleAuthChangedAsync(Task<AuthenticationState> task)
+    {
+        try
+        {
+            var authState = await task;
+            isAuthenticated = authState.User.Identity?.IsAuthenticated ?? false;
+            await InvokeAsync(StateHasChanged);
+        }
+        catch
+        {
+            // ignore
+        }
+    }
+
+    private void OnCartCountChanged(int count)
+    {
+        cartCount = count;
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        AuthenticationStateProvider.AuthenticationStateChanged -= OnAuthChanged;
+        CartService.CartCountChanged -= OnCartCountChanged;
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
+}
