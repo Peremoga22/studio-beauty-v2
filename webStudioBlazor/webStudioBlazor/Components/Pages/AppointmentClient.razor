@@ -1,7 +1,6 @@
 ﻿@page "/appointment-user"
 @page "/appointment-user/{Id:int}"
 @using System.ComponentModel.DataAnnotations
-@using System.Text.RegularExpressions
 @using webStudioBlazor.Data
 @using Microsoft.AspNetCore.Components.Authorization
 
@@ -10,171 +9,177 @@
 @inject SeedService _seedService
 @rendermode InteractiveServer
 
-<h3 style="padding-top: 5%;"></h3>
-<div class="container py-4">
-    <div class="section-title mb-5 text-center">
-        <div class="sub-style">
-            <h4 class="sub-title px-3 mb-0">Запис онлайн</h4>
-        </div>
-        <h1 class="display-5 mb-1">Залиште заявку на прийом</h1>
-        <p>Заповніть форму, і ми з вами зв'яжемося для підтвердження запису.</p>
-        @if (!IsAuthenticated)
-        {
-            <p class="text-center" style="color: #f8b7d8;">
-                Авторизуйтеся, щоб переглядати та зберігати історію ваших записів.
-            </p>
-        }
-    </div>
+<section class="shine-appoint-page py-3">
+    <div class="shine-appoint-inner">
+        <nav class="shine-appoint-breadcrumb mb-4" aria-label="Навігаційна стежка">
+            <a href="/" class="shine-appoint-breadcrumb-link">Домашня сторінка</a>
+            <span class="shine-appoint-breadcrumb-sep" aria-hidden="true">/</span>
+            <span class="shine-appoint-breadcrumb-current">Запис онлайн</span>
+        </nav>
 
-    <div class="row justify-content-center">
-        <div class="col-lg-6">
-            <div class="card shadow rounded">
-                <div class="card-body p-4">
-                    <EditForm Model="@clientUser"
-                              OnValidSubmit="HandleValidSubmit"
-                              class="card shadow-sm border rounded-3 p-4 bg-white">                      
-                        <DataAnnotationsValidator />                      
-                        <ValidationSummary class="text-danger small" />
+        <header class="shine-appoint-intro text-center">
+            <span class="shine-appoint-kicker">Запис онлайн</span>
+            <h1 class="shine-appoint-title">Залиште заявку на прийом</h1>
+            <p class="shine-appoint-lead mb-0">Заповніть форму, і ми з вами зв’яжемося для підтвердження запису.</p>
+            @if (!IsAuthenticated)
+            {
+                <p class="shine-appoint-auth-hint mb-0">
+                    Авторизуйтеся, щоб зручніше переглядати історію записів у своєму кабінеті.
+                </p>
+            }
+        </header>
 
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold small">Ім’я та прізвище *</label>
-                            <InputText @bind-Value="clientUser.ClientName"
-                                       class="form-control form-control-sm" />
-                            <ValidationMessage For="@(() => clientUser.ClientName)"
-                                               class="text-danger small" />
-                        </div>
+        <div class="row justify-content-center g-0">
+            <div class="col-12 col-lg-10 col-xl-8">
+                <div class="card shine-appoint-card border-0 shadow-none">
+                    <div class="card-body p-4 p-md-5">
+                        <EditForm Model="@clientUser"
+                                  OnValidSubmit="HandleValidSubmit"
+                                  class="shine-appoint-form">
+                            <DataAnnotationsValidator />
+                            <ValidationSummary class="text-danger small mb-3" />
 
-                        <div class="mb-3">
-                            <label for="Input_Phone" class="form-label fw-semibold small">
-                                Телефон <span class="text-danger">*</span>
-                            </label>
-                            <InputText @bind-Value="clientUser.ClientPhone"
-                                       id="Input_Phone"
-                                       class="form-control form-control-sm"
-                                       placeholder="+380..."
-                                       oninput="this.value = this.value.replace(/\s+/g, '')" />
-                            <ValidationMessage For="@(() => clientUser.ClientPhone)"
-                                               class="text-danger small" />
-                        </div>
+                            <div class="mb-3">
+                                <label class="form-label" for="appoint-name">Ім’я та прізвище <span class="text-danger">*</span></label>
+                                <InputText @bind-Value="clientUser.ClientName"
+                                           id="appoint-name"
+                                           class="form-control"
+                                           autocomplete="name" />
+                                <ValidationMessage For="@(() => clientUser.ClientName)"
+                                                   class="text-danger small" />
+                            </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Послуга</label>
-                            <span class="text-danger">*</span>
+                            <div class="mb-3">
+                                <label for="Input_Phone" class="form-label">
+                                    Телефон <span class="text-danger">*</span>
+                                </label>
+                                <InputText @bind-Value="clientUser.ClientPhone"
+                                           id="Input_Phone"
+                                           class="form-control"
+                                           placeholder="+380..."
+                                           autocomplete="tel"
+                                           oninput="this.value = this.value.replace(/\s+/g, '')" />
+                                <ValidationMessage For="@(() => clientUser.ClientPhone)"
+                                                   class="text-danger small" />
+                            </div>
 
-                            <InputSelect class="form-select"
-                                         Value="clientUser.CategoryId"
-                                         ValueChanged="@((int v) => OnCategoryChanged(v))"
-                                         ValueExpression="() => clientUser.CategoryId">
-                                <option value="0">Оберіть послугу</option>
-                                @foreach (var cat in categories.Where(a => a.NameCategory != DontChowPageName))
-                                {
-                                    <option value="@cat.Id">@cat.NameCategory</option>
-                                }
-                            </InputSelect>
-                            <ValidationMessage For="@(() => clientUser.CategoryId)"
-                                               class="text-danger small" />
-                          
-                        </div>
-                                             
-                        <div class="mb-3">
-                            <label class="form-label">Категорія</label>
-                            <span class="text-danger">*</span>
-
-                            <InputSelect class="form-select"
-                                         @bind-Value="clientUser.TherapyId"
-                                         TValue="int">
-                                <option value="0">Оберіть послугу</option>
-                                @foreach (var srv in therapyCards.Where(c => c.CategoryId == clientUser.CategoryId).ToList())
-                                {
-                                    <option value="@srv.Id">@srv.TitleCard</option>
-                                }
-                            </InputSelect>
-                            <ValidationMessage For="@(() => clientUser.TherapyId)"
-                                               class="text-danger small" />
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Дата</label>
-                            <span class="text-danger">*</span>
-
-                            <InputDate TValue="DateOnly"
-                                       Value="clientUser.AppointmentDate"
-                                       ValueChanged="@( (DateOnly v) => OnDateChanged(v) )"
-                                       ValueExpression="() => clientUser.AppointmentDate"
-                                       class="form-control" />
-                            <ValidationMessage For="@(() => clientUser.AppointmentDate)"
-                                               class="text-danger small" />
-                            <strong style="color:red">@ErrorMessageSelectedDate</strong>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Час</label>
-                            <span class="text-danger">*</span>
-
-                            @if (IsManicureCategory)
-                            {
-                                <InputSelect @bind-Value="booking.SelectedManicureTime"
+                            <div class="mb-3">
+                                <label class="form-label" for="appoint-category">Категорія <span class="text-danger">*</span></label>
+                                <InputSelect id="appoint-category"
                                              class="form-select"
-                                             TValue="ManicureTime ?">
-                                    <option value="">Оберіть час</option>
-                                    @if (availableManicureSlots?.Count > 0)
+                                             Value="clientUser.CategoryId"
+                                             ValueChanged="@((int v) => OnCategoryChanged(v))"
+                                             ValueExpression="() => clientUser.CategoryId">
+                                    <option value="0">Оберіть категорію</option>
+                                    @foreach (var cat in categories.Where(a => a.NameCategory != DontChowPageName))
                                     {
-                                        foreach (var time in availableManicureSlots)
-                                        {
-                                            <option value="@time">@GetManicureDisplayName(time)</option>
-                                        }
+                                        <option value="@cat.Id">@cat.NameCategory</option>
                                     }
-                                    else
-                                    {
-                                        <option disabled>Немає вільних слотів на цю дату</option>
-                                    }
-                                </InputSelect>                               
-                            }
-                            else
-                            {
-                                <InputSelect @bind-Value="booking.SelectedTime"
+                                </InputSelect>
+                                <ValidationMessage For="@(() => clientUser.CategoryId)"
+                                                   class="text-danger small" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label" for="appoint-therapy">Послуга <span class="text-danger">*</span></label>
+                                <InputSelect id="appoint-therapy"
                                              class="form-select"
-                                             TValue="MassageTime ?">
-                                    <option value="">Оберіть час</option>
-                                    @if (availableSlots?.Count > 0)
+                                             @bind-Value="clientUser.TherapyId"
+                                             TValue="int">
+                                    <option value="0">Оберіть послугу</option>
+                                    @foreach (var srv in therapyCards.Where(c => c.CategoryId == clientUser.CategoryId).ToList())
                                     {
-                                        foreach (var time in availableSlots)
+                                        <option value="@srv.Id">@srv.TitleCard</option>
+                                    }
+                                </InputSelect>
+                                <ValidationMessage For="@(() => clientUser.TherapyId)"
+                                                   class="text-danger small" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label" for="appoint-date">Дата <span class="text-danger">*</span></label>
+                                <InputDate TValue="DateOnly"
+                                           id="appoint-date"
+                                           Value="clientUser.AppointmentDate"
+                                           ValueChanged="@( (DateOnly v) => OnDateChanged(v) )"
+                                           ValueExpression="() => clientUser.AppointmentDate"
+                                           class="form-control" />
+                                <ValidationMessage For="@(() => clientUser.AppointmentDate)"
+                                                   class="text-danger small" />
+                                @if (!string.IsNullOrEmpty(ErrorMessageSelectedDate))
+                                {
+                                    <span class="shine-appoint-inline-error">@ErrorMessageSelectedDate</span>
+                                }
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label" for="appoint-time">Час <span class="text-danger">*</span></label>
+                                @if (IsManicureCategory)
+                                {
+                                    <InputSelect id="appoint-time"
+                                                 @bind-Value="booking.SelectedManicureTime"
+                                                 class="form-select"
+                                                 TValue="ManicureTime?">
+                                        <option value="">Оберіть час</option>
+                                        @if (availableManicureSlots?.Count > 0)
                                         {
-                                            <option value="@time">@GetDisplayName(time)</option>
+                                            foreach (var time in availableManicureSlots)
+                                            {
+                                                <option value="@time">@GetManicureDisplayName(time)</option>
+                                            }
                                         }
-                                    }
-                                    else
-                                    {
-                                        <option disabled>Немає вільних слотів на цю дату</option>
-                                    }
-                                </InputSelect>                               
-                            }
+                                        else
+                                        {
+                                            <option disabled>Немає вільних слотів на цю дату</option>
+                                        }
+                                    </InputSelect>
+                                }
+                                else
+                                {
+                                    <InputSelect id="appoint-time"
+                                                 @bind-Value="booking.SelectedTime"
+                                                 class="form-select"
+                                                 TValue="MassageTime?">
+                                        <option value="">Оберіть час</option>
+                                        @if (availableSlots?.Count > 0)
+                                        {
+                                            foreach (var time in availableSlots)
+                                            {
+                                                <option value="@time">@GetDisplayName(time)</option>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <option disabled>Немає вільних слотів на цю дату</option>
+                                        }
+                                    </InputSelect>
+                                }
+                                @if (!string.IsNullOrEmpty(ErrorMessageSelectedTime))
+                                {
+                                    <span class="shine-appoint-inline-error">@ErrorMessageSelectedTime</span>
+                                }
+                            </div>
 
-                            <strong style="color:red">@ErrorMessageSelectedTime</strong>
-                        </div>
-
-                        <div class="d-flex justify-content-center gap-2 mt-3">
-                            <button type="submit"
-                                    class="btn rounded-pill px-4"
-                                    style="background-color: #f8b7d8; color: white; border: none;">
-                                Записатися
-                            </button>
-                        </div>
-
-                    </EditForm>
-
+                            <div class="d-flex justify-content-center pt-1">
+                                <button type="submit"
+                                        class="shine-hero-btn shine-appoint-submit border-0 px-5">
+                                    Записатися
+                                </button>
+                            </div>
+                        </EditForm>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</section>
 
 @code {
     [Parameter]
     public int Id { get; set; }
 
     [CascadingParameter]
-    private Task<AuthenticationState> AuthenticationStateUser { get; set; }
+    private Task<AuthenticationState> AuthenticationStateUser { get; set; } = default!;
 
     private bool IsAuthenticated { get; set; } = false;
     private string UserId { get; set; } = string.Empty;
