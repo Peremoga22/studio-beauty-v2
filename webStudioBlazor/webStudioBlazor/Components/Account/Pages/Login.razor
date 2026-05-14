@@ -15,55 +15,61 @@
 @inject IJSRuntime _jsRuntime
 
 
-<h3 style="padding-top: 7%;"></h3>
-<PageTitle>Log in</PageTitle>
+<PageTitle>Вхід</PageTitle>
 
-<div class="container py-4">
-    <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-5">
-            <div class="card shadow-lg border-0 rounded-3">
-                <div class="card-body p-4 p-md-5">
+<section class="shine-login-page">
+    <div class="shine-login-inner">
+        <nav class="shine-login-breadcrumb mb-4" aria-label="Навігаційна стежка">
+            <a href="/" class="shine-login-breadcrumb-link">Домашня сторінка</a>
+            <span class="shine-login-breadcrumb-sep" aria-hidden="true">/</span>
+            <span class="shine-login-breadcrumb-current">Вхід</span>
+        </nav>
 
-                    <h2 class="text-center mb-4 fw-bold">Вітаю!</h2>
-                    <p class="text-center text-muted mb-4">Ведіть будь ласка свою пошту</p>
+        <div class="row justify-content-center g-0">
+            <div class="col-12">
+                <div class="card shine-login-card border-0 shadow-none">
+                    <div class="card-body p-4 p-md-5">
 
-                    <StatusMessage Message="@errorMessage" />
+                        <h1 class="shine-login-card-title text-center h2 mb-2">Вітаю!</h1>
+                        <p class="shine-login-card-lead text-center mb-4">Введіть, будь ласка, електронну пошту та пароль.</p>
 
-                    <EditForm Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login">
-                        <DataAnnotationsValidator />
-                        <ValidationSummary class="text-danger mb-3" />
+                        <StatusMessage Message="@errorMessage" />
 
-                        <div class="form-floating mb-3">
-                            <InputText @bind-Value="Input.Email"
-                                       id="Input.Email"
-                                       class="form-control"
-                                       autocomplete="username"
-                                       placeholder="name@example.com" />
-                            <label for="Input.Email">Email address</label>
-                            <ValidationMessage For="() => Input.Email" class="text-danger" />
-                        </div>
+                        <EditForm Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login">
+                            <DataAnnotationsValidator />
+                            <ValidationSummary class="text-danger mb-3" />
 
-                        <div class="form-floating mb-3">
-                            <InputText @bind-Value="Input.Password"
-                                       id="Input.Password"
-                                       type="password"
-                                       class="form-control"
-                                       autocomplete="current-password"
-                                       placeholder="password" />
-                            <label for="Input.Password">Password</label>
-                            <ValidationMessage For="() => Input.Password" class="text-danger" />
-                        </div>
+                            <div class="form-floating mb-3">
+                                <InputText @bind-Value="Input.Email"
+                                           id="login-email"
+                                           class="form-control"
+                                           autocomplete="username"
+                                           placeholder="name@example.com" />
+                                <label for="login-email">Електронна пошта</label>
+                                <ValidationMessage For="() => Input.Email" class="text-danger small" />
+                            </div>
 
-                        <div class="form-check mb-3">
-                            <InputCheckbox @bind-Value="Input.RememberMe"
-                                           id="RememberMe"
-                                           class="form-check-input" />
-                            <label for="RememberMe" class="form-check-label">Запам'ятати мене</label>
-                        </div>
+                            <div class="form-floating mb-3">
+                                <InputText @bind-Value="Input.Password"
+                                           id="login-password"
+                                           type="password"
+                                           class="form-control"
+                                           autocomplete="current-password"
+                                           placeholder="password" />
+                                <label for="login-password">Пароль</label>
+                                <ValidationMessage For="() => Input.Password" class="text-danger small" />
+                            </div>
 
-                        <button type="submit" class="w-100 btn btn-lg btn-primary mb-3">Логін</button>
+                            <div class="form-check mb-4">
+                                <InputCheckbox @bind-Value="Input.RememberMe"
+                                               id="RememberMe"
+                                               class="form-check-input" />
+                                <label for="RememberMe" class="form-check-label">Запам'ятати мене</label>
+                            </div>
 
-                        @*  <div class="text-center">
+                            <button type="submit" class="shine-hero-btn shine-login-submit border-0 mb-0">Логін</button>
+
+                            @*  <div class="text-center">
                             <a class="d-block mb-2" href="Account/ForgotPassword">Forgot your password?</a>
                             <a class="d-block mb-2"
                                href="@(NavigationManager.GetUriWithQueryParameters("Account/Register", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl }))">
@@ -71,13 +77,20 @@
                             </a>
                             <a class="d-block" href="Account/ResendEmailConfirmation">Resend email confirmation</a>
                         </div> *@
-                    </EditForm>    
-                    <ExternalLoginPicker />                                                                       
-                 </div>
+                        </EditForm>
+
+                        @if (ExternalLogins is { Count: > 0 })
+                        {
+                            <hr class="shine-login-divider" />
+                            <p class="shine-login-external-caption">Або</p>
+                        }
+                        <ExternalLoginPicker />
+                    </div>
+                </div>
             </div>
-        </div>              
+        </div>
     </div>
-</div>
+</section>
 
 @code {
     private string? errorMessage;
@@ -108,13 +121,13 @@
     }
 
     private void LoginWithGoogle()
-    {       
+    {
         var returnUrl = "/";
         NavigationManager.NavigateTo($"/auth/login-google?returnUrl={Uri.EscapeDataString(returnUrl)}", forceLoad: true);
     }
 
     private async Task Logout()
-    {        
+    {
         await _jsRuntime.InvokeVoidAsync("fetch", "/auth/logout", new
         {
             method = "POST",
@@ -142,7 +155,7 @@
         if (result.Succeeded)
         {
             Logger.LogInformation("User logged in.");
-            RedirectManager.RedirectTo(ReturnUrl);
+            RedirectManager.RedirectTo(SafeReturnUrl);
         }
         else if (result.RequiresTwoFactor)
         {
@@ -157,12 +170,12 @@
         }
         else
         {
-            errorMessage = "Error: Invalid login attempt.";
+            errorMessage = "Невірна електронна пошта або пароль.";
         }
     }
 
     private string GetSafeReturnUrl(string? candidate)
-    {        
+    {
         const string fallback = "/";
         return IsLocalUrl(NavigationManager, candidate) ? candidate! : fallback;
     }
@@ -170,9 +183,9 @@
     private static bool IsLocalUrl(NavigationManager nav, string? url)
     {
         if (string.IsNullOrWhiteSpace(url)) return false;
-       
+
         var isAbsolute = Uri.TryCreate(url, UriKind.Absolute, out var abs);
-        if (isAbsolute) return false;     
+        if (isAbsolute) return false;
         return true;
     }
 

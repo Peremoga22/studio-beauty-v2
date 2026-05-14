@@ -1,0 +1,327 @@
+/* Сторінка «Про нас» — premium hero + контент (shine-about-) */
+.shine-about-page {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    padding-bottom: 2rem;
+    background:
+        radial-gradient(ellipse 90% 45% at 50% -8%, rgba(255, 79, 163, 0.1), transparent 55%),
+        linear-gradient(180deg, #fffafc 0%, #faf7fb 45%, #f6f2f7 100%);
+}
+
+.shine-about-inner {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 0.75rem;
+}
+
+@media (min-width: 768px) {
+    .shine-about-inner {
+        padding: 0 1.5rem;
+    }
+}
+
+.shine-about-hero {
+    position: relative;
+    overflow: hidden;
+    margin: 1.5rem 0 2.5rem;
+    min-height: 300px;
+    border-radius: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.86), rgba(255, 236, 247, 0.92)),
+        url("/img/saloncrasu2.jpg") center / cover no-repeat;
+    box-shadow:
+        0 35px 90px rgba(255, 86, 160, 0.2),
+        inset 0 0 0 1px rgba(255, 180, 215, 0.55);
+}
+
+.shine-about-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background:
+        radial-gradient(circle at 22% 28%, rgba(255, 105, 180, 0.34), transparent 28%),
+        radial-gradient(circle at 80% 22%, rgba(255, 210, 232, 0.48), transparent 30%),
+        linear-gradient(115deg, rgba(255, 255, 255, 0.93), rgba(255, 242, 249, 0.75));
+    z-index: 1;
+    pointer-events: none;
+}
+
+.shine-about-hero::after {
+    content: "";
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    right: -95px;
+    top: -95px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ff4f9a, #ffc6df);
+    filter: blur(8px);
+    opacity: 0.25;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.shine-about-hero-glow {
+    position: absolute;
+    z-index: 2;
+    width: 200px;
+    height: 200px;
+    left: 40%;
+    bottom: -85px;
+    transform: translateX(-50%);
+    border-radius: 50%;
+    background: #ff72b6;
+    filter: blur(58px);
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+.shine-about-hero-content {
+    position: relative;
+    z-index: 4;
+    max-width: 700px;
+    padding: 2.25rem 1.25rem;
+}
+
+.shine-about-hero-label {
+    display: inline-block;
+    margin-bottom: 12px;
+    font-size: 12px;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: #ff4f9a;
+    font-weight: 800;
+}
+
+.shine-about-hero-title {
+    margin: 0;
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: clamp(2rem, 5.5vw, 3.25rem);
+    line-height: 1.08;
+    color: #251425;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    text-shadow: 0 10px 32px rgba(255, 255, 255, 0.88);
+}
+
+.shine-about-hero-text {
+    max-width: 36rem;
+    margin: 1.125rem auto 0;
+    font-size: 1.05rem;
+    line-height: 1.65;
+    color: #6f5f70;
+}
+
+.shine-about-hero-glass {
+    position: absolute;
+    z-index: 3;
+    width: 155px;
+    height: 195px;
+    border-radius: 28px;
+    background: rgba(255, 255, 255, 0.48);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    box-shadow:
+        0 22px 55px rgba(255, 79, 154, 0.18),
+        inset 0 0 0 1px rgba(255, 180, 215, 0.3);
+    pointer-events: none;
+}
+
+.shine-about-hero-glass-left {
+    left: 44px;
+    bottom: 34px;
+    transform: perspective(660px) rotateY(15deg) rotateZ(-6deg);
+}
+
+.shine-about-hero-glass-right {
+    right: 52px;
+    top: 38px;
+    transform: perspective(660px) rotateY(-15deg) rotateZ(6deg);
+}
+
+.shine-about-hero-glass::before {
+    content: "";
+    position: absolute;
+    inset: 17px;
+    border-radius: 22px;
+    background: linear-gradient(135deg, rgba(255, 79, 154, 0.38), rgba(255, 198, 223, 0.2));
+}
+
+.shine-about-breadcrumb {
+    padding: 1rem 1.25rem;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(255, 182, 213, 0.35);
+    box-shadow: 0 12px 32px rgba(40, 20, 35, 0.06);
+    font-size: 0.95rem;
+    color: #7b6c7a;
+}
+
+.shine-about-breadcrumb-link {
+    color: #ff5fa2;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.shine-about-breadcrumb-link:hover {
+    color: #d63384;
+    text-decoration: underline;
+}
+
+.shine-about-breadcrumb-sep {
+    margin: 0 0.35rem;
+    opacity: 0.65;
+}
+
+.shine-about-breadcrumb-current {
+    font-weight: 500;
+    color: #5c4f5c;
+}
+
+.shine-about-main {
+    background: rgba(255, 255, 255, 0.55);
+    border-radius: var(--shine-radius);
+    border: 1px solid rgba(255, 182, 213, 0.2);
+    box-shadow: var(--shine-shadow);
+}
+
+.shine-about-section-title {
+    font-family: "Playfair Display", Georgia, serif;
+    font-weight: 600;
+    color: var(--shine-graphite);
+}
+
+.shine-about-subtitle {
+    color: var(--shine-graphite);
+    font-weight: 600;
+}
+
+.shine-about-prose {
+    color: var(--shine-graphite);
+    line-height: 1.65;
+}
+
+.shine-about-checklist li {
+    margin-bottom: 0.5rem;
+    color: var(--shine-graphite);
+    display: flex;
+    align-items: flex-start;
+}
+
+.shine-about-checklist li:last-child {
+    margin-bottom: 0;
+}
+
+.shine-about-checklist i {
+    color: var(--shine-rose);
+    margin-top: 0.15rem;
+    flex-shrink: 0;
+}
+
+.shine-about-logo-wrap {
+    max-width: 260px;
+    border-radius: 50%;
+    padding: 0.35rem;
+    background: linear-gradient(145deg, rgba(255, 79, 163, 0.2), rgba(255, 210, 232, 0.45));
+    box-shadow: 0 16px 40px rgba(255, 79, 163, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.95);
+}
+
+.shine-about-logo {
+    display: block;
+    border-radius: 50%;
+    width: 100%;
+    height: auto;
+}
+
+.shine-about-tagline {
+    color: var(--shine-muted);
+}
+
+.shine-about-directions {
+    background: transparent;
+}
+
+.shine-about-directions-row {
+    align-items: stretch;
+}
+
+.shine-about-direction-card {
+    padding: 1.75rem 1.5rem;
+    border-radius: 24px;
+    border: 1px solid rgba(255, 182, 213, 0.4);
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 18px 44px rgba(255, 105, 180, 0.12);
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.shine-about-direction-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 26px 56px rgba(255, 105, 180, 0.2);
+}
+
+.shine-about-direction-icon {
+    color: var(--shine-rose);
+}
+
+.shine-about-direction-text {
+    color: var(--shine-muted);
+    font-size: 0.95rem;
+    line-height: 1.55;
+}
+
+.shine-about-direction-link {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: #ff5fa2 !important;
+    border-bottom: 2px solid rgba(255, 79, 163, 0.35);
+    padding-bottom: 2px;
+    transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.shine-about-direction-link:hover {
+    color: #d63384 !important;
+    border-color: rgba(214, 51, 132, 0.55);
+}
+
+@media (max-width: 768px) {
+    .shine-about-hero {
+        margin: 1rem 0 1.75rem;
+        min-height: 260px;
+        border-radius: 26px;
+    }
+
+    .shine-about-hero-text {
+        font-size: 0.95rem;
+    }
+
+    .shine-about-hero-label {
+        font-size: 10px;
+        letter-spacing: 3px;
+    }
+
+    .shine-about-hero-glass {
+        display: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .shine-about-direction-card,
+    .shine-about-direction-card:hover {
+        transition: none;
+        transform: none;
+    }
+
+    .shine-about-hero-glass-left,
+    .shine-about-hero-glass-right {
+        transform: none;
+    }
+}

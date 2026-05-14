@@ -75,9 +75,12 @@ body {
 
 .shine-sidebar .shine-nav-link.nav-link.active,
 .shine-nav-offcanvas .shine-nav-link.nav-link.active {
-    background: rgba(255, 79, 163, 0.32) !important;
+    background: linear-gradient(125deg, rgba(255, 48, 130, 0.55) 0%, rgba(255, 110, 185, 0.48) 45%, rgba(210, 70, 150, 0.42) 100%) !important;
     color: #fff !important;
-    box-shadow: 0 2px 14px rgba(0, 0, 0, 0.25);
+    box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.22),
+        0 6px 22px rgba(255, 30, 110, 0.38),
+        inset 0 1px 0 rgba(255, 255, 255, 0.18);
 }
 
 .shine-sidebar .shine-sidebar-logout:hover,

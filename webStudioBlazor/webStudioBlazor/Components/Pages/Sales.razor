@@ -1,9 +1,9 @@
 ﻿@page "/sales"
+@implements IDisposable
 @inject CartService _cartService
 @inject SeedService _seedService
 @inject NavigationManager _nav
 @rendermode InteractiveServer
-
 
 @if (_showAlert)
 {
@@ -13,64 +13,73 @@
         <button type="button" class="btn-close ms-2" aria-label="Close" @onclick="HideAlert"></button>
     </div>
 }
+
 @{
-    var page = pageTherapies.FirstOrDefault(p => p.TitlePage == @selectedStore);
-    <section class="shine-page-hero text-center mb-4 mx-2 mx-md-0">
-        <h1 class="display-6 fw-semibold mb-3" style="color: var(--shine-rose-deep);">
-            @(page?.TitlePage ?? "Без сторінки")
-        </h1>
-        <p class="text-muted mb-0 mx-auto" style="max-width: 40rem;">
-            @(page?.DescriptionPage ?? "Без сторінки")
-        </p>
-    </section>
-    <div class="container">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb bg-white p-2 mb-5 rounded shadow-sm">
-                <li class="breadcrumb-item"><a href="/" style="color: #f8b7d8;">Домашня сторінка</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Наш магазин</li>
-            </ol>
-        </nav>
-    </div>
+    var page = pageTherapies.FirstOrDefault(p => p.TitlePage == selectedStore);
 }
-<section class="pt-3">
-    <div class="container">   
-        <figure class="figure m-0">
-            <div class="row g-4">
-                @foreach (var item in salesTherapyCards.Where(x => x.CategoryId == page.CategoryId))
-                {
-                    <div class="col-12 col-sm-6 col-lg-4">
-                        <div class="shine-service-card d-flex flex-column h-100">
-                            <img src="@item.ImagePath" class="shine-service-img" alt="@item.TitleCard" loading="lazy" decoding="async">
-                            <div class="p-4 d-flex flex-column flex-grow-1">
-                                <h5 class="fw-semibold mb-2" style="color: var(--shine-rose-deep);">
-                                    @item.TitleCard
-                                </h5>
-                                <p class="small text-muted flex-grow-1 mb-3">@item.DescriptionCard</p>
-                                <div class="shine-service-meta mb-3">
-                                    <i class="bi bi-cash-stack me-1 text-primary"></i>
-                                    @item.Price.ToString("C0", new System.Globalization.CultureInfo("uk-UA"))
+
+<section class="shine-sales-page py-2 pb-5">
+    <div class="container">
+        <header class="shine-sales-hero text-center mb-4">
+            <h1 class="shine-sales-hero-title">@(page?.TitlePage ?? "Наш магазин")</h1>
+            <p class="shine-sales-hero-text mx-auto mb-0">
+                @(page?.DescriptionPage ?? "Преміальна косметика та догляд — оберіть продукти для вашої краси.")
+            </p>
+        </header>
+
+        <nav class="shine-sales-breadcrumb mb-4" aria-label="Навігаційна стежка">
+            <a href="/" class="shine-sales-breadcrumb-link">Домашня сторінка</a>
+            <span class="shine-sales-breadcrumb-sep" aria-hidden="true">/</span>
+            <span class="shine-sales-breadcrumb-current">Наш магазин</span>
+        </nav>
+
+        @if (page is null)
+        {
+            <p class="text-center text-muted py-5 mb-0">Завантаження каталогу…</p>
+        }
+        else
+        {
+            var cards = salesTherapyCards.Where(x => x.CategoryId == page.CategoryId).ToList();
+            @if (!cards.Any())
+            {
+                <p class="text-center text-muted py-5 mb-0">Товари з’являться незабаром.</p>
+            }
+            else
+            {
+                <div class="row g-4 justify-content-center shine-sales-row">
+                    @foreach (var item in cards)
+                    {
+                        <div class="col-12 col-sm-6 col-lg-4 d-flex">
+                            <article class="shine-service-card shine-sales-product w-100 h-100 d-flex flex-column">
+                                <img src="@item.ImagePath" class="shine-service-img flex-shrink-0" alt="@item.TitleCard" loading="lazy" decoding="async">
+                                <div class="shine-sales-card-body p-4 d-flex flex-column flex-grow-1">
+                                    <h2 class="shine-sales-card-title h5 mb-0">@item.TitleCard</h2>
+                                    <p class="shine-sales-card-desc small text-muted mb-0">@item.DescriptionCard</p>
+                                    <div class="shine-sales-price">
+                                        <i class="bi bi-cash-stack me-1" aria-hidden="true"></i>
+                                        @item.Price.ToString("C0", new System.Globalization.CultureInfo("uk-UA"))
+                                    </div>
+                                    <div class="shine-sales-card-footer d-grid gap-2">
+                                        <button type="button" class="shine-hero-btn shine-sales-cart-btn w-100 border-0" @onclick="() => AddToCart(item.Id)">
+                                            <i class="bi bi-bag-plus me-1" aria-hidden="true"></i>Додати в кошик
+                                        </button>
+                                        <a href="/appointment-user" class="shine-sales-btn-outline w-100 text-decoration-none text-center">Деталі / консультація</a>
+                                    </div>
                                 </div>
-                                <div class="d-grid gap-2 mt-auto">
-                                    <button type="button" class="btn btn-primary rounded-pill" @onclick="() => AddToCart(item.Id)">
-                                        <i class="bi bi-bag-plus me-1"></i> Додати в кошик
-                                    </button>
-                                    <a href="/appointment-user" class="btn btn-outline-primary rounded-pill">Деталі / консультація</a>
-                                </div>
-                            </div>
+                            </article>
                         </div>
-                    </div>
-                }
-            </div>
-        </figure>
+                    }
+                </div>
+            }
+        }
     </div>
 </section>
 
 @code {
-    private string selectedStore = "Наш магазин";
+    private const string selectedStore = "Наш магазин";
     private List<PageTherapy> pageTherapies = new();
     private List<TherapyCard> salesTherapyCards = new();
-    private List<Category> categories = new();
-    [Parameter] public int TherapyId { get; set; } 
+    [Parameter] public int TherapyId { get; set; }
     [Parameter] public int Quantity { get; set; } = 1;
     private bool _showAlert;
     private bool _fadeOut;
@@ -83,8 +92,6 @@
     {
         pageTherapies = await _seedService.GetAllPageTherapyListAsync();
         salesTherapyCards = await _seedService.GetAllTherapyCardListAsync();
-        categories = await _seedService.GetAllCategoryListAsync();
-        pageTherapies = await _seedService.GetAllPageTherapyListAsync();
 
         _cartService.CartCountChanged += count => { cartCount = count; InvokeAsync(StateHasChanged); };
         await _cartService.NotifyCountChangedAsync();
@@ -97,12 +104,12 @@
         await _cartService.AddOrIncrementAsync(Id, Quantity);
         _cartService.IncreaseHeaderCount(Quantity);
         await ShowAlertAsync("Товар додано", "success");
-        await InvokeAsync(StateHasChanged);      
+        await InvokeAsync(StateHasChanged);
     }
 
     private string AlertCss =>
-      $"alert alert-{_alertType} fade {(_fadeOut ? "" : "show")}" +
-      " position-fixed top-0 end-0 m-3 shadow";
+        $"alert alert-{_alertType} fade {(_fadeOut ? "" : "show")}" +
+        " position-fixed top-0 end-0 m-3 shadow";
 
     private async Task ShowAlertAsync(string text, string type = "success")
     {
@@ -111,11 +118,11 @@
         _fadeOut = false;
         _showAlert = true;
         StateHasChanged();
-               
+
         await Task.Delay(2700);
         _fadeOut = true;
         StateHasChanged();
-               
+
         await Task.Delay(300);
         _showAlert = false;
         StateHasChanged();
@@ -135,5 +142,5 @@
     public void Dispose()
     {
         _nav.LocationChanged -= OnLocationChanged;
-    }   
+    }
 }

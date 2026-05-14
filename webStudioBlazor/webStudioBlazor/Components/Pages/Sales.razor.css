@@ -1,0 +1,124 @@
+/* Сторінка «Наш магазин»: вирівнювання карток + стиль breadcrumb / кнопок */
+.shine-sales-hero-title {
+    font-family: "Playfair Display", Georgia, serif;
+    font-weight: 600;
+    color: var(--shine-rose-deep);
+    font-size: clamp(1.75rem, 4vw, 2.25rem);
+}
+
+.shine-sales-hero-text {
+    max-width: 40rem;
+    color: var(--shine-muted);
+    font-size: 0.98rem;
+    line-height: 1.6;
+}
+
+.shine-sales-breadcrumb {
+    padding: 1rem 1.25rem;
+    border-radius: var(--shine-radius);
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(255, 182, 213, 0.35);
+    box-shadow: var(--shine-shadow);
+    font-size: 0.95rem;
+    color: #7b6c7a;
+}
+
+.shine-sales-breadcrumb-link {
+    color: #ff5fa2;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.shine-sales-breadcrumb-link:hover {
+    color: #d63384;
+    text-decoration: underline;
+}
+
+.shine-sales-breadcrumb-sep {
+    margin: 0 0.35rem;
+    opacity: 0.65;
+}
+
+.shine-sales-breadcrumb-current {
+    font-weight: 500;
+    color: #5c4f5c;
+}
+
+.shine-sales-row {
+    align-items: stretch;
+}
+
+.shine-sales-product {
+    min-height: 0;
+}
+
+.shine-sales-product.shine-service-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.shine-sales-card-body {
+    flex: 1 1 auto;
+    gap: 0.75rem;
+    min-height: 0;
+}
+
+.shine-sales-card-title {
+    font-family: "Playfair Display", Georgia, serif;
+    font-weight: 600;
+    color: var(--shine-rose-deep);
+    flex-shrink: 0;
+}
+
+.shine-sales-card-desc {
+    flex: 1 1 auto;
+    min-height: 0;
+    line-height: 1.55;
+}
+
+.shine-sales-price {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--shine-graphite);
+    flex-shrink: 0;
+}
+
+.shine-sales-price i {
+    color: rgba(255, 79, 163, 0.85);
+}
+
+.shine-sales-card-footer {
+    margin-top: auto;
+    flex-shrink: 0;
+}
+
+.shine-sales-cart-btn {
+    cursor: pointer;
+}
+
+.shine-sales-btn-outline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.55rem 1rem;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--shine-rose-deep) !important;
+    border: 2px solid rgba(255, 79, 163, 0.45);
+    background: rgba(255, 255, 255, 0.95);
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.shine-sales-btn-outline:hover {
+    background: rgba(255, 79, 163, 0.1);
+    border-color: rgba(255, 79, 163, 0.65);
+    color: #8b0a4d !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .shine-sales-btn-outline {
+        transition: none;
+    }
+}
