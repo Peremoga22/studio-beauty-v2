@@ -4,149 +4,193 @@
 @inject IJSRuntime _jsRuntime
 @rendermode InteractiveServer
 
-<!-- Topbar Start -->
-<div class="container-fluid bg-dark px-5 d-none d-lg-block">
-    <div class="row gx-0 align-items-center text-white small" style="height: 45px;">
-        <div class="col-lg-8 text-start">
-            <div class="d-flex flex-wrap">
-                <a href="https://maps.app.goo.gl/S5UGHhxQ6fssKRFM7" class="text-light me-4 text-decoration-none">
-                    <i class="fas fa-map-marker-alt text-primary me-2"></i>Івано-Франківськ, вул. Кармелюка, 30
+<header class="shine-header w-100 min-w-0">
+    <div class="shine-topbar shine-topbar-mobile d-lg-none">
+        <div class="shine-topbar-mobile-bleed py-1 py-sm-2">
+            <div class="shine-topbar-mobile-inner d-flex align-items-center justify-content-between gap-2">
+                <a href="tel:+380669052664" class="shine-topbar-mobile-call text-decoration-none d-inline-flex align-items-center gap-2 min-w-0" title="Зателефонувати +380 66 905 26 64">
+                    <i class="fas fa-phone-alt shine-topbar-mobile-call-icon flex-shrink-0"></i>
+                    <span class="shine-topbar-mobile-call-text fw-semibold">+380&nbsp;66&nbsp;905&nbsp;26&nbsp;64</span>
                 </a>
-                <a href="tel:+380669052664" class="text-light me-4 text-decoration-none">
-                    <i class="fas fa-phone-alt text-primary me-2"></i>+380669052664
-                </a>
-                <a href="mailto:shine.cosmetologybyzelinska@gmail.com" class="text-light text-decoration-none">
-                    <i class="fas fa-envelope text-primary me-2"></i>shine.cosmetologybyzelinska@gmail.com
-                </a>
-            </div>
-        </div>
-        <div class="col-lg-4 text-end">
-            <div class="d-flex justify-content-end">
-                <a href="https://facebook.com" target="_blank" class="btn btn-light btn-sm rounded-circle me-2">
-                    <i class="fab fa-facebook-f"></i>
-                </a>
-                <a href="https://instagram.com/shinee.cosmetology" target="_blank" class="btn btn-light btn-sm rounded-circle">
-                    <i class="fab fa-instagram"></i>
-                </a>
+                <div class="shine-topbar-mobile-icons d-flex align-items-center flex-shrink-0 gap-1">
+                    <a href="https://maps.app.goo.gl/S5UGHhxQ6fssKRFM7" class="shine-topbar-mobile-icon text-decoration-none" aria-label="Адреса на карті" title="Карта — Івано-Франківськ">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </a>
+                    <a href="mailto:shine.cosmetologybyzelinska@gmail.com" class="shine-topbar-mobile-icon text-decoration-none" aria-label="Написати листа" title="Написати на email">
+                        <i class="fas fa-envelope"></i>
+                    </a>
+                    <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="shine-topbar-mobile-icon text-decoration-none" aria-label="Facebook" title="Facebook">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="https://instagram.com/shinee.cosmetology" target="_blank" rel="noopener noreferrer" class="shine-topbar-mobile-icon text-decoration-none" aria-label="Instagram" title="Instagram">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<!-- Topbar End -->
 
-<div class="container-fluid position-relative p-0">
-    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm px-4 px-lg-5 py-3">
-        <!-- Logo -->
-        <a href="/" class="navbar-brand d-flex align-items-center gap-2">
-            <img src="img/logo-new.png" alt="Логотип" class="rounded-circle shadow-sm" style="height: 48px; width: 48px; object-fit: cover;">
-            <span style="color: #f8b7d8;" class="fs-4 fw-bold">Студія краси</span>
+    <div class="shine-topbar d-none d-lg-block">
+        <div class="container-fluid px-3 px-md-4">
+            <div class="row align-items-center py-2 gx-3">
+                <div class="col shine-topbar-col-main">
+                    <div class="shine-topbar-links d-flex align-items-center">
+                        <a href="https://maps.app.goo.gl/S5UGHhxQ6fssKRFM7" class="shine-topbar-link text-decoration-none d-inline-flex align-items-center">
+                            <i class="fas fa-map-marker-alt text-primary me-2"></i>
+                            <span>Івано-Франківськ, вул. Кармелюка, 30</span>
+                        </a>
+                        <span class="shine-topbar-divider" aria-hidden="true"></span>
+                        <a href="tel:+380669052664" class="shine-topbar-link text-decoration-none d-inline-flex align-items-center">
+                            <i class="fas fa-phone-alt text-primary me-2"></i>
+                            <span>+380 66 905 26 64</span>
+                        </a>
+                        <span class="shine-topbar-divider" aria-hidden="true"></span>
+                        <a href="mailto:shine.cosmetologybyzelinska@gmail.com" class="shine-topbar-link shine-topbar-link-mail text-decoration-none d-inline-flex align-items-center">
+                            <i class="fas fa-envelope text-primary me-2 flex-shrink-0"></i>
+                            <span class="text-truncate">shine.cosmetologybyzelinska@gmail.com</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <div class="d-flex align-items-center gap-2">
+                        <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="shine-social text-decoration-none" aria-label="Facebook">
+                            <i class="fab fa-facebook-f small"></i>
+                        </a>
+                        <a href="https://instagram.com/shinee.cosmetology" target="_blank" rel="noopener noreferrer" class="shine-social text-decoration-none" aria-label="Instagram">
+                            <i class="fab fa-instagram small"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        </a>
+    <div class="container-fluid position-relative p-0">
+        <nav class="navbar navbar-expand-lg navbar-light shine-header-navbar px-2 px-sm-3 px-lg-4 py-2">
+            <div class="container-fluid shine-navbar-inner">
+                <div class="shine-nav-head d-flex flex-nowrap align-items-center">
+                    <a href="/" class="navbar-brand shine-navbar-brand d-flex align-items-center gap-2 gap-sm-3 me-lg-4 py-0 min-w-0 flex-grow-1 flex-lg-grow-0">
+                        <img src="img/logo-new.png" alt="SHINE cosmetology" class="shine-brand-mark flex-shrink-0" width="48" height="48">
+                        <span class="shine-brand-lockup text-start min-w-0">
+                            <span class="shine-brand-title">SHINE</span><span class="shine-brand-sep" aria-hidden="true"></span><span class="shine-brand-tag">cosmetology</span>
+                        </span>
+                    </a>
+                    <div class="shine-nav-tools d-flex d-lg-none align-items-center flex-shrink-0 gap-1">
+                        <a href="/cart" class="shine-cart shine-cart-nav text-decoration-none" aria-label="Кошик">
+                            <i class="bi bi-cart3 fs-5"></i>
+                            @if (cartCount > 0)
+                            {
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger shine-cart-badge">@cartCount</span>
+                            }
+                        </a>
+                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
+                                aria-controls="navbarCollapse" aria-expanded="false" aria-label="Відкрити меню">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                </div>
 
-        <!-- Mobile Toggle -->
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
-                aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <!-- Navigation -->
-        <div class="collapse navbar-collapse" id="navbarCollapse">
-            <ul class="navbar-nav ms-auto align-items-center gap-2">
-                <li class="nav-item">
-                    <NavLink href="/" class="nav-link" Match="NavLinkMatch.All" activeClass="active">
-                        Домашня
-                    </NavLink>
-                </li>
-                <li class="nav-item">
-                    <NavLink href="/our-reviews-for-stududia" class="nav-link" activeClass="active">
-                        Наші відгуки
-                    </NavLink>
-                </li>
-                <li class="nav-item">
-                    <NavLink href="/cosmetology" class="nav-link" activeClass="active">
-                        Косметологія
-                    </NavLink>
-                </li>
-                <li class="nav-item">
-                    <NavLink href="/massage-therapy" class="nav-link" activeClass="active">
-                        Масажна терапія
-                    </NavLink>
-                </li>
-               @*  <li class="nav-item">
-                    <NavLink href="/manicure" class="nav-link" activeClass="active">
-                        Подологія
-                    </NavLink>
-                </li> *@
-                <li class="nav-item">
-                    <NavLink href="/sales" class="nav-link" activeClass="active">
-                        Наш магазин
-                    </NavLink>
-                </li>
-                <li class="nav-item">
-                    <NavLink href="/event-list" class="nav-link" activeClass="active">
-                        Події
-                    </NavLink>
-                </li>
-                <li class="nav-item">
-                    <NavLink href="/about-us" class="nav-link" activeClass="active">
-                        Про нас
-                    </NavLink>
-                </li>
-                @if(isAuthenticated)
-                {
-                    <li class="nav-item">
-                        <NavLink href="/personal-account" class="nav-link" activeClass="active">
-                            Особистий кабінет
-                        </NavLink>
-                    </li>
-                }
-              
-                <AuthorizeView>
-                    <Authorized Context="auth">
-                        @if (auth.User.IsInRole("Admin") || auth.User.IsInRole("Manicure"))
+                <div class="collapse navbar-collapse shine-navbar-collapse" id="navbarCollapse">
+                    <ul class="navbar-nav ms-auto align-items-lg-center align-items-stretch flex-column flex-lg-row gap-lg-1 pt-2 pt-lg-0">
+                        <li class="nav-item d-lg-none w-100 px-0 mb-2">
+                            <a href="/appointment-user" class="btn btn-primary rounded-pill shine-cta text-white text-decoration-none shine-mobile-cta w-100">
+                                Записатися
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <NavLink href="/" class="nav-link" Match="NavLinkMatch.All" activeClass="active">
+                                Домашня
+                            </NavLink>
+                        </li>
+                        <li class="nav-item">
+                            <NavLink href="/our-reviews-for-stududia" class="nav-link" activeClass="active">
+                                Наші відгуки
+                            </NavLink>
+                        </li>
+                        <li class="nav-item">
+                            <NavLink href="/cosmetology" class="nav-link" activeClass="active">
+                                Косметологія
+                            </NavLink>
+                        </li>
+                        <li class="nav-item">
+                            <NavLink href="/massage-therapy" class="nav-link" activeClass="active">
+                                Масажна терапія
+                            </NavLink>
+                        </li>
+                        <li class="nav-item">
+                            <NavLink href="/sales" class="nav-link" activeClass="active">
+                                Наш магазин
+                            </NavLink>
+                        </li>
+                        <li class="nav-item">
+                            <NavLink href="/event-list" class="nav-link" activeClass="active">
+                                Події
+                            </NavLink>
+                        </li>
+                        <li class="nav-item">
+                            <NavLink href="/about-us" class="nav-link" activeClass="active">
+                                Про нас
+                            </NavLink>
+                        </li>
+                        @if (isAuthenticated)
                         {
                             <li class="nav-item">
-                                <NavLink class="nav-link fw-semibold text-primary" href="/admin-clients">
-                                    <i class="bi bi-shield-lock me-1"></i> Адмінка
+                                <NavLink href="/personal-account" class="nav-link" activeClass="active">
+                                    Особистий кабінет
                                 </NavLink>
                             </li>
                         }
-                        <li class="nav-item">
-                            <form action="Account/Logout" method="post" class="d-inline">
-                                <AntiforgeryToken />
-                                <input type="hidden" name="ReturnUrl" value="@currentUrl" />
-                                <button type="submit" class="nav-link btn-logout">
-                                    <i class="bi bi-box-arrow-right me-1"></i> Вийти
-                                </button>
-                            </form>
+
+                        <AuthorizeView>
+                            <Authorized Context="auth">
+                                @if (auth.User.IsInRole("Admin") || auth.User.IsInRole("Manicure"))
+                                {
+                                    <li class="nav-item">
+                                        <NavLink class="nav-link fw-semibold" href="/admin-clients" activeClass="active">
+                                            <i class="bi bi-shield-lock me-1"></i> Адмінка
+                                        </NavLink>
+                                    </li>
+                                }
+                                <li class="nav-item">
+                                    <form action="Account/Logout" method="post" class="d-inline">
+                                        <AntiforgeryToken />
+                                        <input type="hidden" name="ReturnUrl" value="@currentUrl" />
+                                        <button type="submit" class="nav-link btn-logout">
+                                            <i class="bi bi-box-arrow-right me-1"></i> Вийти
+                                        </button>
+                                    </form>
+                                </li>
+                            </Authorized>
+
+                            <NotAuthorized>
+                                <li class="nav-item">
+                                    <NavLink class="nav-link" href="Account/Login">
+                                        <i class="bi bi-person me-1"></i> Логін
+                                    </NavLink>
+                                </li>
+                            </NotAuthorized>
+                        </AuthorizeView>
+
+                        <li class="nav-item d-none d-lg-block ms-lg-2">
+                            <a href="/appointment-user" class="btn btn-primary rounded-pill shine-cta text-white text-decoration-none">
+                                Записатися
+                            </a>
                         </li>
-                    </Authorized>
-
-                    <NotAuthorized>
-                        <li class="nav-item">
-                            <NavLink class="nav-link" href="Account/Login">
-                                <i class="bi bi-person me-1"></i> Логін
-                            </NavLink>
+                        <li class="nav-item ms-lg-1 d-none d-lg-block">
+                            <a href="/cart" class="shine-cart position-relative text-decoration-none" aria-label="Кошик">
+                                <i class="bi bi-cart3 fs-5"></i>
+                                @if (cartCount > 0)
+                                {
+                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger shine-cart-badge">@cartCount</span>
+                                }
+                            </a>
                         </li>
-                    </NotAuthorized>
-                </AuthorizeView>
-
-                <li class="nav-item">
-                    <a href="/cart" class="btn btn-link position-relative text-decoration-none text-body">
-                        <i class="bi bi-cart3 fs-4"></i>                     
-                        @if (cartCount > 0)
-                        {
-                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                @cartCount
-                            </span>
-                        }
-                    </a>
-                </li>
-            </ul>
-        </div>
-
-    </nav>
-</div>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </div>
+</header>
 
 
 @code {
