@@ -17,44 +17,94 @@
 @inject RoleManager<IdentityRole> RoleManager
 @inject IConfiguration Configuration
 
-<PageTitle>Register</PageTitle>
+<PageTitle>Реєстрація</PageTitle>
 
-<h1>Register</h1>
+<section class="shine-login-page">
+    <div class="shine-login-inner shine-login-inner-wide">
+        <nav class="shine-login-breadcrumb mb-4" aria-label="Навігаційна стежка">
+            <a href="/" class="shine-login-breadcrumb-link">Домашня сторінка</a>
+            <span class="shine-login-breadcrumb-sep" aria-hidden="true">/</span>
+            <span class="shine-login-breadcrumb-current">Реєстрація</span>
+        </nav>
 
-<div class="row">
-    <div class="col-lg-6">
-        <StatusMessage Message="@Message" />
-        <EditForm Model="Input" asp-route-returnUrl="@ReturnUrl" method="post" OnValidSubmit="RegisterUser" FormName="register">
-            <DataAnnotationsValidator />
-            <h2>Create a new account.</h2>
-            <hr />
-            <ValidationSummary class="text-danger" role="alert" />
-            <div class="form-floating mb-3">
-                <InputText @bind-Value="Input.Email" id="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
-                <label for="Input.Email">Email</label>
-                <ValidationMessage For="() => Input.Email" class="text-danger" />
+        <div class="row justify-content-center g-4">
+            <div class="col-12 col-xl-7">
+                <div class="card shine-login-card border-0 shadow-none">
+                    <div class="card-body p-4 p-md-5">
+                        <h1 class="shine-login-card-title text-center h2 mb-2">Створити акаунт</h1>
+                        <p class="shine-login-card-lead text-center mb-4">
+                            Заповніть форму, щоб зберігати історію записів і залишати відгуки в особистому кабінеті.
+                        </p>
+
+                        <StatusMessage Message="@Message" />
+
+                        <EditForm Model="Input" asp-route-returnUrl="@ReturnUrl" method="post" OnValidSubmit="RegisterUser" FormName="register">
+                            <DataAnnotationsValidator />
+                            <ValidationSummary class="text-danger mb-3" role="alert" />
+
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <InputText @bind-Value="Input.FirstName" id="reg-first" class="form-control" autocomplete="given-name" placeholder="Ім'я" />
+                                        <label for="reg-first">Ім'я</label>
+                                        <ValidationMessage For="() => Input.FirstName" class="text-danger small" />
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <InputText @bind-Value="Input.LastName" id="reg-last" class="form-control" autocomplete="family-name" placeholder="Прізвище" />
+                                        <label for="reg-last">Прізвище</label>
+                                        <ValidationMessage For="() => Input.LastName" class="text-danger small" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-floating mt-3">
+                                <InputText @bind-Value="Input.Phone" id="reg-phone" class="form-control" autocomplete="tel" placeholder="+380671234567" />
+                                <label for="reg-phone">Номер телефону</label>
+                                <ValidationMessage For="() => Input.Phone" class="text-danger small" />
+                            </div>
+
+                            <div class="form-floating mt-3">
+                                <InputText @bind-Value="Input.Email" id="reg-email" class="form-control" autocomplete="username" placeholder="name@example.com" />
+                                <label for="reg-email">Електронна пошта</label>
+                                <ValidationMessage For="() => Input.Email" class="text-danger small" />
+                            </div>
+
+                            <div class="form-floating mt-3">
+                                <InputText type="password" @bind-Value="Input.Password" id="reg-pass" class="form-control" autocomplete="new-password" placeholder="Пароль" />
+                                <label for="reg-pass">Пароль</label>
+                                <ValidationMessage For="() => Input.Password" class="text-danger small" />
+                            </div>
+
+                            <div class="form-floating mt-3">
+                                <InputText type="password" @bind-Value="Input.ConfirmPassword" id="reg-pass2" class="form-control" autocomplete="new-password" placeholder="Підтвердження" />
+                                <label for="reg-pass2">Підтвердження пароля</label>
+                                <ValidationMessage For="() => Input.ConfirmPassword" class="text-danger small" />
+                            </div>
+
+                            <button type="submit" class="shine-hero-btn shine-login-submit border-0 w-100 mt-4">Зареєструватися</button>
+                        </EditForm>
+
+                        <p class="text-center mt-4 mb-0 shine-login-card-lead">
+                            Вже маєте акаунт?
+                            <a class="shine-login-breadcrumb-link" href="@LoginHref">Увійти</a>
+                        </p>
+                    </div>
+                </div>
             </div>
-            <div class="form-floating mb-3">
-                <InputText type="password" @bind-Value="Input.Password" id="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
-                <label for="Input.Password">Password</label>
-                <ValidationMessage For="() => Input.Password" class="text-danger" />
+            <div class="col-12 col-xl-5">
+                <div class="card shine-login-card border-0 shadow-none h-100">
+                    <div class="card-body p-4 p-md-5 d-flex flex-column">
+                        <h2 class="h5 text-center mb-3 shine-login-card-title">Або через сервіс</h2>
+                        <p class="shine-login-card-lead text-center mb-4">Швидкий вхід без пароля SHINE (за наявності акаунта у Google).</p>
+                        <ExternalLoginPicker />
+                    </div>
+                </div>
             </div>
-            <div class="form-floating mb-3">
-                <InputText type="password" @bind-Value="Input.ConfirmPassword" id="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
-                <label for="Input.ConfirmPassword">Confirm Password</label>
-                <ValidationMessage For="() => Input.ConfirmPassword" class="text-danger" />
-            </div>
-            <button type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
-        </EditForm>
+        </div>
     </div>
-    <div class="col-lg-4 col-lg-offset-2">
-        <section>
-            <h3>Use another service to register.</h3>
-            <hr />
-            <ExternalLoginPicker />
-        </section>
-    </div>
-</div>
+</section>
 
 @code {
     private IEnumerable<IdentityError>? identityErrors;
@@ -65,8 +115,11 @@
     [SupplyParameterFromQuery]
     private string? ReturnUrl { get; set; }
 
-    private string? Message => identityErrors is null ? null : $"Error: {string.Join(", ", identityErrors.Select(error => error.Description))}";
+    private string? Message => identityErrors is null ? null : string.Join(" ", identityErrors.Select(e => e.Description));
     private string? adminEmail;
+
+    private string LoginHref =>
+        NavigationManager.GetUriWithQueryParameters("Account/Login", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl });
 
     protected override void OnInitialized()
     {
@@ -76,66 +129,67 @@
     public async Task RegisterUser(EditContext editContext)
     {
         var user = CreateUser();
+        user.FirstName = Input.FirstName.Trim();
+        user.LastName = Input.LastName.Trim();
+        user.PhoneNumber = Input.Phone.Trim();
 
         await UserStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
         var emailStore = GetEmailStore();
         await emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
-        var result = await UserManager.CreateAsync(user, Input.Password);
 
+        var result = await UserManager.CreateAsync(user, Input.Password);
         if (!result.Succeeded)
         {
             identityErrors = result.Errors;
             return;
         }
-        else
-        {
-            var roleResult = await RoleManager.FindByNameAsync("Admin");
-            if (roleResult == null)
-            {
-                await RoleManager.CreateAsync(new IdentityRole("Admin"));
-            }
 
-            var currentUser = await UserManager.FindByEmailAsync(Input.Email);
-            if (currentUser.Email == adminEmail)
+        var roleResult = await RoleManager.FindByNameAsync("Admin");
+        if (roleResult == null)
+        {
+            await RoleManager.CreateAsync(new IdentityRole("Admin"));
+        }
+
+        var currentUser = await UserManager.FindByEmailAsync(Input.Email);
+        if (currentUser is not null && string.Equals(currentUser.Email, adminEmail, StringComparison.OrdinalIgnoreCase))
+        {
+            var isInRole = await UserManager.IsInRoleAsync(currentUser, "Admin");
+            if (!isInRole)
             {
-                var isInRole = await UserManager.IsInRoleAsync(currentUser, "Admin");
-                if (!isInRole)
-                {
-                    await UserManager.AddToRoleAsync(currentUser, "Admin");
-                    await SignInManager.RefreshSignInAsync(currentUser);
-                }
+                await UserManager.AddToRoleAsync(currentUser, "Admin");
             }
-            // else
-            // {
-            //     var isInRole = await UserManager.IsInRoleAsync(currentUser, "User");
-            //     if (!isInRole)
-            //     {
-            //         await UserManager.AddToRoleAsync(currentUser, "User");
-            //         await SignInManager.RefreshSignInAsync(currentUser);
-            //     }
-            // }
         }
 
         Logger.LogInformation("User created a new account with password.");
 
-        var userId = await UserManager.GetUserIdAsync(user);
-        var code = await UserManager.GenerateEmailConfirmationTokenAsync(user);
-        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-        var callbackUrl = NavigationManager.GetUriWithQueryParameters(
-            NavigationManager.ToAbsoluteUri("Account/ConfirmEmail").AbsoluteUri,
-            new Dictionary<string, object?> { ["userId"] = userId, ["code"] = code, ["returnUrl"] = ReturnUrl });
-
-        await EmailSender.SendConfirmationLinkAsync(user, Input.Email, HtmlEncoder.Default.Encode(callbackUrl));
-
         if (UserManager.Options.SignIn.RequireConfirmedAccount)
         {
+            var userId = await UserManager.GetUserIdAsync(user);
+            var code = await UserManager.GenerateEmailConfirmationTokenAsync(user);
+            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+            var callbackUrl = NavigationManager.GetUriWithQueryParameters(
+                NavigationManager.ToAbsoluteUri("Account/ConfirmEmail").AbsoluteUri,
+                new Dictionary<string, object?> { ["userId"] = userId, ["code"] = code, ["returnUrl"] = ReturnUrl });
+
+            await EmailSender.SendConfirmationLinkAsync(user, Input.Email, HtmlEncoder.Default.Encode(callbackUrl));
+
             RedirectManager.RedirectTo(
                 "Account/RegisterConfirmation",
                 new() { ["email"] = Input.Email, ["returnUrl"] = ReturnUrl });
         }
 
         await SignInManager.SignInAsync(user, isPersistent: false);
-        RedirectManager.RedirectTo(ReturnUrl);
+        var target = GetSafeReturnUrl();
+        RedirectManager.RedirectTo(target);
+    }
+
+    private string GetSafeReturnUrl()
+    {
+        if (string.IsNullOrWhiteSpace(ReturnUrl)) return "/account/profile";
+        var t = ReturnUrl.Trim();
+        if (t.Contains("://", StringComparison.OrdinalIgnoreCase) || t.StartsWith("//", StringComparison.Ordinal)) return "/account/profile";
+        if (!t.StartsWith('/')) return "/account/profile";
+        return t;
     }
 
     private ApplicationUser CreateUser()
@@ -162,20 +216,36 @@
 
     private sealed class InputModel
     {
-        [Required]
-        [EmailAddress]
+        [Required(ErrorMessage = "Вкажіть ім'я.")]
+        [StringLength(100, MinimumLength = 2, ErrorMessage = "Ім'я — від 2 до 100 символів.")]
+        [Display(Name = "Ім'я")]
+        public string FirstName { get; set; } = "";
+
+        [Required(ErrorMessage = "Вкажіть прізвище.")]
+        [StringLength(100, MinimumLength = 2, ErrorMessage = "Прізвище — від 2 до 100 символів.")]
+        [Display(Name = "Прізвище")]
+        public string LastName { get; set; } = "";
+
+        [Required(ErrorMessage = "Вкажіть номер телефону.")]
+        [RegularExpression(@"^(\+380|0)\d{9}$", ErrorMessage = "Формат: +380XXXXXXXXX або 0XXXXXXXXX.")]
+        [Display(Name = "Телефон")]
+        public string Phone { get; set; } = "";
+
+        [Required(ErrorMessage = "Вкажіть email.")]
+        [EmailAddress(ErrorMessage = "Некоректний формат email.")]
         [Display(Name = "Email")]
         public string Email { get; set; } = "";
 
-        [Required]
-        [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+        [Required(ErrorMessage = "Вкажіть пароль.")]
+        [StringLength(100, MinimumLength = 6, ErrorMessage = "Пароль — щонайменше 6 символів.")]
         [DataType(DataType.Password)]
-        [Display(Name = "Password")]
+        [Display(Name = "Пароль")]
         public string Password { get; set; } = "";
 
+        [Required(ErrorMessage = "Підтвердіть пароль.")]
         [DataType(DataType.Password)]
-        [Display(Name = "Confirm password")]
-        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+        [Display(Name = "Підтвердження пароля")]
+        [Compare(nameof(Password), ErrorMessage = "Паролі не збігаються.")]
         public string ConfirmPassword { get; set; } = "";
     }
 }

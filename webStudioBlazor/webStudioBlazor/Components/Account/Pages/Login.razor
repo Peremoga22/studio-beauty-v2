@@ -69,14 +69,10 @@
 
                             <button type="submit" class="shine-hero-btn shine-login-submit border-0 mb-0">Логін</button>
 
-                            @*  <div class="text-center">
-                            <a class="d-block mb-2" href="Account/ForgotPassword">Forgot your password?</a>
-                            <a class="d-block mb-2"
-                               href="@(NavigationManager.GetUriWithQueryParameters("Account/Register", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl }))">
-                                Register as a new user
-                            </a>
-                            <a class="d-block" href="Account/ResendEmailConfirmation">Resend email confirmation</a>
-                        </div> *@
+                            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2 mt-4 text-center text-sm-start">
+                                <a class="shine-login-breadcrumb-link small text-decoration-none" href="/Account/ForgotPassword">Забули пароль?</a>
+                                <a class="shine-login-breadcrumb-link small text-decoration-none" href="@RegisterHref">Ще не маєте акаунта? Зареєструватися</a>
+                            </div>
                         </EditForm>
 
                         @if (ExternalLogins is { Count: > 0 })
@@ -107,6 +103,9 @@
     private string? adminEmail;
     private IList<AuthenticationScheme>? ExternalLogins { get; set; }
     private string SafeReturnUrl => GetSafeReturnUrl(ReturnUrl);
+
+    private string RegisterHref =>
+        NavigationManager.GetUriWithQueryParameters("Account/Register", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl });
 
     protected override async Task OnInitializedAsync()
     {
@@ -142,18 +141,15 @@
         // This doesn't count login failures towards account lockout
         // To enable password failures to trigger account lockout, set lockoutOnFailure: true
         var result = await SignInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
-        if (Input.Email == adminEmail)
-        {
-            var user = new ApplicationUser { UserName = Input.Email, Email = Input.Email };
-            var findUser = await UserManager.FindByEmailAsync(user.Email);
-            if (findUser != null)
-            {
-                await SignInManager.SignInAsync(findUser, isPersistent: false);
-                RedirectManager.RedirectTo("/admin-clients");
-            }
-        }
+
         if (result.Succeeded)
         {
+            if (string.Equals(Input.Email, adminEmail, StringComparison.OrdinalIgnoreCase))
+            {
+                Logger.LogInformation("Admin logged in.");
+                RedirectManager.RedirectTo("/admin-clients");
+            }
+
             Logger.LogInformation("User logged in.");
             RedirectManager.RedirectTo(SafeReturnUrl);
         }

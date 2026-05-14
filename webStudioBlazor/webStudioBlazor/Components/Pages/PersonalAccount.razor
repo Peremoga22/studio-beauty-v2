@@ -1,6 +1,17 @@
-﻿@page "/personal-account"
+﻿@page "/account/profile"
+@page "/personal-account"
+
+@attribute [Authorize]
+@rendermode InteractiveServer
 
 @using System.Security.Claims
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Identity
+@using webStudioBlazor.Data
+
+@inject UserManager<ApplicationUser> UserManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <section class="shine-account-page">
     <div class="shine-account-inner">
@@ -23,6 +34,34 @@
             <span class="shine-account-breadcrumb-sep" aria-hidden="true">/</span>
             <span class="shine-account-breadcrumb-current">Особистий кабінет</span>
         </nav>
+
+        @if (profileUser is not null)
+        {
+            <section class="shine-account-profile-card" aria-labelledby="profile-heading">
+                <h2 class="h5 mb-3 shine-login-card-title" id="profile-heading">Ваші дані</h2>
+                <dl class="shine-account-profile-dl row mb-0">
+                    <div class="col-md-6">
+                        <dt>Ім'я</dt>
+                        <dd>@(string.IsNullOrWhiteSpace(profileUser.FirstName) ? "—" : profileUser.FirstName)</dd>
+                    </div>
+                    <div class="col-md-6">
+                        <dt>Прізвище</dt>
+                        <dd>@(string.IsNullOrWhiteSpace(profileUser.LastName) ? "—" : profileUser.LastName)</dd>
+                    </div>
+                    <div class="col-md-6">
+                        <dt>Телефон</dt>
+                        <dd>@(string.IsNullOrWhiteSpace(profileUser.PhoneNumber) ? "—" : profileUser.PhoneNumber)</dd>
+                    </div>
+                    <div class="col-md-6">
+                        <dt>Email</dt>
+                        <dd>@(string.IsNullOrWhiteSpace(profileUser.Email) ? "—" : profileUser.Email)</dd>
+                    </div>
+                </dl>
+                <p class="small text-muted mb-0">
+                    Історія записів та відгуки — у блоках нижче; залишити відгук можна після візиту до студії.
+                </p>
+            </section>
+        }
 
         <section class="shine-account-grid-section py-2 pb-5">
             <div class="container">
@@ -129,27 +168,24 @@
 </section>
 
 @code {
-    [CascadingParameter]
-    private Task<AuthenticationState> AuthenticationStateUser { get; set; } = default!;
-
-    private bool IsAuthenticated { get; set; }
     private string UserId { get; set; } = string.Empty;
+    private ApplicationUser? profileUser;
 
     protected override async Task OnInitializedAsync()
     {
-        var authState = await AuthenticationStateUser;
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
-        IsAuthenticated = user.Identity?.IsAuthenticated ?? false;
+        UserId =
+            user.FindFirst(ClaimTypes.NameIdentifier)?.Value ??
+            user.FindFirst(ClaimTypes.Email)?.Value ??
+            user.FindFirst("email")?.Value ??
+            user.Identity?.Name ??
+            string.Empty;
 
-        if (IsAuthenticated)
+        if (user.Identity?.IsAuthenticated == true)
         {
-            UserId =
-                user.FindFirst(ClaimTypes.NameIdentifier)?.Value ??
-                user.FindFirst(ClaimTypes.Email)?.Value ??
-                user.FindFirst("email")?.Value ??
-                user.Identity?.Name ??
-                string.Empty;
+            profileUser = await UserManager.GetUserAsync(user);
         }
     }
 }
