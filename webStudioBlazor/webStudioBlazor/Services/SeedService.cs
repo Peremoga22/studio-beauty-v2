@@ -454,6 +454,8 @@ namespace webStudioBlazor.Services
                 .Select(a => new CalendarRowDto
                 {
                     Id = a.Id,
+                    AppointmentId = a.AppointmentId,
+                    UserId = a.Appointment.UserId,
                     Date = a.Appointment.AppointmentDate,
                     Time = a.Appointment.SetHour,
                     ClientName = a.Appointment.ClientName,
@@ -489,6 +491,8 @@ namespace webStudioBlazor.Services
                 .Select(a => new CalendarRowDto
                 {
                     Id = a.Id,
+                    AppointmentId = a.Id,
+                    UserId = a.UserId,
                     Date = a.AppointmentDate,
                     Time = a.SetHour,
                     ClientName = a.ClientName,

@@ -21,6 +21,8 @@ namespace webStudioBlazor.Data
         public DbSet<ClientOrders> ClientOrders { get; set; }
         public DbSet<Review> Reviews => Set<Review>();
         public DbSet<GiftCertificate> GiftCertificates => Set<GiftCertificate>();
+        public DbSet<TreatmentHistory> TreatmentHistories => Set<TreatmentHistory>();
+        public DbSet<TreatmentPhoto> TreatmentPhotos => Set<TreatmentPhoto>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -39,6 +41,8 @@ namespace webStudioBlazor.Data
             modelBuilder.ApplyConfiguration(new ClientOrdersConfig());
             modelBuilder.ApplyConfiguration(new ReviewConfiguration());
             modelBuilder.ApplyConfiguration(new GiftCertificateConfig());
+            modelBuilder.ApplyConfiguration(new TreatmentHistoryConfiguration());
+            modelBuilder.ApplyConfiguration(new TreatmentPhotoConfiguration());
         }
     }
     
@@ -534,6 +538,79 @@ namespace webStudioBlazor.Data
             b.HasOne(x => x.User)
                 .WithMany() // або .WithMany(u => u.GiftCertificates), 
                 .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
+    }
+
+    public class TreatmentHistoryConfiguration : IEntityTypeConfiguration<TreatmentHistory>
+    {
+        public void Configure(EntityTypeBuilder<TreatmentHistory> b)
+        {
+            b.ToTable("TreatmentHistories");
+
+            b.HasKey(x => x.Id);
+
+            b.Property(x => x.ClientId)
+                .IsRequired()
+                .HasMaxLength(450);
+
+            b.Property(x => x.VisitDate)
+                .IsRequired();
+
+            b.Property(x => x.ProcedureName)
+                .IsRequired()
+                .HasMaxLength(200);
+
+            b.Property(x => x.ProcedureDescription)
+                .IsRequired()
+                .HasMaxLength(4000);
+
+            b.Property(x => x.SkinBeforeDescription)
+                .IsRequired()
+                .HasMaxLength(4000);
+
+            b.Property(x => x.SkinAfterDescription)
+                .IsRequired()
+                .HasMaxLength(4000);
+
+            b.Property(x => x.Recommendations)
+                .IsRequired()
+                .HasMaxLength(4000);
+
+            b.Property(x => x.MasterComment)
+                .IsRequired()
+                .HasMaxLength(4000);
+
+            b.Property(x => x.CreatedAt)
+                .IsRequired();
+
+            b.HasIndex(x => x.ClientId);
+            b.HasIndex(x => new { x.ClientId, x.VisitDate });
+        }
+    }
+
+    public class TreatmentPhotoConfiguration : IEntityTypeConfiguration<TreatmentPhoto>
+    {
+        public void Configure(EntityTypeBuilder<TreatmentPhoto> b)
+        {
+            b.ToTable("TreatmentPhotos");
+
+            b.HasKey(x => x.Id);
+
+            b.Property(x => x.FilePath)
+                .IsRequired()
+                .HasMaxLength(512);
+
+            b.Property(x => x.PhotoType)
+                .IsRequired()
+                .HasMaxLength(16);
+
+            b.Property(x => x.UploadedAt)
+                .IsRequired();
+
+            b.HasOne(x => x.TreatmentHistory)
+                .WithMany(h => h.Photos)
+                .HasForeignKey(x => x.TreatmentHistoryId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

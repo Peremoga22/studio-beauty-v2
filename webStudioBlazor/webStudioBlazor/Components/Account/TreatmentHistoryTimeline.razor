@@ -1,0 +1,313 @@
+@using webStudioBlazor.EntityModels
+@inject TreatmentHistoryService TreatmentSvc
+@inject IJSRuntime Js
+
+<div class="@WrapperClass">
+    @if (isLoading)
+    {
+        <div class="text-center py-5">
+            <div class="spinner-border text-danger" role="status"><span class="visually-hidden">Завантаження</span></div>
+        </div>
+    }
+    else
+    {
+        @if (IsClientView)
+        {
+            <header class="mb-4">
+                <span class="shine-admin-page-kicker">SHINE Cosmetology</span>
+                <h1 class="shine-admin-page-title mb-0">Історія процедур</h1>
+                <p class="shine-admin-page-lead mb-0 mt-2">Опис візитів, рекомендації та фото «до / після» — лише для перегляду.</p>
+            </header>
+        }
+        else
+        {
+            <header class="shine-admin-page-hero text-center text-lg-start mb-4">
+                <span class="shine-admin-page-kicker">Медична історія</span>
+                <h1 class="shine-admin-page-title mb-0">Картка клієнта</h1>
+                <p class="shine-admin-page-lead mb-0 mt-2">Процедури, рекомендації, фото «до / після» та динаміка стану шкіри.</p>
+            </header>
+        }
+
+        <div class="card border-0 shadow-sm rounded-4 mb-4 th-client-banner">
+            <div class="card-body p-4">
+                <div class="row g-3 align-items-center">
+                    <div class="col-md-8">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <i class="bi bi-person-heart th-icon" aria-hidden="true"></i>
+                            <h2 class="h5 mb-0 fw-bold">@displayName</h2>
+                        </div>
+                        <div class="d-flex flex-wrap gap-3 text-muted small">
+                            @if (!string.IsNullOrEmpty(displayPhone))
+                            {
+                                <span><i class="bi bi-telephone me-1"></i><a href="tel:@displayPhone">@displayPhone</a></span>
+                            }
+                            @if (!string.IsNullOrEmpty(displayEmail))
+                            {
+                                <span><i class="bi bi-envelope me-1"></i><a href="mailto:@displayEmail">@displayEmail</a></span>
+                            }
+                            @if (lastVisit is not null)
+                            {
+                                <span><i class="bi bi-calendar3 me-1"></i>Останній візит: <strong>@lastVisit.Value.ToLocalTime().ToString("dd.MM.yyyy")</strong></span>
+                            }
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        @if (CanEdit)
+                        {
+                            <a class="btn btn-sm rounded-pill th-btn-primary px-3" href="@($"/admin/treatment-history/create/{Uri.EscapeDataString(ClientId)}")">
+                                <i class="bi bi-plus-lg me-1"></i>Додати картку візиту
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if (!items.Any())
+        {
+            <div class="shine-admin-empty rounded-4 p-5 text-center">
+                <i class="bi bi-journal-medical display-4 text-danger mb-3 d-block"></i>
+                <p class="mb-3">Поки що немає записів процедур для цього клієнта.</p>
+                @if (CanEdit)
+                {
+                    <a class="btn rounded-pill th-btn-primary" href="@($"/admin/treatment-history/create/{Uri.EscapeDataString(ClientId)}")">Створити першу картку</a>
+                }
+            </div>
+        }
+        else
+        {
+            <ul class="list-unstyled th-timeline">
+                @foreach (var h in items)
+                {
+                    var before = h.Photos.Where(p => p.PhotoType == TreatmentPhoto.PhotoTypeBefore).ToList();
+                    var after = h.Photos.Where(p => p.PhotoType == TreatmentPhoto.PhotoTypeAfter).ToList();
+                    var firstBefore = before.FirstOrDefault();
+                    var firstAfter = after.FirstOrDefault();
+                    var clip = GetSlider(h.Id);
+
+                    <li class="th-timeline-item mb-4">
+                        <div class="th-timeline-marker"></div>
+                        <article class="card th-visit-card border-0 h-100">
+                            <div class="card-body p-4">
+                                <div class="d-flex flex-wrap justify-content-between gap-2 mb-3">
+                                    <div>
+                                        <span class="badge rounded-pill th-badge-date me-2">
+                                            <i class="bi bi-calendar-event me-1"></i>@h.VisitDate.ToLocalTime().ToString("dd.MM.yyyy")
+                                        </span>
+                                        <span class="badge rounded-pill th-badge-proc">@h.ProcedureName</span>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        @if (CanEdit)
+                                        {
+                                            <a class="btn btn-sm btn-outline-secondary rounded-pill" href="@($"/admin/treatment-history/edit/{h.Id}")">
+                                                <i class="bi bi-pencil"></i> Редагувати
+                                            </a>
+                                            <button type="button" class="btn btn-sm btn-outline-danger rounded-pill" @onclick="() => DeleteVisitAsync(h)">
+                                                <i class="bi bi-trash"></i> Видалити
+                                            </button>
+                                        }
+                                    </div>
+                                </div>
+
+                                <p class="text-muted small mb-3">@Truncate(h.ProcedureDescription, 220)</p>
+
+                                <div class="row g-3 mb-3">
+                                    <div class="col-md-6">
+                                        <div class="th-field">
+                                            <span class="th-field-label"><i class="bi bi-droplet me-1"></i>Шкіра до</span>
+                                            <p class="mb-0 small">@h.SkinBeforeDescription</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="th-field">
+                                            <span class="th-field-label th-field-after"><i class="bi bi-stars me-1"></i>Шкіра після</span>
+                                            <p class="mb-0 small">@h.SkinAfterDescription</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row g-3 mb-3">
+                                    <div class="col-md-6">
+                                        <div class="th-field">
+                                            <span class="th-field-label"><i class="bi bi-chat-heart me-1"></i>Рекомендації</span>
+                                            <p class="mb-0 small">@h.Recommendations</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="th-field">
+                                            <span class="th-field-label"><i class="bi bi-person-lines me-1"></i>Коментар майстра</span>
+                                            <p class="mb-0 small">@h.MasterComment</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @if (firstBefore is not null && firstAfter is not null)
+                                {
+                                    <div class="mb-3">
+                                        <div class="d-flex align-items-center justify-content-between mb-2">
+                                            <span class="small fw-semibold">Порівняння «до / після»</span>
+                                            <span class="badge bg-light text-dark border">повзунок</span>
+                                        </div>
+                                        <div class="th-ba-wrap" style="--clip: @clip">
+                                            <img src="@firstAfter.FilePath" alt="Після" class="th-ba-base" />
+                                            <div class="th-ba-top">
+                                                <img src="@firstBefore.FilePath" alt="До" class="th-ba-before-img" />
+                                            </div>
+                                            <input class="th-ba-range" type="range" min="5" max="95"
+                                                   value="@clip"
+                                                   @oninput="e => SetSlider(h.Id, e)" />
+                                        </div>
+                                    </div>
+                                }
+
+                                <div class="row g-2">
+                                    <div class="col-md-6">
+                                        <div class="d-flex align-items-center gap-2 mb-2">
+                                            <span class="badge th-badge-before">До процедури</span>
+                                            <span class="small text-muted">@before.Count фото</span>
+                                        </div>
+                                        <div class="d-flex flex-wrap gap-2">
+                                            @foreach (var p in before)
+                                            {
+                                                <button type="button" class="th-thumb-btn p-0 border-0 bg-transparent" @onclick="() => OpenModal(p.FilePath)">
+                                                    <img src="@p.FilePath" class="th-thumb" alt="" />
+                                                </button>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex align-items-center gap-2 mb-2">
+                                            <span class="badge th-badge-after">Після процедури</span>
+                                            <span class="small text-muted">@after.Count фото</span>
+                                        </div>
+                                        <div class="d-flex flex-wrap gap-2">
+                                            @foreach (var p in after)
+                                            {
+                                                <button type="button" class="th-thumb-btn p-0 border-0 bg-transparent" @onclick="() => OpenModal(p.FilePath)">
+                                                    <img src="@p.FilePath" class="th-thumb" alt="" />
+                                                </button>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="small text-muted mt-3">
+                                    Створено: @h.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
+                                    @if (h.UpdatedAt is not null)
+                                    {
+                                        <span> · Оновлено: @h.UpdatedAt.Value.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</span>
+                                    }
+                                </div>
+                            </div>
+                        </article>
+                    </li>
+                }
+            </ul>
+        }
+
+        <div class="mt-4">
+            <a class="btn btn-outline-secondary rounded-pill" href="@BackHref"><i class="bi bi-arrow-left me-1"></i>@BackText</a>
+        </div>
+    }
+</div>
+
+@if (!string.IsNullOrEmpty(modalSrc))
+{
+    <div class="modal fade show th-modal d-block" tabindex="-1" style="background: rgba(0,0,0,.55);" @onclick="CloseModal">
+        <div class="modal-dialog modal-dialog-centered modal-lg" @onclick:stopPropagation="true">
+            <div class="modal-content border-0 bg-transparent shadow-none">
+                <div class="text-end mb-2">
+                    <button type="button" class="btn-close btn-close-white" @onclick="CloseModal"></button>
+                </div>
+                <img src="@modalSrc" class="img-fluid rounded-3 shadow" alt="Перегляд" />
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public string ClientId { get; set; } = string.Empty;
+
+    [Parameter]
+    public bool CanEdit { get; set; }
+
+    [Parameter]
+    public bool IsClientView { get; set; }
+
+    [Parameter]
+    public string BackHref { get; set; } = "/admin-clients";
+
+    [Parameter]
+    public string BackText { get; set; } = "До календаря";
+
+    [Parameter]
+    public string WrapperClass { get; set; } = "container shine-admin-3d-page pb-5";
+
+    private bool isLoading = true;
+    private string displayName = "—";
+    private string? displayPhone;
+    private string? displayEmail;
+    private DateTime? lastVisit;
+    private List<TreatmentHistory> items = new();
+    private readonly Dictionary<int, int> sliderPct = new();
+    private string? modalSrc;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (string.IsNullOrWhiteSpace(ClientId))
+        {
+            return;
+        }
+
+        isLoading = true;
+        var contact = await TreatmentSvc.GetClientContactAsync(ClientId);
+        if (contact is not null)
+        {
+            displayName = contact.Value.Name;
+            displayPhone = contact.Value.Phone;
+            displayEmail = contact.Value.Email;
+        }
+        else
+        {
+            displayName = "—";
+            displayPhone = null;
+            displayEmail = null;
+        }
+
+        items = await TreatmentSvc.ListForClientAsync(ClientId);
+        lastVisit = items.Count == 0 ? null : items.Max(x => x.VisitDate);
+        isLoading = false;
+    }
+
+    private static string Truncate(string s, int max)
+    {
+        if (string.IsNullOrEmpty(s) || s.Length <= max) return s;
+        return s[..max] + "…";
+    }
+
+    private int GetSlider(int id) => sliderPct.TryGetValue(id, out var v) ? v : 50;
+
+    private void SetSlider(int id, ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out var v))
+        {
+            sliderPct[id] = v;
+        }
+    }
+
+    private void OpenModal(string src) => modalSrc = src;
+
+    private void CloseModal() => modalSrc = null;
+
+    private async Task DeleteVisitAsync(TreatmentHistory h)
+    {
+        if (!CanEdit) return;
+        var ok = await Js.InvokeAsync<bool>("confirm", $"Видалити візит «{h.ProcedureName}» від {h.VisitDate.ToLocalTime():dd.MM.yyyy}?");
+        if (!ok) return;
+        await TreatmentSvc.DeleteAsync(h.Id);
+        items.RemoveAll(x => x.Id == h.Id);
+        sliderPct.Remove(h.Id);
+        StateHasChanged();
+    }
+}

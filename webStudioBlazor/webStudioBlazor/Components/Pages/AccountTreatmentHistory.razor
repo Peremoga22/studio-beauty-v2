@@ -1,0 +1,48 @@
+@page "/account/treatment-history"
+@attribute [Authorize]
+@rendermode InteractiveServer
+
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<section class="shine-account-page">
+    <div class="shine-account-inner">
+        <nav class="shine-account-breadcrumb mb-4" aria-label="Навігаційна стежка">
+            <a href="/" class="shine-account-breadcrumb-link">Домашня сторінка</a>
+            <span class="shine-account-breadcrumb-sep" aria-hidden="true">/</span>
+            <a href="/personal-account" class="shine-account-breadcrumb-link">Особистий кабінет</a>
+            <span class="shine-account-breadcrumb-sep" aria-hidden="true">/</span>
+            <span class="shine-account-breadcrumb-current">Історія процедур</span>
+        </nav>
+
+        @if (string.IsNullOrEmpty(userId))
+        {
+            <p class="text-muted">Не вдалося визначити обліковий запис. Увійдіть у систему ще раз.</p>
+        }
+        else
+        {
+            <TreatmentHistoryTimeline ClientId="@userId"
+                                      CanEdit="false"
+                                      IsClientView="true"
+                                      BackHref="/personal-account"
+                                      BackText="До особистого кабінету"
+                                      WrapperClass="container pb-5" />
+        }
+    </div>
+</section>
+
+@code {
+    private string userId = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        userId =
+            user.FindFirst(ClaimTypes.NameIdentifier)?.Value ??
+            string.Empty;
+    }
+}

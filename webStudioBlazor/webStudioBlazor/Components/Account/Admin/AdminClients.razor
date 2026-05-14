@@ -86,7 +86,7 @@
                                 <i class="fa-solid fa-trash" aria-hidden="true"></i>
                                 <span>@(deleting.Contains(row.Id) ? "Видаляю..." : "Видалити")</span>
                             </button>
-                            <button class="btn btn-outline-info btn-sm rounded-pill d-inline-flex align-items-center gap-1" @onclick="() => EditRow(row.Id)">
+                            <button class="btn btn-outline-info btn-sm rounded-pill d-inline-flex align-items-center gap-1" @onclick="() => OpenTreatmentHistory(row)">
                                Редагувати
                             </button>
                         </div>
@@ -125,9 +125,10 @@
             rows = await _seedService.ListManicureCalendarForManicureAsync(onlyCompleted: true);
         }       
     }
-    private void EditRow(int rowId)
+    private void OpenTreatmentHistory(CalendarRowDto row)
     {
-        _navigationManager.NavigateTo($"/admin/treatment-history/{rowId}");
+        var clientKey = !string.IsNullOrEmpty(row.UserId) ? row.UserId! : $"guest:{row.AppointmentId}";
+        _navigationManager.NavigateTo($"/admin/treatment-history/{Uri.EscapeDataString(clientKey)}");
     }
 
     private async Task ConfirmAndDeleteAsync(CalendarRowDto row)

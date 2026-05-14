@@ -1,0 +1,193 @@
+@page "/admin/treatment-history/create/{ClientId}"
+@layout AdminLayout
+@attribute [Authorize(Roles = "Admin")]
+@rendermode InteractiveServer
+@using System.ComponentModel.DataAnnotations
+@inject TreatmentHistoryService TreatmentSvc
+@inject NavigationManager Nav
+
+<div class="container shine-admin-3d-page pb-5">
+    <header class="shine-admin-page-hero text-center text-lg-start mb-4">
+        <span class="shine-admin-page-kicker">Новий візит</span>
+        <h1 class="shine-admin-page-title mb-0">Картка процедури</h1>
+        <p class="shine-admin-page-lead mb-0 mt-2">Клієнт: <code class="small">@DecodedClientId</code></p>
+    </header>
+
+    <div class="card border-0 shadow-sm rounded-4 th-form-card">
+        <div class="card-body p-4">
+            @if (!string.IsNullOrEmpty(errorMsg))
+            {
+                <div class="alert alert-danger" role="alert">@errorMsg</div>
+            }
+
+            <EditForm Model="form" OnValidSubmit="SaveAsync">
+                <DataAnnotationsValidator />
+                <ValidationSummary class="text-danger mb-3" />
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Дата відвідування</label>
+                        <InputDate class="form-control" @bind-Value="form.VisitDate" TValue="DateTime" />
+                        <ValidationMessage For="() => form.VisitDate" class="text-danger small d-block" />
+                    </div>
+                    <div class="col-md-8">
+                        <label class="form-label fw-semibold">Назва процедури</label>
+                        <InputText class="form-control" @bind-Value="form.ProcedureName" autocomplete="off" />
+                        <ValidationMessage For="() => form.ProcedureName" class="text-danger small d-block" />
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Опис процедури</label>
+                    <InputTextArea class="form-control" rows="4" @bind-Value="form.ProcedureDescription" />
+                    <ValidationMessage For="() => form.ProcedureDescription" class="text-danger small d-block" />
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Стан шкіри до процедури</label>
+                        <InputTextArea class="form-control" rows="3" @bind-Value="form.SkinBeforeDescription" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Стан шкіри після процедури</label>
+                        <InputTextArea class="form-control" rows="3" @bind-Value="form.SkinAfterDescription" />
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Рекомендації після процедури</label>
+                        <InputTextArea class="form-control" rows="3" @bind-Value="form.Recommendations" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Коментар майстра</label>
+                        <InputTextArea class="form-control" rows="3" @bind-Value="form.MasterComment" />
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold"><span class="badge th-badge-before me-2">До</span>Фото до процедури</label>
+                        <InputFile class="form-control" multiple accept="image/*" OnChange="OnBeforeChange" />
+                        <p class="small text-muted mt-1 mb-0">@BeforeSummary</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold"><span class="badge th-badge-after me-2">Після</span>Фото після процедури</label>
+                        <InputFile class="form-control" multiple accept="image/*" OnChange="OnAfterChange" />
+                        <p class="small text-muted mt-1 mb-0">@AfterSummary</p>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-wrap gap-2">
+                    <button type="submit" class="btn rounded-pill th-btn-primary px-4" disabled="@saving">
+                        @if (saving)
+                        {
+                            <span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>
+                        }
+                        Зберегти картку
+                    </button>
+                    <a class="btn btn-outline-secondary rounded-pill" href="@BackUrl">Скасувати</a>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public string ClientId { get; set; } = string.Empty;
+
+    private string DecodedClientId => Uri.UnescapeDataString(ClientId);
+
+    private string BackUrl => $"/admin/treatment-history/{Uri.EscapeDataString(DecodedClientId)}";
+
+    private readonly VisitForm form = new();
+    private readonly List<IBrowserFile> beforeFiles = new();
+    private readonly List<IBrowserFile> afterFiles = new();
+    private bool saving;
+    private string? errorMsg;
+
+    private string BeforeSummary => beforeFiles.Count == 0 ? "Файли не вибрано." : $"Вибрано файлів: {beforeFiles.Count}.";
+
+    private string AfterSummary => afterFiles.Count == 0 ? "Файли не вибрано." : $"Вибрано файлів: {afterFiles.Count}.";
+
+    private void OnBeforeChange(InputFileChangeEventArgs e) => ReplaceFiles(beforeFiles, e);
+
+    private void OnAfterChange(InputFileChangeEventArgs e) => ReplaceFiles(afterFiles, e);
+
+    private static void ReplaceFiles(List<IBrowserFile> target, InputFileChangeEventArgs e)
+    {
+        target.Clear();
+        foreach (var f in e.GetMultipleFiles(32))
+        {
+            target.Add(f);
+        }
+    }
+
+    private async Task SaveAsync()
+    {
+        saving = true;
+        errorMsg = null;
+        try
+        {
+            var visitUtc = DateTime.SpecifyKind(form.VisitDate.Date, DateTimeKind.Local).ToUniversalTime();
+            var entity = new TreatmentHistory
+            {
+                ClientId = DecodedClientId,
+                VisitDate = visitUtc,
+                ProcedureName = form.ProcedureName.Trim(),
+                ProcedureDescription = form.ProcedureDescription.Trim(),
+                SkinBeforeDescription = form.SkinBeforeDescription.Trim(),
+                SkinAfterDescription = form.SkinAfterDescription.Trim(),
+                Recommendations = form.Recommendations.Trim(),
+                MasterComment = form.MasterComment.Trim()
+            };
+
+            var created = await TreatmentSvc.CreateAsync(entity);
+
+            foreach (var f in beforeFiles)
+            {
+                await TreatmentSvc.AddPhotoAndPersistAsync(created.Id, DecodedClientId, TreatmentPhoto.PhotoTypeBefore, f);
+            }
+
+            foreach (var f in afterFiles)
+            {
+                await TreatmentSvc.AddPhotoAndPersistAsync(created.Id, DecodedClientId, TreatmentPhoto.PhotoTypeAfter, f);
+            }
+
+            Nav.NavigateTo(BackUrl);
+        }
+        catch (Exception ex)
+        {
+            errorMsg = ex.Message;
+        }
+        finally
+        {
+            saving = false;
+        }
+    }
+
+    private sealed class VisitForm
+    {
+        [Required(ErrorMessage = "Вкажіть дату відвідування.")]
+        public DateTime VisitDate { get; set; } = DateTime.Today;
+
+        [Required(ErrorMessage = "Введіть назву процедури.")]
+        [StringLength(400, MinimumLength = 2, ErrorMessage = "Назва — від 2 до 400 символів.")]
+        public string ProcedureName { get; set; } = "";
+
+        [StringLength(8000)]
+        public string ProcedureDescription { get; set; } = "";
+
+        [StringLength(8000)]
+        public string SkinBeforeDescription { get; set; } = "";
+
+        [StringLength(8000)]
+        public string SkinAfterDescription { get; set; } = "";
+
+        [StringLength(8000)]
+        public string Recommendations { get; set; } = "";
+
+        [StringLength(8000)]
+        public string MasterComment { get; set; } = "";
+    }
+}

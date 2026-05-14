@@ -1,0 +1,27 @@
+@page "/admin/treatment-history/{ClientId}"
+@using Microsoft.AspNetCore.Authorization
+@using webStudioBlazor.Components.Layout
+@layout AdminLayout
+@inject AuthenticationStateProvider Auth
+@attribute [Authorize(Roles = "Admin,Manicure")]
+@rendermode InteractiveServer
+
+<TreatmentHistoryTimeline ClientId="@DecodedClientId"
+                          CanEdit="@isAdmin"
+                          IsClientView="false"
+                          BackHref="/admin-clients"
+                          BackText="До календаря"
+                          WrapperClass="container shine-admin-3d-page pb-5" />
+
+@code {
+    [Parameter] public string ClientId { get; set; } = string.Empty;
+
+    private string DecodedClientId => Uri.UnescapeDataString(ClientId);
+    private bool isAdmin;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var state = await Auth.GetAuthenticationStateAsync();
+        isAdmin = state.User.IsInRole("Admin");
+    }
+}
