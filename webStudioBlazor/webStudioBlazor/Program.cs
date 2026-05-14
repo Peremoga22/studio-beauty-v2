@@ -96,14 +96,31 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddIdentityCore<ApplicationUser>(options =>
 {
-    options.SignIn.RequireConfirmedAccount = true;
+    options.SignIn.RequireConfirmedAccount = false;
+    options.User.RequireUniqueEmail = true;
+    options.Password.RequiredLength = 6;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase = false;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireDigit = false;
 })
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddSignInManager()
     .AddDefaultTokenProviders();
 
-builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+builder.Services.Configure<EmailSmtpOptions>(
+    builder.Configuration.GetSection(EmailSmtpOptions.SectionName));
+
+var smtpHost = builder.Configuration[$"{EmailSmtpOptions.SectionName}:Host"];
+if (!string.IsNullOrWhiteSpace(smtpHost))
+{
+    builder.Services.AddSingleton<IEmailSender<ApplicationUser>, SmtpEmailSender>();
+}
+else
+{
+    builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+}
 
 builder.Services.AddControllers();
 
