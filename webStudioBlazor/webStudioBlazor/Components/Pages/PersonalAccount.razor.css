@@ -263,3 +263,48 @@
         transform: none;
     }
 }
+
+/* Доповнення профілю (ім’я / прізвище / телефон) */
+.profile-alert {
+    margin-top: 8px;
+    padding: 28px;
+    border-radius: 24px;
+    background: linear-gradient(135deg, #fff0f7, #ffffff);
+    border: 1px solid rgba(255, 105, 180, 0.25);
+    box-shadow: 0 20px 50px rgba(255, 105, 180, 0.16);
+}
+
+.profile-alert h4 {
+    color: #d63384;
+    font-weight: 800;
+}
+
+.profile-alert p {
+    color: #7b6c7a;
+}
+
+.profile-alert .form-control {
+    border-radius: 14px;
+    min-height: 3.1rem;
+    border: 1px solid rgba(255, 182, 213, 0.45);
+}
+
+.profile-alert .form-floating > label {
+    color: #7b6a78;
+}
+
+.btn-save {
+    border: none;
+    border-radius: 999px;
+    padding: 13px 28px;
+    background: linear-gradient(135deg, #ff4f9a, #ff9ac7);
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.btn-save:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(255, 79, 163, 0.35);
+}

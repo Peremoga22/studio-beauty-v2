@@ -109,18 +109,11 @@ builder.Services.AddIdentityCore<ApplicationUser>(options =>
     .AddSignInManager()
     .AddDefaultTokenProviders();
 
-builder.Services.Configure<EmailSmtpOptions>(
-    builder.Configuration.GetSection(EmailSmtpOptions.SectionName));
+builder.Services.Configure<EmailSettings>(
+    builder.Configuration.GetSection(EmailSettings.SectionName));
+builder.Services.AddScoped<IEmailService, EmailService>();
 
-var smtpHost = builder.Configuration[$"{EmailSmtpOptions.SectionName}:Host"];
-if (!string.IsNullOrWhiteSpace(smtpHost))
-{
-    builder.Services.AddSingleton<IEmailSender<ApplicationUser>, SmtpEmailSender>();
-}
-else
-{
-    builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
-}
+builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
 builder.Services.AddControllers();
 

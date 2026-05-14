@@ -4,6 +4,7 @@
 @attribute [Authorize]
 @rendermode InteractiveServer
 
+@using System.ComponentModel.DataAnnotations
 @using System.Security.Claims
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Authorization
@@ -35,7 +36,52 @@
             <span class="shine-account-breadcrumb-current">Особистий кабінет</span>
         </nav>
 
-        @if (profileUser is not null)
+        @if (profileUser is not null && !IsProfileIncomplete && !string.IsNullOrWhiteSpace(profileSaveMessage))
+        {
+            <div class="alert alert-success py-2 mb-4" role="status">@profileSaveMessage</div>
+        }
+
+        @if (profileUser is not null && IsProfileIncomplete)
+        {
+            <div class="profile-alert mb-4" role="region" aria-labelledby="profile-complete-heading">
+                <h4 class="h5 mb-2" id="profile-complete-heading">Доповніть ваш профіль</h4>
+                <p class="mb-4">
+                    Щоб ми могли коректно оформлювати записи, додайте ім’я, прізвище та номер телефону.
+                </p>
+
+                @if (profileIdentityErrors is { Count: > 0 })
+                {
+                    <div class="alert alert-danger py-2 mb-3" role="alert">
+                        @string.Join(" ", profileIdentityErrors.Select(e => e.Description))
+                    </div>
+                }
+
+                <EditForm Model="profileInput" OnValidSubmit="SaveProfileAsync" FormName="complete-profile">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary class="text-danger mb-3" />
+
+                    <div class="form-floating mb-3">
+                        <InputText id="pa-first" class="form-control" @bind-Value="profileInput.FirstName" placeholder="Ім’я" autocomplete="given-name" />
+                        <label for="pa-first">Ім’я</label>
+                        <ValidationMessage For="() => profileInput.FirstName" class="text-danger small d-block" />
+                    </div>
+                    <div class="form-floating mb-3">
+                        <InputText id="pa-last" class="form-control" @bind-Value="profileInput.LastName" placeholder="Прізвище" autocomplete="family-name" />
+                        <label for="pa-last">Прізвище</label>
+                        <ValidationMessage For="() => profileInput.LastName" class="text-danger small d-block" />
+                    </div>
+                    <div class="form-floating mb-4">
+                        <InputText id="pa-phone" class="form-control" @bind-Value="profileInput.PhoneNumber" placeholder="+380671234567" autocomplete="tel" />
+                        <label for="pa-phone">Номер телефону</label>
+                        <ValidationMessage For="() => profileInput.PhoneNumber" class="text-danger small d-block" />
+                    </div>
+
+                    <button class="btn-save" type="submit">Зберегти дані</button>
+                </EditForm>
+            </div>
+        }
+
+        @if (profileUser is not null && !IsProfileIncomplete)
         {
             <section class="shine-account-profile-card" aria-labelledby="profile-heading">
                 <h2 class="h5 mb-3 shine-login-card-title" id="profile-heading">Ваші дані</h2>
@@ -170,22 +216,79 @@
 @code {
     private string UserId { get; set; } = string.Empty;
     private ApplicationUser? profileUser;
+    private ClaimsPrincipal authPrincipal = default!;
+    private readonly ProfileInput profileInput = new();
+    private string? profileSaveMessage;
+    private List<IdentityError>? profileIdentityErrors;
+
+    private bool IsProfileIncomplete =>
+        profileUser is not null && (
+            string.IsNullOrWhiteSpace(profileUser.FirstName) ||
+            string.IsNullOrWhiteSpace(profileUser.LastName) ||
+            string.IsNullOrWhiteSpace(profileUser.PhoneNumber));
 
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
+        authPrincipal = authState.User;
 
         UserId =
-            user.FindFirst(ClaimTypes.NameIdentifier)?.Value ??
-            user.FindFirst(ClaimTypes.Email)?.Value ??
-            user.FindFirst("email")?.Value ??
-            user.Identity?.Name ??
+            authPrincipal.FindFirst(ClaimTypes.NameIdentifier)?.Value ??
+            authPrincipal.FindFirst(ClaimTypes.Email)?.Value ??
+            authPrincipal.FindFirst("email")?.Value ??
+            authPrincipal.Identity?.Name ??
             string.Empty;
 
-        if (user.Identity?.IsAuthenticated == true)
+        if (authPrincipal.Identity?.IsAuthenticated == true)
         {
-            profileUser = await UserManager.GetUserAsync(user);
+            profileUser = await UserManager.GetUserAsync(authPrincipal);
+            MapProfileToInput();
         }
+    }
+
+    private void MapProfileToInput()
+    {
+        if (profileUser is null) return;
+        profileInput.FirstName = profileUser.FirstName ?? "";
+        profileInput.LastName = profileUser.LastName ?? "";
+        profileInput.PhoneNumber = profileUser.PhoneNumber ?? "";
+    }
+
+    private async Task SaveProfileAsync()
+    {
+        profileSaveMessage = null;
+        profileIdentityErrors = null;
+
+        if (profileUser is null) return;
+
+        profileUser.FirstName = profileInput.FirstName.Trim();
+        profileUser.LastName = profileInput.LastName.Trim();
+        profileUser.PhoneNumber = profileInput.PhoneNumber.Trim();
+
+        var result = await UserManager.UpdateAsync(profileUser);
+        if (!result.Succeeded)
+        {
+            profileIdentityErrors = result.Errors.ToList();
+            return;
+        }
+
+        profileUser = await UserManager.GetUserAsync(authPrincipal);
+        MapProfileToInput();
+        profileSaveMessage = "Дані збережено.";
+    }
+
+    private sealed class ProfileInput
+    {
+        [Required(ErrorMessage = "Введіть ім’я.")]
+        [StringLength(100, MinimumLength = 2, ErrorMessage = "Ім’я — від 2 до 100 символів.")]
+        public string FirstName { get; set; } = "";
+
+        [Required(ErrorMessage = "Введіть прізвище.")]
+        [StringLength(100, MinimumLength = 2, ErrorMessage = "Прізвище — від 2 до 100 символів.")]
+        public string LastName { get; set; } = "";
+
+        [Required(ErrorMessage = "Введіть номер телефону.")]
+        [RegularExpression(@"^(\+380|0)\d{9}$", ErrorMessage = "Формат: +380XXXXXXXXX або 0XXXXXXXXX.")]
+        public string PhoneNumber { get; set; } = "";
     }
 }
