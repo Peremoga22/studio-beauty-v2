@@ -527,17 +527,25 @@ body {
     margin-top: 30px;
     padding: 14px 34px;
     border-radius: 999px;
-    background: linear-gradient(135deg, #ff4f9a, #ff9ac7);
+    background: linear-gradient(145deg, #ff1f7a 0%, #ff3d94 40%, #ff7ec4 100%);
     color: #fff !important;
     font-weight: 700;
     text-decoration: none;
-    box-shadow: 0 16px 35px rgba(255, 79, 154, 0.35);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.45),
+        0 10px 28px rgba(255, 30, 130, 0.5),
+        0 20px 48px rgba(255, 70, 155, 0.4);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, filter 0.3s ease;
 }
 
 .shine-reviews-hero-btn:hover {
     transform: translateY(-4px);
-    box-shadow: 0 22px 45px rgba(255, 79, 154, 0.45);
+    filter: brightness(1.06) saturate(1.06);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.55),
+        0 14px 36px rgba(255, 25, 125, 0.58),
+        0 28px 56px rgba(255, 75, 165, 0.48);
     color: #fff !important;
 }
 

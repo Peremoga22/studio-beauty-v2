@@ -1,65 +1,70 @@
 ﻿@page "/cosmetology"
-
-
 @inject SeedService _seedService
+
 @{
-    var page = pageTherapies.FirstOrDefault(p => p.TitlePage == @selectedCosmetology);
-    <section class="shine-page-hero text-center mb-4 mx-2 mx-md-0">
-        <h1 class="display-6 fw-semibold mb-3" style="color: var(--shine-rose-deep);">
-            @(page?.TitlePage ?? "Без сторінки")
-        </h1>
-        <p class="text-muted mb-0 mx-auto" style="max-width: 40rem;">
-            @(page?.DescriptionPage ?? "Без сторінки")
-        </p>
-    </section>
-     <div class="container">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb bg-white p-2 mb-5 rounded shadow-sm">
-                <li class="breadcrumb-item"><a href="/" style="color: #f8b7d8;">Домашня сторінка</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Косметологія</li>
-            </ol>
-        </nav>
-     </div>
+    var page = pageTherapies.FirstOrDefault(p => p.TitlePage == selectedCosmetology);
 }
-<section class="pt-3">
-    <div class="container">
-        <figure class="figure m-0">
-            <div class="row g-4">
-                @foreach (var item in cosmetologyTherapyCards.Where(x => x.CategoryId == page.CategoryId))
-                {
-                    <div class="col-12 col-sm-6 col-lg-4">
-                        <div class="shine-service-card d-flex flex-column h-100">
-                            <img src="@item.ImagePath" class="shine-service-img" alt="@item.TitleCard" loading="lazy" decoding="async">
-                            <div class="p-4 d-flex flex-column flex-grow-1">
-                                <h5 class="fw-semibold mb-2" style="color: var(--shine-rose-deep);">
-                                    @item.TitleCard
-                                </h5>
-                                <p class="small text-muted flex-grow-1 mb-3">@item.DescriptionCard</p>
-                                <div class="shine-service-meta d-flex flex-wrap gap-3 mb-3">
-                                    <span><i class="bi bi-clock me-1 text-primary"></i>Тривалість: за домовленістю</span>
-                                    <span><i class="bi bi-cash-stack me-1 text-primary"></i>@item.Price.ToString("C0", new System.Globalization.CultureInfo("uk-UA"))</span>
-                                </div>
-                                <a href="/appointment-user" class="btn btn-primary rounded-pill w-100 mt-auto">Записатися</a>
+
+<section class="shine-cosmo-page">
+    <div class="shine-cosmo-page-inner">
+        <header class="shine-cosmo-hero">
+            <span class="shine-cosmo-hero-label">SHINE COSMETOLOGY</span>
+            <h1 class="shine-cosmo-hero-title">@(page?.TitlePage ?? "Косметологія")</h1>
+            <p class="shine-cosmo-hero-text">
+                @(page?.DescriptionPage ?? "Професійний догляд за шкірою, сучасні методики та індивідуальний підхід для вашої краси, молодості й впевненості.")
+            </p>
+        </header>
+
+        <nav class="shine-cosmo-breadcrumb" aria-label="Навігаційна стежка">
+            <a href="/" class="shine-cosmo-breadcrumb-link">Домашня сторінка</a>
+            <span class="shine-cosmo-breadcrumb-sep" aria-hidden="true">/</span>
+            <span class="shine-cosmo-breadcrumb-current">Косметологія</span>
+        </nav>
+
+        @if (page is null)
+        {
+            <p class="shine-cosmo-empty text-center text-muted py-5 mb-0">Завантаження розділу…</p>
+        }
+        else
+        {
+            var cards = cosmetologyTherapyCards.Where(x => x.CategoryId == page.CategoryId).ToList();
+            @if (!cards.Any())
+            {
+                <p class="shine-cosmo-empty text-center text-muted py-5 mb-0">Послуги з’являться незабаром.</p>
+            }
+            else
+            {
+                <div class="shine-cosmo-services-grid">
+                    @foreach (var item in cards)
+                    {
+                        <article class="shine-cosmo-service-card">
+                            <div class="shine-cosmo-service-image">
+                                <img src="@item.ImagePath" alt="@item.TitleCard" loading="lazy" decoding="async" />
                             </div>
-                        </div>
-                    </div>
-                }
-            </div>
-        </figure>
+                            <div class="shine-cosmo-service-body">
+                                <h2 class="shine-cosmo-service-title">@item.TitleCard</h2>
+                                <p class="shine-cosmo-service-desc">@item.DescriptionCard</p>
+                                <div class="shine-cosmo-service-footer">
+                                    <span class="shine-cosmo-service-time">@item.Price.ToString("C0", new System.Globalization.CultureInfo("uk-UA"))</span>
+                                    <a href="/appointment-user" class="shine-cosmo-service-btn text-decoration-none">Записатися</a>
+                                </div>
+                            </div>
+                        </article>
+                    }
+                </div>
+            }
+        }
     </div>
 </section>
 
-
 @code {
     private List<TherapyCard> cosmetologyTherapyCards = new();
-    private List<Category> categories = new();
     private List<PageTherapy> pageTherapies = new();
-    private string selectedCosmetology = "Косметологія";
+    private const string selectedCosmetology = "Косметологія";
 
     protected override async Task OnInitializedAsync()
     {
         cosmetologyTherapyCards = await _seedService.GetAllTherapyCardListAsync();
-        categories = await _seedService.GetAllCategoryListAsync();
         pageTherapies = await _seedService.GetAllPageTherapyListAsync();
     }
 }

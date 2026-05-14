@@ -1,0 +1,256 @@
+.shine-cosmo-page {
+    padding: 1.5rem 2rem 5rem;
+    background:
+        radial-gradient(circle at top right, rgba(255, 105, 180, 0.12), transparent 35%),
+        linear-gradient(180deg, #fff8fc 0%, #ffffff 45%, #fff5fa 100%);
+    min-height: 100%;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.shine-cosmo-page-inner {
+    max-width: 1120px;
+    margin: 0 auto;
+}
+
+.shine-cosmo-hero {
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+    padding: 4.375rem 1.5rem;
+    border-radius: 28px;
+    background:
+        radial-gradient(circle at 20% 20%, rgba(255, 105, 180, 0.22), transparent 30%),
+        linear-gradient(135deg, #fff0f7, #ffffff);
+    box-shadow: 0 24px 60px rgba(255, 105, 180, 0.14);
+    border: 1px solid rgba(255, 182, 213, 0.45);
+}
+
+.shine-cosmo-hero-label {
+    display: inline-block;
+    margin-bottom: 14px;
+    font-size: 12px;
+    letter-spacing: 5px;
+    color: #ff5fa2;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.shine-cosmo-hero-title {
+    margin: 0;
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: clamp(2rem, 5vw, 3rem);
+    line-height: 1.1;
+    color: #291529;
+    font-weight: 700;
+}
+
+.shine-cosmo-hero-text {
+    max-width: 40rem;
+    margin: 1.25rem auto 0;
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: #746575;
+}
+
+.shine-cosmo-breadcrumb {
+    margin: 2.125rem auto 3.5rem;
+    padding: 1.125rem 1.5rem;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.82);
+    border: 1px solid rgba(255, 182, 213, 0.35);
+    box-shadow: 0 12px 32px rgba(40, 20, 35, 0.07);
+    color: #7b6c7a;
+    font-size: 0.95rem;
+}
+
+.shine-cosmo-breadcrumb-link {
+    color: #ff5fa2;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.shine-cosmo-breadcrumb-link:hover {
+    color: #d63384;
+    text-decoration: underline;
+}
+
+.shine-cosmo-breadcrumb-sep {
+    margin: 0 0.35rem;
+    opacity: 0.65;
+}
+
+.shine-cosmo-breadcrumb-current {
+    font-weight: 500;
+    color: #5c4f5c;
+}
+
+.shine-cosmo-services-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 28px;
+    align-items: stretch;
+}
+
+.shine-cosmo-service-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    position: relative;
+    overflow: hidden;
+    border-radius: 28px;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(255, 182, 213, 0.4);
+    box-shadow: 0 22px 55px rgba(255, 105, 180, 0.13);
+    transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+
+.shine-cosmo-service-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 30px 75px rgba(255, 105, 180, 0.23);
+}
+
+.shine-cosmo-service-image {
+    flex-shrink: 0;
+    overflow: hidden;
+    background: #fff3f8;
+}
+
+.shine-cosmo-service-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 28px 28px 0 0;
+    transition: transform 0.45s ease;
+}
+
+.shine-cosmo-service-card:hover .shine-cosmo-service-image img {
+    transform: scale(1.06);
+}
+
+.shine-cosmo-service-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    padding: 26px;
+}
+
+.shine-cosmo-service-title {
+    margin: 0 0 12px;
+    flex-shrink: 0;
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 1.4rem;
+    color: #d63384;
+    font-weight: 700;
+}
+
+.shine-cosmo-service-desc {
+    margin: 0;
+    flex: 1 1 auto;
+    font-size: 15px;
+    line-height: 1.65;
+    color: #6f6170;
+}
+
+.shine-cosmo-service-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-top: auto;
+    flex-shrink: 0;
+}
+
+.shine-cosmo-service-time {
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: #fff0f7;
+    color: #d63384;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.shine-cosmo-service-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 11px 22px;
+    border-radius: 999px;
+    background: linear-gradient(145deg, #ff1f7a 0%, #ff3d94 40%, #ff7ec4 100%);
+    color: #fff !important;
+    font-weight: 700;
+    font-size: 0.9rem;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.4),
+        0 8px 22px rgba(255, 30, 130, 0.48),
+        0 16px 36px rgba(255, 70, 155, 0.35);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, filter 0.3s ease;
+}
+
+.shine-cosmo-service-btn:hover {
+    color: #fff !important;
+    filter: brightness(1.06) saturate(1.05);
+    transform: translateY(-3px);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.52),
+        0 12px 30px rgba(255, 25, 125, 0.55),
+        0 22px 44px rgba(255, 75, 165, 0.42);
+}
+
+@media (max-width: 768px) {
+    .shine-cosmo-page {
+        padding: 1rem 0.75rem 3.75rem;
+    }
+
+    .shine-cosmo-hero {
+        padding: 3.125rem 1.25rem;
+        border-radius: 22px;
+    }
+
+    .shine-cosmo-hero-text {
+        font-size: 15px;
+    }
+
+    .shine-cosmo-breadcrumb {
+        margin: 1.5rem auto 2.125rem;
+        padding: 15px 18px;
+    }
+
+    .shine-cosmo-services-grid {
+        grid-template-columns: 1fr;
+        gap: 22px;
+    }
+
+    .shine-cosmo-service-body {
+        padding: 22px;
+    }
+
+    .shine-cosmo-service-title {
+        font-size: 1.25rem;
+    }
+
+    .shine-cosmo-service-footer {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .shine-cosmo-service-btn {
+        width: 100%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .shine-cosmo-service-card,
+    .shine-cosmo-service-card:hover,
+    .shine-cosmo-service-image img,
+    .shine-cosmo-service-btn,
+    .shine-cosmo-service-btn:hover {
+        transition: none;
+        transform: none;
+    }
+}
