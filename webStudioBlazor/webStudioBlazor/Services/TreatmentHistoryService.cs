@@ -1,6 +1,10 @@
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Jpeg;
+using SixLabors.ImageSharp.Processing;
 
 using webStudioBlazor.Data;
 using webStudioBlazor.EntityModels;
@@ -9,13 +13,26 @@ namespace webStudioBlazor.Services
 {
     public class TreatmentHistoryService
     {
+        /// <summary>Максимальний розмір вхідного файлу з браузера (до стиснення).</summary>
+        public const int MaxTreatmentImageUploadBytes = 25 * 1024 * 1024;
+
+        private const int StoredImageMaxEdge = 1920;
+        private const int StoredJpegQuality = 82;
+        private const int PreviewImageMaxEdge = 480;
+        private const int PreviewJpegQuality = 72;
+
         private readonly IDbContextFactory<ApplicationDbContext> _dbFactory;
         private readonly IWebHostEnvironment _env;
+        private readonly ILogger<TreatmentHistoryService>? _logger;
 
-        public TreatmentHistoryService(IDbContextFactory<ApplicationDbContext> dbFactory, IWebHostEnvironment env)
+        public TreatmentHistoryService(
+            IDbContextFactory<ApplicationDbContext> dbFactory,
+            IWebHostEnvironment env,
+            ILogger<TreatmentHistoryService>? logger = null)
         {
             _dbFactory = dbFactory;
             _env = env;
+            _logger = logger;
         }
 
         public static string BuildClientId(Appointment appointment)
@@ -115,6 +132,7 @@ namespace webStudioBlazor.Services
             await using var db = await _dbFactory.CreateDbContextAsync(ct);
             return await db.TreatmentHistories
                 .AsNoTracking()
+                .AsSplitQuery()
                 .Include(h => h.Photos)
                 .Where(h => h.ClientId == clientId)
                 .OrderByDescending(h => h.VisitDate)
@@ -127,6 +145,7 @@ namespace webStudioBlazor.Services
             await using var db = await _dbFactory.CreateDbContextAsync(ct);
             return await db.TreatmentHistories
                 .AsNoTracking()
+                .AsSplitQuery()
                 .Include(h => h.Photos)
                 .FirstOrDefaultAsync(h => h.Id == id, ct);
         }
@@ -230,26 +249,124 @@ namespace webStudioBlazor.Services
         public string GetPhysicalTreatmentRoot(string clientId, int treatmentId) =>
             Path.Combine(_env.WebRootPath, "uploads", "treatments", SanitizeClientFolder(clientId), treatmentId.ToString());
 
-        /// <summary>Зберігає файл і повертає відносний URL (/uploads/...)</summary>
-        public async Task<string> SavePhotoAsync(
+        /// <summary>JPEG-прев’ю для відображення у формі після вибору файлу.</summary>
+        public static string? TryGetPreviewDataUrlFromBytes(ReadOnlySpan<byte> imageBytes)
+        {
+            try
+            {
+                using var image = Image.Load(imageBytes);
+                ResizeToMaxEdge(image, PreviewImageMaxEdge);
+                using var ms = new MemoryStream();
+                image.SaveAsJpeg(ms, new JpegEncoder { Quality = PreviewJpegQuality });
+                return $"data:image/jpeg;base64,{Convert.ToBase64String(ms.ToArray())}";
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        private static void ResizeToMaxEdge(Image image, int maxEdge)
+        {
+            if (image.Width <= maxEdge && image.Height <= maxEdge)
+            {
+                return;
+            }
+
+            image.Mutate(x => x.Resize(new ResizeOptions
+            {
+                Mode = ResizeMode.Max,
+                Size = new Size(maxEdge, maxEdge)
+            }));
+        }
+
+        private static async Task<byte[]> ReadBrowserFileBytesAsync(IBrowserFile file, CancellationToken ct)
+        {
+            await using var s = file.OpenReadStream(maxAllowedSize: MaxTreatmentImageUploadBytes, cancellationToken: ct);
+            using var ms = new MemoryStream();
+            await s.CopyToAsync(ms, ct);
+            return ms.ToArray();
+        }
+
+        /// <summary>Зберігає зображення як стиснутий JPEG (до @StoredImageMaxEdge px по довшій стороні). При збої декодування — копія сирих байтів (JPEG/PNG/WebP).</summary>
+        private async Task<string> SaveCompressedJpegToDiskAsync(
             string clientId,
             int treatmentId,
             string beforeOrAfter,
-            IBrowserFile file,
-            CancellationToken ct = default)
+            byte[] imageBytes,
+            CancellationToken ct)
         {
-            var ext = Path.GetExtension(file.Name);
-            if (string.IsNullOrEmpty(ext) || ext.Length > 6)
+            try
             {
-                ext = ".jpg";
+                using var mem = new MemoryStream(imageBytes, writable: false);
+                using var image = await Image.LoadAsync(mem, ct);
+                ResizeToMaxEdge(image, StoredImageMaxEdge);
+
+                var sub = beforeOrAfter.Equals(TreatmentPhoto.PhotoTypeAfter, StringComparison.OrdinalIgnoreCase)
+                    ? TreatmentPhoto.PhotoTypeAfter
+                    : TreatmentPhoto.PhotoTypeBefore;
+
+                var dir = Path.Combine(GetPhysicalTreatmentRoot(clientId, treatmentId), sub);
+                Directory.CreateDirectory(dir);
+
+                var name = $"{Guid.NewGuid():N}.jpg";
+                var fullPath = Path.Combine(dir, name);
+                await image.SaveAsJpegAsync(fullPath, new JpegEncoder { Quality = StoredJpegQuality }, cancellationToken: ct);
+
+                return $"/uploads/treatments/{SanitizeClientFolder(clientId)}/{treatmentId}/{sub}/{name}".Replace('\\', '/');
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogWarning(ex, "Стиснення JPEG не вдалося, пробуємо зберегти оригінальні байти зображення.");
+                try
+                {
+                    return await SaveRawImageBytesFallbackAsync(clientId, treatmentId, beforeOrAfter, imageBytes, ct);
+                }
+                catch (Exception inner)
+                {
+                    throw new InvalidOperationException(
+                        "Не вдалося зберегти фото. Спробуйте інший формат (JPEG, PNG, WebP) або менший файл.",
+                        inner);
+                }
+            }
+        }
+
+        private static string GuessImageFileExtension(ReadOnlySpan<byte> bytes)
+        {
+            if (bytes.Length >= 3 && bytes[0] == 0xFF && bytes[1] == 0xD8 && bytes[2] == 0xFF)
+            {
+                return ".jpg";
             }
 
-            ext = ext.ToLowerInvariant();
-            if (ext is not ".jpg" and not ".jpeg" and not ".png" and not ".webp")
+            if (bytes.Length >= 8 && bytes[0] == 0x89 && bytes[1] == (byte)'P' && bytes[2] == (byte)'N' && bytes[3] == (byte)'G')
             {
-                ext = ".jpg";
+                return ".png";
             }
 
+            if (bytes.Length >= 12
+                && bytes[0] == (byte)'R'
+                && bytes[1] == (byte)'I'
+                && bytes[2] == (byte)'F'
+                && bytes[3] == (byte)'F'
+                && bytes[8] == (byte)'W'
+                && bytes[9] == (byte)'E'
+                && bytes[10] == (byte)'B'
+                && bytes[11] == (byte)'P')
+            {
+                return ".webp";
+            }
+
+            return ".jpg";
+        }
+
+        private async Task<string> SaveRawImageBytesFallbackAsync(
+            string clientId,
+            int treatmentId,
+            string beforeOrAfter,
+            byte[] imageBytes,
+            CancellationToken ct)
+        {
+            var ext = GuessImageFileExtension(imageBytes);
             var sub = beforeOrAfter.Equals(TreatmentPhoto.PhotoTypeAfter, StringComparison.OrdinalIgnoreCase)
                 ? TreatmentPhoto.PhotoTypeAfter
                 : TreatmentPhoto.PhotoTypeBefore;
@@ -259,23 +376,19 @@ namespace webStudioBlazor.Services
 
             var name = $"{Guid.NewGuid():N}{ext}";
             var fullPath = Path.Combine(dir, name);
-            await using (var fs = File.Create(fullPath))
-            {
-                await file.OpenReadStream(maxAllowedSize: 8 * 1024 * 1024).CopyToAsync(fs, ct);
-            }
+            await File.WriteAllBytesAsync(fullPath, imageBytes, ct);
 
-            var rel = $"/uploads/treatments/{SanitizeClientFolder(clientId)}/{treatmentId}/{sub}/{name}".Replace('\\', '/');
-            return rel;
+            return $"/uploads/treatments/{SanitizeClientFolder(clientId)}/{treatmentId}/{sub}/{name}".Replace('\\', '/');
         }
 
-        public async Task<TreatmentPhoto> AddPhotoAndPersistAsync(
+        public async Task<TreatmentPhoto> AddPhotoFromBytesAsync(
             int treatmentHistoryId,
             string clientId,
             string beforeOrAfter,
-            IBrowserFile file,
+            byte[] imageBytes,
             CancellationToken ct = default)
         {
-            var path = await SavePhotoAsync(clientId, treatmentHistoryId, beforeOrAfter, file, ct);
+            var path = await SaveCompressedJpegToDiskAsync(clientId, treatmentHistoryId, beforeOrAfter, imageBytes, ct);
             await using var db = await _dbFactory.CreateDbContextAsync(ct);
             var type = beforeOrAfter.Equals(TreatmentPhoto.PhotoTypeAfter, StringComparison.OrdinalIgnoreCase)
                 ? TreatmentPhoto.PhotoTypeAfter
@@ -290,6 +403,17 @@ namespace webStudioBlazor.Services
             db.TreatmentPhotos.Add(photo);
             await db.SaveChangesAsync(ct);
             return photo;
+        }
+
+        public async Task<TreatmentPhoto> AddPhotoAndPersistAsync(
+            int treatmentHistoryId,
+            string clientId,
+            string beforeOrAfter,
+            IBrowserFile file,
+            CancellationToken ct = default)
+        {
+            var bytes = await ReadBrowserFileBytesAsync(file, ct);
+            return await AddPhotoFromBytesAsync(treatmentHistoryId, clientId, beforeOrAfter, bytes, ct);
         }
 
         public async Task<string?> GetClientIdFromAppointmentIdAsync(int appointmentId, CancellationToken ct = default)

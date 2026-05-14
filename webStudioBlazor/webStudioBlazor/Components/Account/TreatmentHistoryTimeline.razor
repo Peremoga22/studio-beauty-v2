@@ -1,6 +1,7 @@
 @using webStudioBlazor.EntityModels
 @inject TreatmentHistoryService TreatmentSvc
 @inject IJSRuntime Js
+@inject NavigationManager Navigation
 
 <div class="@WrapperClass">
     @if (isLoading)
@@ -79,8 +80,8 @@
             <ul class="list-unstyled th-timeline">
                 @foreach (var h in items)
                 {
-                    var before = h.Photos.Where(p => p.PhotoType == TreatmentPhoto.PhotoTypeBefore).ToList();
-                    var after = h.Photos.Where(p => p.PhotoType == TreatmentPhoto.PhotoTypeAfter).ToList();
+                    var before = h.Photos.Where(p => string.Equals(p.PhotoType, TreatmentPhoto.PhotoTypeBefore, StringComparison.OrdinalIgnoreCase)).ToList();
+                    var after = h.Photos.Where(p => string.Equals(p.PhotoType, TreatmentPhoto.PhotoTypeAfter, StringComparison.OrdinalIgnoreCase)).ToList();
                     var firstBefore = before.FirstOrDefault();
                     var firstAfter = after.FirstOrDefault();
                     var clip = GetSlider(h.Id);
@@ -149,9 +150,9 @@
                                             <span class="badge bg-light text-dark border">повзунок</span>
                                         </div>
                                         <div class="th-ba-wrap" style="--clip: @clip">
-                                            <img src="@firstAfter.FilePath" alt="Після" class="th-ba-base" />
+                                            <img src="@PhotoUrl(firstAfter.FilePath)" alt="Після" class="th-ba-base" />
                                             <div class="th-ba-top">
-                                                <img src="@firstBefore.FilePath" alt="До" class="th-ba-before-img" />
+                                                <img src="@PhotoUrl(firstBefore.FilePath)" alt="До" class="th-ba-before-img" />
                                             </div>
                                             <input class="th-ba-range" type="range" min="5" max="95"
                                                    value="@clip"
@@ -170,7 +171,7 @@
                                             @foreach (var p in before)
                                             {
                                                 <button type="button" class="th-thumb-btn p-0 border-0 bg-transparent" @onclick="() => OpenModal(p.FilePath)">
-                                                    <img src="@p.FilePath" class="th-thumb" alt="" />
+                                                    <img src="@PhotoUrl(p.FilePath)" class="th-thumb" alt="" />
                                                 </button>
                                             }
                                         </div>
@@ -184,7 +185,7 @@
                                             @foreach (var p in after)
                                             {
                                                 <button type="button" class="th-thumb-btn p-0 border-0 bg-transparent" @onclick="() => OpenModal(p.FilePath)">
-                                                    <img src="@p.FilePath" class="th-thumb" alt="" />
+                                                    <img src="@PhotoUrl(p.FilePath)" class="th-thumb" alt="" />
                                                 </button>
                                             }
                                         </div>
@@ -296,7 +297,26 @@
         }
     }
 
-    private void OpenModal(string src) => modalSrc = src;
+    private string PhotoUrl(string? path)
+    {
+        if (string.IsNullOrWhiteSpace(path))
+        {
+            return string.Empty;
+        }
+
+        var p = path.Trim();
+        if (p.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
+            || p.StartsWith("https://", StringComparison.OrdinalIgnoreCase)
+            || p.StartsWith("data:", StringComparison.OrdinalIgnoreCase))
+        {
+            return p;
+        }
+
+        var rel = p.StartsWith('/') ? p : "/" + p;
+        return Navigation.ToAbsoluteUri(rel).AbsoluteUri;
+    }
+
+    private void OpenModal(string storedPath) => modalSrc = PhotoUrl(storedPath);
 
     private void CloseModal() => modalSrc = null;
 

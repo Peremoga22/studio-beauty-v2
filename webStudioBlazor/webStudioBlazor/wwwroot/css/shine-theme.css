@@ -1810,3 +1810,15 @@ section {
 .th-modal {
     z-index: 1080;
 }
+
+.th-upload-preview-img,
+.th-upload-preview-placeholder {
+    width: 104px;
+    height: 104px;
+    object-fit: cover;
+    background: rgba(255, 248, 252, 0.9);
+}
+
+.th-upload-preview-placeholder {
+    background: linear-gradient(135deg, rgba(255, 236, 244, 0.95), rgba(248, 249, 250, 0.98));
+}

@@ -3,6 +3,7 @@
 @attribute [Authorize(Roles = "Admin")]
 @rendermode InteractiveServer
 @using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.WebUtilities
 @inject TreatmentHistoryService TreatmentSvc
 @inject NavigationManager Nav
 @inject IJSRuntime Js
@@ -104,7 +105,7 @@
                             @foreach (var p in beforePhotos)
                             {
                                 <div class="position-relative th-edit-thumb-wrap">
-                                    <img src="@p.FilePath" class="th-thumb rounded-3 border" alt="" />
+                                    <img src="@PhotoUrl(p.FilePath)" class="th-thumb rounded-3 border" alt="" />
                                     <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1 py-0 px-1" title="Видалити" @onclick="() => DeletePhotoAsync(p)">×</button>
                                 </div>
                             }
@@ -118,7 +119,7 @@
                             @foreach (var p in afterPhotos)
                             {
                                 <div class="position-relative th-edit-thumb-wrap">
-                                    <img src="@p.FilePath" class="th-thumb rounded-3 border" alt="" />
+                                    <img src="@PhotoUrl(p.FilePath)" class="th-thumb rounded-3 border" alt="" />
                                     <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1 py-0 px-1" title="Видалити" @onclick="() => DeletePhotoAsync(p)">×</button>
                                 </div>
                             }
@@ -134,11 +135,57 @@
                         <label class="form-label small text-muted">Нові фото «до»</label>
                         <InputFile class="form-control" multiple accept="image/*" OnChange="OnBeforeChange" />
                         <p class="small text-muted mt-1 mb-0">@BeforeSummary</p>
+                        @if (loadingBeforePreviews)
+                        {
+                            <div class="mt-2"><span class="spinner-border spinner-border-sm text-danger" role="status"></span> <span class="small text-muted">Обробка…</span></div>
+                        }
+                        else if (pendingBefore.Count > 0)
+                        {
+                            <div class="d-flex flex-wrap gap-2 mt-3 th-upload-preview-row">
+                                @foreach (var p in pendingBefore)
+                                {
+                                    <div class="th-upload-preview-item text-center">
+                                        @if (!string.IsNullOrEmpty(p.PreviewDataUrl))
+                                        {
+                                            <img src="@p.PreviewDataUrl" class="th-upload-preview-img rounded-3 border" alt="" />
+                                        }
+                                        else
+                                        {
+                                            <div class="th-upload-preview-placeholder rounded-3 border d-flex align-items-center justify-content-center small text-muted">?</div>
+                                        }
+                                        <div class="small text-truncate mt-1" style="max-width: 7.5rem" title="@p.FileName">@p.FileName</div>
+                                    </div>
+                                }
+                            </div>
+                        }
                     </div>
                     <div class="col-md-6">
                         <label class="form-label small text-muted">Нові фото «після»</label>
                         <InputFile class="form-control" multiple accept="image/*" OnChange="OnAfterChange" />
                         <p class="small text-muted mt-1 mb-0">@AfterSummary</p>
+                        @if (loadingAfterPreviews)
+                        {
+                            <div class="mt-2"><span class="spinner-border spinner-border-sm text-danger" role="status"></span> <span class="small text-muted">Обробка…</span></div>
+                        }
+                        else if (pendingAfter.Count > 0)
+                        {
+                            <div class="d-flex flex-wrap gap-2 mt-3 th-upload-preview-row">
+                                @foreach (var p in pendingAfter)
+                                {
+                                    <div class="th-upload-preview-item text-center">
+                                        @if (!string.IsNullOrEmpty(p.PreviewDataUrl))
+                                        {
+                                            <img src="@p.PreviewDataUrl" class="th-upload-preview-img rounded-3 border" alt="" />
+                                        }
+                                        else
+                                        {
+                                            <div class="th-upload-preview-placeholder rounded-3 border d-flex align-items-center justify-content-center small text-muted">?</div>
+                                        }
+                                        <div class="small text-truncate mt-1" style="max-width: 7.5rem" title="@p.FileName">@p.FileName</div>
+                                    </div>
+                                }
+                            </div>
+                        }
                     </div>
                 </div>
 
@@ -150,6 +197,7 @@
                         }
                         Завантажити вибрані фото
                     </button>
+                    <p class="small text-muted mt-2 mb-0">Фото з цього блоку також автоматично зберігаються при натисканні «Зберегти зміни» вище.</p>
                 </div>
             </div>
         </div>
@@ -162,8 +210,10 @@
     private TreatmentHistory? entity;
     private bool notFound;
     private readonly VisitForm form = new();
-    private readonly List<IBrowserFile> pendingBefore = new();
-    private readonly List<IBrowserFile> pendingAfter = new();
+    private readonly List<PendingImage> pendingBefore = new();
+    private readonly List<PendingImage> pendingAfter = new();
+    private bool loadingBeforePreviews;
+    private bool loadingAfterPreviews;
     private bool saving;
     private bool savingPhotos;
     private string? errorMsg;
@@ -171,18 +221,40 @@
     private string BackUrl => entity is null ? "/admin-clients" : $"/admin/treatment-history/{Uri.EscapeDataString(entity.ClientId)}";
 
     private IEnumerable<TreatmentPhoto> beforePhotos =>
-        entity?.Photos.Where(p => p.PhotoType == TreatmentPhoto.PhotoTypeBefore).OrderBy(p => p.Id) ?? Enumerable.Empty<TreatmentPhoto>();
+        entity?.Photos.Where(p => string.Equals(p.PhotoType, TreatmentPhoto.PhotoTypeBefore, StringComparison.OrdinalIgnoreCase)).OrderBy(p => p.Id) ?? Enumerable.Empty<TreatmentPhoto>();
 
     private IEnumerable<TreatmentPhoto> afterPhotos =>
-        entity?.Photos.Where(p => p.PhotoType == TreatmentPhoto.PhotoTypeAfter).OrderBy(p => p.Id) ?? Enumerable.Empty<TreatmentPhoto>();
+        entity?.Photos.Where(p => string.Equals(p.PhotoType, TreatmentPhoto.PhotoTypeAfter, StringComparison.OrdinalIgnoreCase)).OrderBy(p => p.Id) ?? Enumerable.Empty<TreatmentPhoto>();
 
-    private string BeforeSummary => pendingBefore.Count == 0 ? "Нічого не вибрано." : $"До завантаження: {pendingBefore.Count}.";
+    private string BeforeSummary => pendingBefore.Count == 0
+        ? "Нічого не вибрано."
+        : $"До завантаження: {pendingBefore.Count} (до {TreatmentHistoryService.MaxTreatmentImageUploadBytes / 1024 / 1024} МБ кожен).";
 
-    private string AfterSummary => pendingAfter.Count == 0 ? "Нічого не вибрано." : $"До завантаження: {pendingAfter.Count}.";
+    private string AfterSummary => pendingAfter.Count == 0
+        ? "Нічого не вибрано."
+        : $"До завантаження: {pendingAfter.Count} (до {TreatmentHistoryService.MaxTreatmentImageUploadBytes / 1024 / 1024} МБ кожен).";
 
     protected override async Task OnInitializedAsync()
     {
         await ReloadAsync();
+        TryShowPhotoErrFromQuery();
+    }
+
+    private void TryShowPhotoErrFromQuery()
+    {
+        try
+        {
+            var uri = new Uri(Nav.Uri);
+            var q = QueryHelpers.ParseQuery(uri.Query);
+            if (q.TryGetValue("photoErr", out var vals) && vals.Count > 0)
+            {
+                errorMsg = Uri.UnescapeDataString(vals.First() ?? "");
+            }
+        }
+        catch
+        {
+            // ignore malformed query
+        }
     }
 
     private async Task ReloadAsync()
@@ -204,16 +276,59 @@
         form.MasterComment = entity.MasterComment;
     }
 
-    private void OnBeforeChange(InputFileChangeEventArgs e) => ReplaceFiles(pendingBefore, e);
-
-    private void OnAfterChange(InputFileChangeEventArgs e) => ReplaceFiles(pendingAfter, e);
-
-    private static void ReplaceFiles(List<IBrowserFile> target, InputFileChangeEventArgs e)
+    private async Task OnBeforeChange(InputFileChangeEventArgs e)
     {
-        target.Clear();
-        foreach (var f in e.GetMultipleFiles(32))
+        loadingBeforePreviews = true;
+        errorMsg = null;
+        try
         {
-            target.Add(f);
+            pendingBefore.Clear();
+            foreach (var f in e.GetMultipleFiles(32))
+            {
+                await using var stream = f.OpenReadStream(maxAllowedSize: TreatmentHistoryService.MaxTreatmentImageUploadBytes);
+                using var ms = new MemoryStream();
+                await stream.CopyToAsync(ms);
+                var bytes = ms.ToArray();
+                var preview = TreatmentHistoryService.TryGetPreviewDataUrlFromBytes(bytes);
+                var item = new PendingImage(f.Name, bytes, preview);
+                pendingBefore.Add(item);
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMsg = $"Фото «до»: {ex.Message}";
+        }
+        finally
+        {
+            loadingBeforePreviews = false;
+        }
+    }
+
+    private async Task OnAfterChange(InputFileChangeEventArgs e)
+    {
+        loadingAfterPreviews = true;
+        errorMsg = null;
+        try
+        {
+            pendingAfter.Clear();
+            foreach (var f in e.GetMultipleFiles(32))
+            {
+                await using var stream = f.OpenReadStream(maxAllowedSize: TreatmentHistoryService.MaxTreatmentImageUploadBytes);
+                using var ms = new MemoryStream();
+                await stream.CopyToAsync(ms);
+                var bytes = ms.ToArray();
+                var preview = TreatmentHistoryService.TryGetPreviewDataUrlFromBytes(bytes);
+                var item = new PendingImage(f.Name, bytes, preview);
+                pendingAfter.Add(item);
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMsg = $"Фото «після»: {ex.Message}";
+        }
+        finally
+        {
+            loadingAfterPreviews = false;
         }
     }
 
@@ -245,6 +360,13 @@
                 return;
             }
 
+            var flushErrors = await TryFlushPendingPhotosAsync();
+            if (flushErrors.Count > 0)
+            {
+                errorMsg = string.Join(" · ", flushErrors);
+                return;
+            }
+
             Nav.NavigateTo(BackUrl);
         }
         catch (Exception ex)
@@ -265,6 +387,44 @@
         await ReloadAsync();
     }
 
+    /// <summary>Зберігає вибрані фото; успішні прибирає зі списку, помилки повертає текстом.</summary>
+    private async Task<IReadOnlyList<string>> TryFlushPendingPhotosAsync()
+    {
+        var errors = new List<string>();
+        if (entity is null)
+        {
+            return errors;
+        }
+
+        foreach (var p in pendingBefore.ToList())
+        {
+            try
+            {
+                await TreatmentSvc.AddPhotoFromBytesAsync(entity.Id, entity.ClientId, TreatmentPhoto.PhotoTypeBefore, p.Bytes);
+                pendingBefore.Remove(p);
+            }
+            catch (Exception ex)
+            {
+                errors.Add($"«До» {p.FileName}: {ex.Message}");
+            }
+        }
+
+        foreach (var p in pendingAfter.ToList())
+        {
+            try
+            {
+                await TreatmentSvc.AddPhotoFromBytesAsync(entity.Id, entity.ClientId, TreatmentPhoto.PhotoTypeAfter, p.Bytes);
+                pendingAfter.Remove(p);
+            }
+            catch (Exception ex)
+            {
+                errors.Add($"«Після» {p.FileName}: {ex.Message}");
+            }
+        }
+
+        return errors;
+    }
+
     private async Task UploadPendingAsync()
     {
         if (entity is null) return;
@@ -272,18 +432,12 @@
         errorMsg = null;
         try
         {
-            foreach (var f in pendingBefore)
+            var errs = await TryFlushPendingPhotosAsync();
+            if (errs.Count > 0)
             {
-                await TreatmentSvc.AddPhotoAndPersistAsync(entity.Id, entity.ClientId, TreatmentPhoto.PhotoTypeBefore, f);
+                errorMsg = string.Join(" · ", errs);
             }
 
-            foreach (var f in pendingAfter)
-            {
-                await TreatmentSvc.AddPhotoAndPersistAsync(entity.Id, entity.ClientId, TreatmentPhoto.PhotoTypeAfter, f);
-            }
-
-            pendingBefore.Clear();
-            pendingAfter.Clear();
             await ReloadAsync();
         }
         catch (Exception ex)
@@ -294,6 +448,25 @@
         {
             savingPhotos = false;
         }
+    }
+
+    private string PhotoUrl(string? path)
+    {
+        if (string.IsNullOrWhiteSpace(path))
+        {
+            return string.Empty;
+        }
+
+        var p = path.Trim();
+        if (p.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
+            || p.StartsWith("https://", StringComparison.OrdinalIgnoreCase)
+            || p.StartsWith("data:", StringComparison.OrdinalIgnoreCase))
+        {
+            return p;
+        }
+
+        var rel = p.StartsWith('/') ? p : "/" + p;
+        return Nav.ToAbsoluteUri(rel).AbsoluteUri;
     }
 
     private sealed class VisitForm
@@ -320,4 +493,6 @@
         [StringLength(8000)]
         public string MasterComment { get; set; } = "";
     }
+
+    private sealed record PendingImage(string FileName, byte[] Bytes, string? PreviewDataUrl);
 }

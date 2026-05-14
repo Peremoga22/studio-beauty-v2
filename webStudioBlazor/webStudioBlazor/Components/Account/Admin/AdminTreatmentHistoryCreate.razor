@@ -70,11 +70,57 @@
                         <label class="form-label fw-semibold"><span class="badge th-badge-before me-2">До</span>Фото до процедури</label>
                         <InputFile class="form-control" multiple accept="image/*" OnChange="OnBeforeChange" />
                         <p class="small text-muted mt-1 mb-0">@BeforeSummary</p>
+                        @if (loadingBeforePreviews)
+                        {
+                            <div class="mt-2"><span class="spinner-border spinner-border-sm text-danger" role="status"></span> <span class="small text-muted">Обробка…</span></div>
+                        }
+                        else if (beforePending.Count > 0)
+                        {
+                            <div class="d-flex flex-wrap gap-2 mt-3 th-upload-preview-row">
+                                @foreach (var p in beforePending)
+                                {
+                                    <div class="th-upload-preview-item text-center">
+                                        @if (!string.IsNullOrEmpty(p.PreviewDataUrl))
+                                        {
+                                            <img src="@p.PreviewDataUrl" class="th-upload-preview-img rounded-3 border" alt="" />
+                                        }
+                                        else
+                                        {
+                                            <div class="th-upload-preview-placeholder rounded-3 border d-flex align-items-center justify-content-center small text-muted">?</div>
+                                        }
+                                        <div class="small text-truncate mt-1" style="max-width: 7.5rem" title="@p.FileName">@p.FileName</div>
+                                    </div>
+                                }
+                            </div>
+                        }
                     </div>
                     <div class="col-md-6">
                         <label class="form-label fw-semibold"><span class="badge th-badge-after me-2">Після</span>Фото після процедури</label>
                         <InputFile class="form-control" multiple accept="image/*" OnChange="OnAfterChange" />
                         <p class="small text-muted mt-1 mb-0">@AfterSummary</p>
+                        @if (loadingAfterPreviews)
+                        {
+                            <div class="mt-2"><span class="spinner-border spinner-border-sm text-danger" role="status"></span> <span class="small text-muted">Обробка…</span></div>
+                        }
+                        else if (afterPending.Count > 0)
+                        {
+                            <div class="d-flex flex-wrap gap-2 mt-3 th-upload-preview-row">
+                                @foreach (var p in afterPending)
+                                {
+                                    <div class="th-upload-preview-item text-center">
+                                        @if (!string.IsNullOrEmpty(p.PreviewDataUrl))
+                                        {
+                                            <img src="@p.PreviewDataUrl" class="th-upload-preview-img rounded-3 border" alt="" />
+                                        }
+                                        else
+                                        {
+                                            <div class="th-upload-preview-placeholder rounded-3 border d-flex align-items-center justify-content-center small text-muted">?</div>
+                                        }
+                                        <div class="small text-truncate mt-1" style="max-width: 7.5rem" title="@p.FileName">@p.FileName</div>
+                                    </div>
+                                }
+                            </div>
+                        }
                     </div>
                 </div>
 
@@ -101,25 +147,72 @@
     private string BackUrl => $"/admin/treatment-history/{Uri.EscapeDataString(DecodedClientId)}";
 
     private readonly VisitForm form = new();
-    private readonly List<IBrowserFile> beforeFiles = new();
-    private readonly List<IBrowserFile> afterFiles = new();
+    private readonly List<PendingImage> beforePending = new();
+    private readonly List<PendingImage> afterPending = new();
+    private bool loadingBeforePreviews;
+    private bool loadingAfterPreviews;
     private bool saving;
     private string? errorMsg;
 
-    private string BeforeSummary => beforeFiles.Count == 0 ? "Файли не вибрано." : $"Вибрано файлів: {beforeFiles.Count}.";
+    private string BeforeSummary => beforePending.Count == 0
+        ? "Файли не вибрано."
+        : $"Вибрано файлів: {beforePending.Count}. До {TreatmentHistoryService.MaxTreatmentImageUploadBytes / 1024 / 1024} МБ на файл; на диск зберігається стиснутий JPEG.";
 
-    private string AfterSummary => afterFiles.Count == 0 ? "Файли не вибрано." : $"Вибрано файлів: {afterFiles.Count}.";
+    private string AfterSummary => afterPending.Count == 0
+        ? "Файли не вибрано."
+        : $"Вибрано файлів: {afterPending.Count}. До {TreatmentHistoryService.MaxTreatmentImageUploadBytes / 1024 / 1024} МБ на файл; на диск зберігається стиснутий JPEG.";
 
-    private void OnBeforeChange(InputFileChangeEventArgs e) => ReplaceFiles(beforeFiles, e);
-
-    private void OnAfterChange(InputFileChangeEventArgs e) => ReplaceFiles(afterFiles, e);
-
-    private static void ReplaceFiles(List<IBrowserFile> target, InputFileChangeEventArgs e)
+    private async Task OnBeforeChange(InputFileChangeEventArgs e)
     {
-        target.Clear();
-        foreach (var f in e.GetMultipleFiles(32))
+        loadingBeforePreviews = true;
+        errorMsg = null;
+        try
         {
-            target.Add(f);
+            beforePending.Clear();
+            foreach (var f in e.GetMultipleFiles(32))
+            {
+                await using var stream = f.OpenReadStream(maxAllowedSize: TreatmentHistoryService.MaxTreatmentImageUploadBytes);
+                using var ms = new MemoryStream();
+                await stream.CopyToAsync(ms);
+                var bytes = ms.ToArray();
+                var preview = TreatmentHistoryService.TryGetPreviewDataUrlFromBytes(bytes);
+                beforePending.Add(new PendingImage(f.Name, bytes, preview));
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMsg = $"Фото «до»: {ex.Message}";
+        }
+        finally
+        {
+            loadingBeforePreviews = false;
+        }
+    }
+
+    private async Task OnAfterChange(InputFileChangeEventArgs e)
+    {
+        loadingAfterPreviews = true;
+        errorMsg = null;
+        try
+        {
+            afterPending.Clear();
+            foreach (var f in e.GetMultipleFiles(32))
+            {
+                await using var stream = f.OpenReadStream(maxAllowedSize: TreatmentHistoryService.MaxTreatmentImageUploadBytes);
+                using var ms = new MemoryStream();
+                await stream.CopyToAsync(ms);
+                var bytes = ms.ToArray();
+                var preview = TreatmentHistoryService.TryGetPreviewDataUrlFromBytes(bytes);
+                afterPending.Add(new PendingImage(f.Name, bytes, preview));
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMsg = $"Фото «після»: {ex.Message}";
+        }
+        finally
+        {
+            loadingAfterPreviews = false;
         }
     }
 
@@ -144,14 +237,41 @@
 
             var created = await TreatmentSvc.CreateAsync(entity);
 
-            foreach (var f in beforeFiles)
+            var photoErrors = new List<string>();
+            foreach (var p in beforePending)
             {
-                await TreatmentSvc.AddPhotoAndPersistAsync(created.Id, DecodedClientId, TreatmentPhoto.PhotoTypeBefore, f);
+                try
+                {
+                    await TreatmentSvc.AddPhotoFromBytesAsync(created.Id, DecodedClientId, TreatmentPhoto.PhotoTypeBefore, p.Bytes);
+                }
+                catch (Exception ex)
+                {
+                    photoErrors.Add($"«До» {p.FileName}: {ex.Message}");
+                }
             }
 
-            foreach (var f in afterFiles)
+            foreach (var p in afterPending)
             {
-                await TreatmentSvc.AddPhotoAndPersistAsync(created.Id, DecodedClientId, TreatmentPhoto.PhotoTypeAfter, f);
+                try
+                {
+                    await TreatmentSvc.AddPhotoFromBytesAsync(created.Id, DecodedClientId, TreatmentPhoto.PhotoTypeAfter, p.Bytes);
+                }
+                catch (Exception ex)
+                {
+                    photoErrors.Add($"«Після» {p.FileName}: {ex.Message}");
+                }
+            }
+
+            if (photoErrors.Count > 0)
+            {
+                var msg = string.Join(" · ", photoErrors);
+                if (msg.Length > 380)
+                {
+                    msg = msg[..380] + "…";
+                }
+
+                Nav.NavigateTo($"/admin/treatment-history/edit/{created.Id}?photoErr={Uri.EscapeDataString(msg)}");
+                return;
             }
 
             Nav.NavigateTo(BackUrl);
@@ -190,4 +310,6 @@
         [StringLength(8000)]
         public string MasterComment { get; set; } = "";
     }
+
+    private sealed record PendingImage(string FileName, byte[] Bytes, string? PreviewDataUrl);
 }
