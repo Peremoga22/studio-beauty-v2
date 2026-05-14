@@ -1,0 +1,60 @@
+﻿@page "/admin/treatment-history"
+
+@layout AdminLayout
+@attribute [Authorize(Roles = "Admin,Manicure")]
+
+<main>
+
+    <section class="py-3 text-center container">
+        <div class="row py-lg-5">
+            <div class="col-lg-7 col-md-9 mx-auto">
+                <h1 class="fw-bold mb-3">Історія процедур</h1>
+                <p class="lead text-muted mb-4">
+                    Тут зберігаються записи/фото та короткі нотатки по процедурі.
+                </p>
+
+                <div class="d-flex justify-content-center gap-2 flex-wrap">
+                    <a href="#" class="btn-buy ec-btn-primary px-4 py-2">Додати запис</a>
+                   
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <div class="album py-0 bg-light">
+        <div class="container">
+
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+                <div class="col">
+                    <div class="ec-card">
+                        <div class="ec-thumb">
+                            Thumbnail
+                        </div>
+
+                        <div class="p-3">
+                            <p class="ec-card-text">
+                                Короткий опис процедури/нотатки/що зробили/рекомендації.
+                            </p>
+                            
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex gap-2">
+                                    <button type="button" class="btn-buy ec-btn-outline-white ec-btn-sm">Переглянути</button>
+                                    <button type="button" class="btn-buy ec-btn-primary ec-btn-sm">Редагувати</button>
+                                </div>
+
+                                <small class="text-muted">21.12.2025</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>                                               
+            </div>
+        </div>
+    </div>
+
+</main>
+
+
+@code {
+
+}

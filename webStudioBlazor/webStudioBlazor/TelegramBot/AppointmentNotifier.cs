@@ -81,30 +81,52 @@ namespace webStudioBlazor.BL
             }           
         }
 
-        public async Task NotifyNewAsync(string clientName, string phone, string serviceName,
+        public async Task NotifyNewAsync(string clientName, string phone, string serviceName,string procedureName,
                                          DateOnly date, TimeOnly time, string? notes = null,
                                          long? overrideChatId = null, CancellationToken ct = default)
         {
-            var chatId = overrideChatId ?? _cfg.AdminChatId;
+            long chatId;
+            string text;
 
-            var text = new StringBuilder()
-                .AppendLine("🗓️ *Новий запис!*")
-                .AppendLine($"👤 Клієнт: *{Esc(clientName)}*")
-                .AppendLine($"📞 Телефон: `{Esc(phone)}`")
-                .AppendLine($"💆 Послуга: *{Esc(serviceName)}*")
-                .AppendLine($"📅 Дата: *{date:dd.MM.yyyy}*")
-                .AppendLine($"⏰ Час: *{time:HH\\:mm}*")
-                .AppendLine(!string.IsNullOrWhiteSpace(notes) ? $"📝 Примітки: {Esc(notes!)}" : "")
-                .ToString();
+            if (serviceName == "Подологія")
+            {
 
-            try { 
+                chatId = (long)(overrideChatId ?? _cfg.ManicureChatId);
+                text = new StringBuilder()
+                    .AppendLine("🗓️ *Новий запис!*")
+                    .AppendLine($"👤 Клієнт: *{Esc(clientName)}*")
+                    .AppendLine($"📞 Телефон: `{Esc(phone)}`")
+                    .AppendLine($"💆 Послуга: *{Esc(serviceName)}*")
+                    .AppendLine($"💆 Процедура: *{Esc(procedureName)}*")
+                    .AppendLine($"📅 Дата: *{date:dd.MM.yyyy}*")                    
+                    .AppendLine($"⏰ Час: *{time:HH\\:mm}*")
+                    .AppendLine(!string.IsNullOrWhiteSpace(notes) ? $"📝 Примітки: {Esc(notes!)}" : "")
+                    .ToString();
+            }
+            else
+            {
+                chatId = (long)(overrideChatId ?? _cfg.AdminChatId);
+
+                text = new StringBuilder()
+                    .AppendLine("🗓️ *Новий запис!*")
+                    .AppendLine($"👤 Клієнт: *{Esc(clientName)}*")
+                    .AppendLine($"📞 Телефон: `{Esc(phone)}`")
+                    .AppendLine($"💆 Послуга: *{Esc(serviceName)}*")
+                    .AppendLine($"📅 Дата: *{date:dd.MM.yyyy}*")
+                    .AppendLine($"⏰ Час: *{time:HH\\:mm}*")
+                    .AppendLine(!string.IsNullOrWhiteSpace(notes) ? $"📝 Примітки: {Esc(notes!)}" : "")
+                    .ToString();
+            }
+
+            try
+            {
                 await _bot.SendMessage(chatId, text, parseMode: ParseMode.Markdown, cancellationToken: ct);
             }
             catch (Exception ex)
             {
                 // Log the exception or handle it as needed
                 Console.WriteLine($"Error sending appointment notification: {ex.Message}");
-            }            
+            }
         }
 
         public async Task NotifyGiftCertificateApprovedAsync(

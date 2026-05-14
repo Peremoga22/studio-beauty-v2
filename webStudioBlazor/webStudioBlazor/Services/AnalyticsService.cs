@@ -1,26 +1,32 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
 using webStudioBlazor.Data;
-using webStudioBlazor.EntityModels;
 using webStudioBlazor.Statistics;
 
 namespace webStudioBlazor.Services
 {
     public class AnalyticsService
     {
-        private readonly ApplicationDbContext _db;
+        private readonly IDbContextFactory<ApplicationDbContext> _dbFactory;
 
-        public AnalyticsService(ApplicationDbContext db) => _db = db;
+        public AnalyticsService(IDbContextFactory<ApplicationDbContext> dbFactory)
+            => _dbFactory = dbFactory;
 
-        public async Task<IReadOnlyList<AnalyticsPoint>> GetAsync(DateTime? from, DateTime? to, CancellationToken ct = default)
-        {          
+        public async Task<IReadOnlyList<AnalyticsPoint>> GetAsync(
+            DateTime? from,
+            DateTime? to,
+            CancellationToken ct = default)
+        {
+            await using var db = await _dbFactory.CreateDbContextAsync(ct);
+
             static bool IsUnset(DateTime? dt) =>
                 !dt.HasValue || dt.Value == DateTime.MinValue || dt.Value.Year <= 1;
 
             var today = DateTime.Today;
-                        
+
             var defaultFrom = DateOnly.FromDateTime(today.AddMonths(-1));
-            var defaultToExclusive = DateOnly.FromDateTime(today.AddDays(31)); 
+            // якщо "to" не заданий — логічніше брати до "сьогодні+1", але лишаю твою ідею діапазону
+            var defaultToExclusive = DateOnly.FromDateTime(today.AddDays(31)).AddDays(1);
 
             var start = !IsUnset(from) ? DateOnly.FromDateTime(from!.Value.Date) : defaultFrom;
             var endExclusive = !IsUnset(to)
@@ -35,7 +41,7 @@ namespace webStudioBlazor.Services
                 start = s;
                 endExclusive = e;
             }
-                     
+
             static bool IsCosmetology(string? s) =>
                 !string.IsNullOrWhiteSpace(s) &&
                 (s.Contains("космет", StringComparison.OrdinalIgnoreCase) ||
@@ -46,20 +52,20 @@ namespace webStudioBlazor.Services
                 (s.Contains("масаж", StringComparison.OrdinalIgnoreCase) ||
                  s.Contains("massage", StringComparison.OrdinalIgnoreCase));
 
-            static decimal Safe(decimal? v) => v ?? 0m;                                             
-                       
-            var raw = await (
-                   from a in _db.Appointments.AsNoTracking()
-                   join c in _db.Categories.AsNoTracking() on a.CategoryId equals c.Id
-                   where a.AppointmentDate >= start && a.AppointmentDate <= endExclusive
-                   select new
-                   {
-                       a.AppointmentDate,
-                       a.Price,
-                       CategoryName = c.NameCategory
-                   })
-                   .ToListAsync(ct);
+            static decimal Safe(decimal? v) => v ?? 0m;
 
+            // ✅ ВАЖЛИВО: endExclusive має бути EXCLUSIVE, тому < endExclusive
+            var raw = await (
+                from a in db.Appointments.AsNoTracking()
+                join c in db.Categories.AsNoTracking() on a.CategoryId equals c.Id
+                where a.AppointmentDate >= start && a.AppointmentDate < endExclusive
+                select new
+                {
+                    a.AppointmentDate,
+                    a.Price,
+                    CategoryName = c.NameCategory
+                })
+                .ToListAsync(ct);
 
             var pointsByDate = raw
                 .Select(x => new
@@ -82,12 +88,14 @@ namespace webStudioBlazor.Services
                     SalesRevenue = 0m
                 })
                 .ToDictionary(p => p.Date, p => p);
-                      
-            var rawOrders = await _db.Orders
+
+            // ✅ Orders: краще фільтрувати по DateTime діапазону (менше шансів на проблеми з SQL/індексами)
+            var startDt = start.ToDateTime(TimeOnly.MinValue);
+            var endDt = endExclusive.ToDateTime(TimeOnly.MinValue);
+
+            var rawOrders = await db.Orders
                 .AsNoTracking()
-                .Where(o =>
-                    DateOnly.FromDateTime(o.OrderDate) >= start &&
-                    DateOnly.FromDateTime(o.OrderDate) < endExclusive)
+                .Where(o => o.OrderDate >= startDt && o.OrderDate < endDt)
                 .Select(o => new
                 {
                     Day = DateOnly.FromDateTime(o.OrderDate),
@@ -102,8 +110,7 @@ namespace webStudioBlazor.Services
                     Day = g.Key,
                     OrdersCount = g.Count(),
                     SalesRevenue = g.Sum(x => x.TotalAmount)
-                })
-                .ToList();
+                });
 
             foreach (var g in ordersGrouped)
             {

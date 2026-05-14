@@ -2,7 +2,7 @@
 @inject SeedService _seedService
 @inject NavigationManager _navigationManager
 @layout AdminLayout
-@attribute [Authorize(Roles = "Admin")]
+@attribute [Authorize(Roles = "Admin,Manicure")]
 @rendermode InteractiveServer
 
 
@@ -86,7 +86,7 @@
 
 @code {
     private List<PageTherapy> pageTherapyList = new();
-    private string selectedCosmetology = "Манікюр";
+    private string selectedCosmetology = "Подологія";
 
     protected override async Task OnInitializedAsync()
     {

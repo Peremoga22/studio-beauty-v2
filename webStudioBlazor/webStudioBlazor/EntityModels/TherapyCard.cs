@@ -6,7 +6,7 @@ namespace webStudioBlazor.EntityModels
     {
         public int Id { get; set; }
         [Required(ErrorMessage = "Вкажіть назву картки.")]
-        [StringLength(60, MinimumLength = 3, ErrorMessage = "Довжина назви 3–60 символів.")]
+        //[StringLength(60, MinimumLength = 3, ErrorMessage = "Довжина назви 3–60 символів.")]
         [RegularExpression(@"^[\p{L}\p{M}\d\s\-\’'.,!&()]+$",
         ErrorMessage = "Назва може містити літери, цифри, пробіли та базові знаки пунктуації.")]
         public string TitleCard { get; set; }

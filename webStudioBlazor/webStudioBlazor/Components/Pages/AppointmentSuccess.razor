@@ -81,12 +81,14 @@
         categories = await _seedService.GetAllCategoryListAsync();
         var category = categories.FirstOrDefault(c => c.Id == clientUser.CategoryId);
         var categoryName = category?.NameCategory;
+        var procedureName = category.TherapyCards.FirstOrDefault(c => c.Id == clientUser.TherapyId);
         var serviceName = clientUser.ClientName;
 
         await _notification.NotifyNewAsync(
             clientName: clientUser.ClientName,
             phone: clientUser.ClientPhone,
             serviceName: categoryName,
+            procedureName: procedureName?.TitleCard,
             date: clientUser.AppointmentDate,
             time: clientUser.SetHour
         );

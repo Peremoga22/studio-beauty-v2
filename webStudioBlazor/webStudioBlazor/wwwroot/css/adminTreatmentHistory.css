@@ -1,0 +1,76 @@
+﻿body {
+    /* м’який фон секцій */
+    .ec-bg-soft {
+        background: #f3f5f8;
+    }
+    /* картки - premium middle */
+    .ec-card {
+        border: 1px solid rgba(15, 23, 42, 0.08);
+        border-radius: 18px;
+        overflow: hidden;
+        background: #fff;
+        box-shadow: 0 14px 34px rgba(15, 23, 42, 0.08);
+        transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+        .ec-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 18px 46px rgba(15, 23, 42, 0.12);
+        }
+    /* зона “картинки” */
+    .ec-thumb {
+        height: 210px;
+        background: linear-gradient(135deg, rgba(11,60,93,.12), rgba(11,60,93,.03));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: rgba(15, 23, 42, 0.55);
+        font-weight: 600;
+    }
+    /* текст в картці */
+    .ec-card-text {
+        color: #475569;
+        line-height: 1.55;
+        margin-bottom: 14px;
+        font-size: 14px;
+    }
+    /* темно-синя primary */
+    .ec-btn-primary {
+        background-color: #0b3c5d;
+        color: #fff;
+        border-radius: 999px;
+        font-weight: 600;
+        letter-spacing: .3px;
+        border: 1px solid transparent;
+        box-shadow: 0 8px 20px rgba(11, 60, 93, 0.25);
+        transition: all .25s ease;
+    }
+
+        .ec-btn-primary:hover {
+            background-color: #082f49;
+            transform: translateY(-1px);
+            color: #fff;
+        }
+    /* outline */
+    .ec-btn-outline-white {
+        background-color: transparent;
+        color: #0b3c5d;
+        border: 2px solid #0b3c5d;
+        border-radius: 999px;
+        font-weight: 600;
+        letter-spacing: .3px;
+        transition: all .25s ease;
+    }
+
+        .ec-btn-outline-white:hover {
+            background-color: #0b3c5d;
+            color: #fff;
+            transform: translateY(-1px);
+        }
+    /* малі кнопки в картці */
+    .ec-btn-sm {
+        padding: 6px 12px;
+        border-radius: 999px;
+        font-weight: 600;
+    }
+}
