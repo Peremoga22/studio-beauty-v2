@@ -1,0 +1,348 @@
+/* Сторінка «Масажна терапія»: premium 3D hero + сітка послуг (префікс shine-massage-) */
+.shine-massage-page {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    background:
+        radial-gradient(ellipse 90% 50% at 50% -10%, rgba(255, 79, 163, 0.1), transparent 55%),
+        linear-gradient(180deg, #fffafc 0%, #faf7fb 45%, #f8f4fa 100%);
+    padding-bottom: 3rem;
+}
+
+.shine-massage-inner {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 0.75rem;
+}
+
+@media (min-width: 768px) {
+    .shine-massage-inner {
+        padding: 0 1.5rem;
+    }
+}
+
+.shine-massage-hero {
+    position: relative;
+    overflow: hidden;
+    margin: 1.5rem 0 2.875rem;
+    min-height: 320px;
+    border-radius: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.82), rgba(255, 236, 247, 0.9)),
+        url("/img/foto45.jpeg") center / cover no-repeat;
+    box-shadow:
+        0 35px 90px rgba(255, 86, 160, 0.22),
+        inset 0 0 0 1px rgba(255, 180, 215, 0.55);
+}
+
+.shine-massage-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background:
+        radial-gradient(circle at 18% 22%, rgba(255, 105, 180, 0.38), transparent 28%),
+        radial-gradient(circle at 82% 18%, rgba(255, 210, 232, 0.55), transparent 30%),
+        linear-gradient(120deg, rgba(255, 255, 255, 0.9), rgba(255, 240, 248, 0.68));
+    z-index: 1;
+    pointer-events: none;
+}
+
+.shine-massage-hero::after {
+    content: "";
+    position: absolute;
+    width: 360px;
+    height: 360px;
+    right: -120px;
+    top: -120px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ff4f9a, #ffc6df);
+    filter: blur(8px);
+    opacity: 0.28;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.shine-massage-hero-glow {
+    position: absolute;
+    z-index: 2;
+    width: 220px;
+    height: 220px;
+    left: 45%;
+    bottom: -90px;
+    transform: translateX(-50%);
+    border-radius: 50%;
+    background: #ff72b6;
+    filter: blur(65px);
+    opacity: 0.35;
+    pointer-events: none;
+}
+
+.shine-massage-hero-content {
+    position: relative;
+    z-index: 4;
+    max-width: 760px;
+    padding: 2.5rem 1.5rem;
+}
+
+.shine-massage-hero-label {
+    display: inline-block;
+    margin-bottom: 14px;
+    font-size: 12px;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: #ff4f9a;
+    font-weight: 800;
+}
+
+.shine-massage-hero-title {
+    margin: 0;
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: clamp(2.25rem, 6vw, 3.625rem);
+    line-height: 1.05;
+    color: #251425;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    text-shadow: 0 10px 35px rgba(255, 255, 255, 0.9);
+}
+
+.shine-massage-hero-text {
+    max-width: 40rem;
+    margin: 1.375rem auto 0;
+    font-size: 1.125rem;
+    line-height: 1.7;
+    color: #6f5f70;
+}
+
+.shine-massage-hero-glass {
+    position: absolute;
+    z-index: 3;
+    width: 180px;
+    height: 220px;
+    border-radius: 30px;
+    background: rgba(255, 255, 255, 0.52);
+    -webkit-backdrop-filter: blur(18px);
+    backdrop-filter: blur(18px);
+    border: 1px solid rgba(255, 255, 255, 0.75);
+    box-shadow:
+        0 25px 65px rgba(255, 79, 154, 0.22),
+        inset 0 0 0 1px rgba(255, 180, 215, 0.35);
+    pointer-events: none;
+}
+
+.shine-massage-hero-glass-left {
+    left: 70px;
+    bottom: 42px;
+    transform: perspective(700px) rotateY(18deg) rotateZ(-8deg);
+}
+
+.shine-massage-hero-glass-right {
+    right: 90px;
+    top: 45px;
+    transform: perspective(700px) rotateY(-18deg) rotateZ(8deg);
+}
+
+.shine-massage-hero-glass::before {
+    content: "";
+    position: absolute;
+    inset: 22px;
+    border-radius: 24px;
+    background: linear-gradient(135deg, rgba(255, 79, 154, 0.45), rgba(255, 198, 223, 0.25));
+}
+
+.shine-massage-breadcrumb {
+    margin: 0 auto 2.5rem;
+    padding: 1.125rem 1.5rem;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.82);
+    border: 1px solid rgba(255, 182, 213, 0.35);
+    box-shadow: 0 12px 32px rgba(40, 20, 35, 0.07);
+    color: #7b6c7a;
+    font-size: 0.95rem;
+}
+
+.shine-massage-breadcrumb-link {
+    color: #ff5fa2;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.shine-massage-breadcrumb-link:hover {
+    color: #d63384;
+    text-decoration: underline;
+}
+
+.shine-massage-breadcrumb-sep {
+    margin: 0 0.35rem;
+    opacity: 0.65;
+}
+
+.shine-massage-breadcrumb-current {
+    font-weight: 500;
+    color: #5c4f5c;
+}
+
+.shine-massage-services-grid {
+    display: grid;
+    gap: 28px;
+    grid-template-columns: 1fr;
+    align-items: stretch;
+}
+
+@media (min-width: 768px) {
+    .shine-massage-services-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1200px) {
+    .shine-massage-services-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.shine-massage-service-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+    border-radius: 28px;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(255, 182, 213, 0.4);
+    box-shadow: 0 22px 55px rgba(255, 105, 180, 0.13);
+    transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+
+.shine-massage-service-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 28px 70px rgba(255, 105, 180, 0.2);
+}
+
+.shine-massage-service-media {
+    flex-shrink: 0;
+    overflow: hidden;
+    border-radius: 28px 28px 0 0;
+    background: #1a1520;
+}
+
+.shine-massage-service-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    gap: 0.75rem;
+    padding: 1.5rem 1.25rem 1.5rem;
+}
+
+@media (min-width: 576px) {
+    .shine-massage-service-body {
+        padding: 1.65rem 1.5rem 1.75rem;
+    }
+}
+
+.shine-massage-service-title {
+    margin: 0;
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #d63384;
+    flex-shrink: 0;
+}
+
+.shine-massage-service-desc {
+    margin: 0;
+    flex: 1 1 auto;
+    min-height: 0;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #6f6170;
+}
+
+.shine-massage-service-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem 1rem;
+    font-size: 0.8rem;
+    color: #6b5a66;
+    flex-shrink: 0;
+}
+
+.shine-massage-service-meta i {
+    color: rgba(255, 79, 163, 0.75);
+}
+
+.shine-massage-service-footer {
+    margin-top: auto;
+    flex-shrink: 0;
+}
+
+.shine-massage-service-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 11px 22px;
+    border-radius: 999px;
+    background: linear-gradient(145deg, #ff1f7a 0%, #ff3d94 40%, #ff7ec4 100%);
+    color: #fff !important;
+    font-weight: 700;
+    font-size: 0.9rem;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.4),
+        0 8px 22px rgba(255, 30, 130, 0.48),
+        0 16px 36px rgba(255, 70, 155, 0.35);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, filter 0.3s ease;
+}
+
+.shine-massage-service-btn:hover {
+    color: #fff !important;
+    filter: brightness(1.06) saturate(1.05);
+    transform: translateY(-2px);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.52),
+        0 12px 30px rgba(255, 25, 125, 0.55),
+        0 22px 44px rgba(255, 75, 165, 0.42);
+}
+
+@media (max-width: 768px) {
+    .shine-massage-hero {
+        margin: 1rem 0 2rem;
+        min-height: 270px;
+        border-radius: 26px;
+    }
+
+    .shine-massage-hero-text {
+        font-size: 15px;
+        line-height: 1.6;
+    }
+
+    .shine-massage-hero-label {
+        font-size: 10px;
+        letter-spacing: 3px;
+    }
+
+    .shine-massage-hero-glass {
+        display: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .shine-massage-service-card,
+    .shine-massage-service-card:hover,
+    .shine-massage-service-btn,
+    .shine-massage-service-btn:hover {
+        transition: none;
+        transform: none;
+    }
+
+    .shine-massage-hero-glass-left,
+    .shine-massage-hero-glass-right {
+        transform: none;
+    }
+}

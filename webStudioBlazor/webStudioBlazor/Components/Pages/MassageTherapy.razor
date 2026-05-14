@@ -1,66 +1,81 @@
 ﻿@page "/massage-therapy"
-
 @inject SeedService _seedService
+
 @{
-    var page = pageTherapies.FirstOrDefault(p => p.TitlePage == @selectedMassage);
-    <section class="shine-page-hero text-center mb-4 mx-2 mx-md-0">
-        <h1 class="display-6 fw-semibold mb-3" style="color: var(--shine-rose-deep);">
-            @(page?.TitlePage ?? "Без сторінки")
-        </h1>
-        <p class="text-muted mb-0 mx-auto" style="max-width: 40rem;">
-            @(page?.DescriptionPage ?? "Без сторінки")
-        </p>
-    </section>
-    <div class="container">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb bg-white p-2 mb-5 rounded shadow-sm">
-                <li class="breadcrumb-item"><a href="/" style="color: #f8b7d8;">Домашня сторінка</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Массажна терапія</li>
-            </ol>
-        </nav>
-    </div>
+    var page = pageTherapies.FirstOrDefault(p => p.TitlePage == selectedMassage);
 }
-<section class="pt-3">
-    <div class="container">
-        <figure class="figure m-0">
-            <div class="row g-4">
-                @foreach (var item in massageTherapyCards.Where(x => x.CategoryId == page.CategoryId))
-                {
-                    <div class="col-12 col-sm-6 col-lg-4">
-                        <div class="shine-service-card d-flex flex-column h-100">
-                            <div class="ratio ratio-16x9 bg-dark">
-                                <lite-youtube class="object-fit-cover" videoid="@item.ImagePath" title="@item.TitleCard"></lite-youtube>
-                            </div>
-                            <div class="p-4 d-flex flex-column flex-grow-1">
-                                <h5 class="fw-semibold mb-2" style="color: var(--shine-rose-deep);">
-                                    @item.TitleCard
-                                </h5>
-                                <p class="small text-muted flex-grow-1 mb-3">@item.DescriptionCard</p>
-                                <div class="shine-service-meta d-flex flex-wrap gap-3 mb-3">
-                                    <span><i class="bi bi-clock me-1 text-primary"></i>Тривалість: за домовленістю</span>
-                                    <span><i class="bi bi-cash-stack me-1 text-primary"></i>@item.Price.ToString("C0", new System.Globalization.CultureInfo("uk-UA"))</span>
-                                </div>
-                                <a href="/appointment-user" class="btn btn-primary rounded-pill w-100 mt-auto">Записатися</a>
-                            </div>
-                        </div>
-                    </div>
-                }
+
+<section class="shine-massage-page">
+    <div class="shine-massage-inner">
+        <header class="shine-massage-hero" aria-labelledby="shine-massage-hero-heading">
+            <div class="shine-massage-hero-glass shine-massage-hero-glass-left" aria-hidden="true"></div>
+            <div class="shine-massage-hero-glass shine-massage-hero-glass-right" aria-hidden="true"></div>
+            <div class="shine-massage-hero-glow" aria-hidden="true"></div>
+
+            <div class="shine-massage-hero-content">
+                <span class="shine-massage-hero-label">SHINE MASSAGE THERAPY</span>
+                <h1 class="shine-massage-hero-title" id="shine-massage-hero-heading">@(page?.TitlePage ?? "Масаж")</h1>
+                <p class="shine-massage-hero-text">
+                    @(page?.DescriptionPage ?? "Відновлення, розслаблення та турбота про тіло в атмосфері комфорту. Оберіть свій ритуал відпочинку разом з нами.")
+                </p>
             </div>
-        </figure>
+        </header>
+
+        <nav class="shine-massage-breadcrumb" aria-label="Навігаційна стежка">
+            <a href="/" class="shine-massage-breadcrumb-link">Домашня сторінка</a>
+            <span class="shine-massage-breadcrumb-sep" aria-hidden="true">/</span>
+            <span class="shine-massage-breadcrumb-current">Масажна терапія</span>
+        </nav>
+
+        @if (page is null)
+        {
+            <p class="shine-massage-empty text-center text-muted py-5 mb-0">Завантаження розділу…</p>
+        }
+        else
+        {
+            var cards = massageTherapyCards.Where(x => x.CategoryId == page.CategoryId).ToList();
+            @if (!cards.Any())
+            {
+                <p class="shine-massage-empty text-center text-muted py-5 mb-0">Послуги з’являться незабаром.</p>
+            }
+            else
+            {
+                <div class="shine-massage-services-grid">
+                    @foreach (var item in cards)
+                    {
+                        <article class="shine-massage-service-card">
+                            <div class="shine-massage-service-media">
+                                <div class="ratio ratio-16x9 bg-dark">
+                                    <lite-youtube class="object-fit-cover" videoid="@item.ImagePath" title="@item.TitleCard"></lite-youtube>
+                                </div>
+                            </div>
+                            <div class="shine-massage-service-body">
+                                <h2 class="shine-massage-service-title">@item.TitleCard</h2>
+                                <p class="shine-massage-service-desc">@item.DescriptionCard</p>
+                                <div class="shine-massage-service-meta">
+                                    <span><i class="bi bi-clock me-1" aria-hidden="true"></i>Тривалість: за домовленістю</span>
+                                    <span><i class="bi bi-cash-stack me-1" aria-hidden="true"></i>@item.Price.ToString("C0", new System.Globalization.CultureInfo("uk-UA"))</span>
+                                </div>
+                                <div class="shine-massage-service-footer">
+                                    <a href="/appointment-user" class="shine-massage-service-btn text-decoration-none">Записатися</a>
+                                </div>
+                            </div>
+                        </article>
+                    }
+                </div>
+            }
+        }
     </div>
 </section>
 
-
 @code {
     private List<TherapyCard> massageTherapyCards = new();
-    private List<Category> categories = new();
     private List<PageTherapy> pageTherapies = new();
-    private string selectedMassage = "Масаж";
+    private const string selectedMassage = "Масаж";
 
     protected override async Task OnInitializedAsync()
     {
         massageTherapyCards = await _seedService.GetAllTherapyCardListAsync();
-        categories = await _seedService.GetAllCategoryListAsync();
         pageTherapies = await _seedService.GetAllPageTherapyListAsync();
     }
 }
