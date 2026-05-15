@@ -1,64 +1,68 @@
-﻿@* @page "/order-confirm-page" *@
-@page "/order-confirm-page/{id:int}"
+﻿@page "/order-confirm-page/{id:int}"
 @inject NavigationManager Nav
 @inject OrderService _orderService
 @inject CartService _cartService
 @rendermode InteractiveServer
 
-<section class="thankyou-section container py-5 text-center">
-    <div class="card shadow-lg border-0 rounded-4 mx-auto" style="max-width: 650px;">
-        <div class="card-body py-5 px-4">
-            <div class="mb-4">
-                <i class="bi bi-check-circle-fill text-success display-4"></i>
-            </div>
+<section class="shine-checkout-page shine-checkout-confirm-page py-3">
+    <div class="shine-checkout-inner shine-checkout-confirm-inner">
+        <div class="card shine-checkout-card border-0 text-center">
+            <div class="card-body p-4 p-md-5">
+                <div class="shine-checkout-success-icon-wrap mb-3" aria-hidden="true">
+                    <i class="bi bi-check-lg shine-checkout-success-icon"></i>
+                </div>
 
-            <h3 class="fw-bold text-success mb-3">
-                Дякуємо за ваше замовлення!
-            </h3>
+                <h1 class="shine-checkout-success-title">Дякуємо за ваше замовлення!</h1>
 
-            @if (order is not null)
-            {
-                <p class="text-secondary fs-5 mb-4">
-                    Шановний(а) <span class="fw-semibold text-dark">@order.ClientFirstName @order.ClientLastName</span>,<br />
-                    ваше замовлення <span class="fw-semibold text-dark">№@order.Id</span> успішно оформлено.
-                </p>
+                @if (order is not null)
+                {
+                    <p class="shine-checkout-success-lead mb-0">
+                        <span class="shine-checkout-success-accent">Шановний(а)</span>
+                        <strong class="shine-checkout-success-name">@order.ClientFirstName @order.ClientLastName</strong><span class="shine-checkout-success-accent">,</span><br />
+                        <span class="shine-checkout-success-accent">ваше замовлення</span>
+                        <strong class="shine-checkout-success-name">№@order.Id</strong>
+                        <span class="shine-checkout-success-accent">успішно оформлено.</span>
+                    </p>
+                    <p class="shine-checkout-success-hint mt-3 mb-0">
+                        Ми зв’яжемось із вами найближчим часом для підтвердження та уточнення деталей.
+                    </p>
+                }
+                else
+                {
+                    <p class="shine-checkout-success-lead mb-0">Завантаження інформації про замовлення…</p>
+                }
 
-                <p class="text-muted">
-                    Ми зв’яжемось із вами найближчим часом для підтвердження та уточнення деталей.
-                </p>
-            }
-            else
-            {
-                <p class="text-muted fs-5 mb-4">Завантаження інформації про замовлення...</p>
-            }
-
-            <div class="d-flex justify-content-center gap-3 flex-wrap mt-4">
-                <button class="btn btn-sales-ghost flex-fill flex-sm-grow-0"
-                        @onclick="GoBackToCart">
-                    <i class="bi bi-arrow-left"></i> Повернутися до кошика
-                </button>
-
-                <button class="btn btn-sales-ghost flex-fill flex-sm-grow-0"
-                        @onclick="GoToHome">
-                    <i class="bi bi-house"></i> На головну
-                </button>
+                <div class="d-flex flex-column flex-sm-row justify-content-center gap-3 mt-4 pt-1">
+                    <button type="button"
+                            class="shine-checkout-btn-outline"
+                            @onclick="GoBackToCart">
+                        <i class="bi bi-arrow-left" aria-hidden="true"></i>
+                        Повернутися до кошика
+                    </button>
+                    <button type="button"
+                            class="shine-checkout-btn-outline"
+                            @onclick="GoToHome">
+                        <i class="bi bi-house" aria-hidden="true"></i>
+                        На головну
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 </section>
 
 @code {
-    [Parameter] 
+    [Parameter]
     public int Id { get; set; }
-    private ClientOrders? order;     
+    private ClientOrders? order;
 
     protected override async Task OnInitializedAsync()
-    {       
-        order = await _orderService.GetClientOrderByIdAsync(Id);      
+    {
+        order = await _orderService.GetClientOrderByIdAsync(Id);
         await _cartService.ClearAsync();
-        await InvokeAsync(StateHasChanged);       
+        await InvokeAsync(StateHasChanged);
     }
-      
+
     private void GoBackToCart() => Nav.NavigateTo("/cart");
     private void GoToHome() => Nav.NavigateTo("/");
 }

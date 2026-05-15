@@ -7,113 +7,129 @@
 @inject UserManager<ApplicationUser> _userManager
 @rendermode InteractiveServer
 
-<h3 style="padding-top: 7%;"></h3>
-<h5 class="fw-semibold text-center text-primary mb-3">
-    <i class="bi bi-truck me-2"></i>
-    Ваше замовлення буде відправлено <span class="text-danger">Новою поштою</span>.
-    Оплата — <span class="text-success">при отриманні</span>.
-</h5>
-<section class="container py-0 ">
-    <button class="btn btn-sales flex-fill flex-sm-grow-0 px-4" @onclick="GoBackToCart">
-        <i class="bi bi-arrow-left"></i> Повернутися до кошика
-    </button>
-    <div class="card shadow-elevated orders-card border-0">
-        <div class="card-header orders-header text-white d-flex align-items-center justify-content-between">
-            <h5 class="mb-0 d-flex align-items-center gap-2">
-                <i class="bi bi-person-lines-fill"></i>
-                Оформлення замовлення
-            </h5>
-            <small class="opacity-75">Shine Cosmetology</small>
+<section class="shine-checkout-page py-3">
+    <div class="shine-checkout-inner">
+        <nav class="shine-checkout-breadcrumb mb-4" aria-label="Навігаційна стежка">
+            <a href="/" class="shine-checkout-breadcrumb-link">Домашня сторінка</a>
+            <span class="shine-checkout-breadcrumb-sep" aria-hidden="true">/</span>
+            <a href="/sales" class="shine-checkout-breadcrumb-link">Наш магазин</a>
+            <span class="shine-checkout-breadcrumb-sep" aria-hidden="true">/</span>
+            <a href="/cart" class="shine-checkout-breadcrumb-link">Кошик</a>
+            <span class="shine-checkout-breadcrumb-sep" aria-hidden="true">/</span>
+            <span class="shine-checkout-breadcrumb-current">Оформлення</span>
+        </nav>
+
+        <p class="shine-checkout-notice text-center mb-4">
+            <i class="bi bi-truck me-2" aria-hidden="true"></i>
+            Ваше замовлення буде відправлено <strong>Новою поштою</strong>.
+            Оплата — <strong>при отриманні</strong>.
+        </p>
+
+        <div class="mb-3">
+            <button type="button"
+                    class="shine-checkout-back-btn"
+                    @onclick="GoBackToCart">
+                <i class="bi bi-arrow-left" aria-hidden="true"></i>
+                Повернутися до кошика
+            </button>
         </div>
 
-        <div class="card-body form-section">
-            <EditForm Model="@Model" OnValidSubmit="HandleSubmit" class="row g-3">
-                <DataAnnotationsValidator />
-                <ValidationSummary />
+        <div class="card shine-checkout-card border-0">
+            <div class="shine-checkout-card-header text-white d-flex align-items-center justify-content-between flex-wrap gap-2">
+                <h2 class="shine-checkout-card-title mb-0 d-flex align-items-center gap-2">
+                    <i class="bi bi-person-lines-fill" aria-hidden="true"></i>
+                    Оформлення замовлення
+                </h2>
+                <small class="shine-checkout-brand opacity-90">Shine Cosmetology</small>
+            </div>
 
-                <div class="col-md-6">
-                    <label for="ClientFirstName" class="form-label fw-semibold">Ім’я *</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-person"></i></span>
-                        <InputText id="ClientFirstName" class="form-control" @bind-Value="Model.ClientFirstName" maxlength="64" />
+            <div class="card-body shine-checkout-form-body">
+                <EditForm Model="@Model" OnValidSubmit="HandleSubmit" class="row g-3 shine-checkout-form">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary class="text-danger small mb-2" />
+
+                    <div class="col-md-6">
+                        <label for="ClientFirstName" class="form-label">Ім’я <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-person" aria-hidden="true"></i></span>
+                            <InputText id="ClientFirstName" class="form-control" @bind-Value="Model.ClientFirstName" maxlength="64" autocomplete="given-name" />
+                        </div>
+                        <ValidationMessage For="@(() => Model.ClientFirstName)" class="text-danger small" />
                     </div>
-                    <ValidationMessage For="@(() => Model.ClientFirstName)" />
-                </div>
 
-                <div class="col-md-6">
-                    <label for="ClientLastName" class="form-label fw-semibold">Прізвище *</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-person-badge"></i></span>
-                        <InputText id="ClientLastName" class="form-control" @bind-Value="Model.ClientLastName" maxlength="64" />
+                    <div class="col-md-6">
+                        <label for="ClientLastName" class="form-label">Прізвище <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-person-badge" aria-hidden="true"></i></span>
+                            <InputText id="ClientLastName" class="form-control" @bind-Value="Model.ClientLastName" maxlength="64" autocomplete="family-name" />
+                        </div>
+                        <ValidationMessage For="@(() => Model.ClientLastName)" class="text-danger small" />
                     </div>
-                    <ValidationMessage For="@(() => Model.ClientLastName)" />
-                </div>
 
-                <div class="col-md-6">
-                    <label for="ClientPhone" class="form-label fw-semibold">Телефон *</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-telephone"></i></span>
-                        <InputText id="ClientPhone" class="form-control" @bind-Value="Model.ClientPhone" inputmode="tel" placeholder="+380XXXXXXXXX" />
+                    <div class="col-md-6">
+                        <label for="ClientPhone" class="form-label">Телефон <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-telephone" aria-hidden="true"></i></span>
+                            <InputText id="ClientPhone" class="form-control" @bind-Value="Model.ClientPhone" inputmode="tel" placeholder="+380XXXXXXXXX" autocomplete="tel" />
+                        </div>
+                        <ValidationMessage For="@(() => Model.ClientPhone)" class="text-danger small" />
                     </div>
-                    <ValidationMessage For="@(() => Model.ClientPhone)" />
-                </div>
 
-                <div class="col-md-6">
-                    <label for="City" class="form-label fw-semibold">Місто *</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
-                        <InputText id="City" class="form-control" @bind-Value="Model.City" maxlength="64" />
+                    <div class="col-md-6">
+                        <label for="City" class="form-label">Місто <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-geo-alt" aria-hidden="true"></i></span>
+                            <InputText id="City" class="form-control" @bind-Value="Model.City" maxlength="64" autocomplete="address-level2" />
+                        </div>
+                        <ValidationMessage For="@(() => Model.City)" class="text-danger small" />
                     </div>
-                    <ValidationMessage For="@(() => Model.City)" />
-                </div>
 
-                <div class="col-md-6">
-                    <label for="AddressNewPostOffice" class="form-label fw-semibold">Відділення Нової Пошти *</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-truck"></i></span>
-                        <InputText id="AddressNewPostOffice" class="form-control" @bind-Value="Model.AddressNewPostOffice" maxlength="128" />
+                    <div class="col-md-6">
+                        <label for="AddressNewPostOffice" class="form-label">Відділення Нової Пошти <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-truck" aria-hidden="true"></i></span>
+                            <InputText id="AddressNewPostOffice" class="form-control" @bind-Value="Model.AddressNewPostOffice" maxlength="128" />
+                        </div>
+                        <ValidationMessage For="@(() => Model.AddressNewPostOffice)" class="text-danger small" />
                     </div>
-                    <ValidationMessage For="@(() => Model.AddressNewPostOffice)" />
-                </div>
 
-                <!-- Дата: лише показ -->
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold">Дата запису</label>
-                    <div class="d-flex align-items-center gap-2 ps-2">
-                        <i class="bi bi-calendar3" style="color:var(--sales-700)"></i>
-                        <span class="fw-semibold">@Model.AppointmentDate.ToString("dd.MM.yyyy")</span>
+                    <div class="col-md-6">
+                        <label class="form-label">Дата запису</label>
+                        <div class="shine-checkout-meta d-flex align-items-center gap-2">
+                            <i class="bi bi-calendar3 shine-checkout-meta-icon" aria-hidden="true"></i>
+                            <span class="fw-semibold">@Model.AppointmentDate.ToString("dd.MM.yyyy")</span>
+                        </div>
                     </div>
-                </div>
 
-                <!-- Ціна: лише показ -->
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold">Сума, ₴</label>
-                    <div class="d-flex align-items-center gap-2">
-                        <span class="badge badge-amount fs-6 px-3 py-2">
-                            @Model.Price.ToString("C2", new System.Globalization.CultureInfo("uk-UA"))
-                        </span>
+                    <div class="col-md-6">
+                        <label class="form-label">Сума, ₴</label>
+                        <div class="d-flex align-items-center">
+                            <span class="shine-checkout-amount-badge">
+                                @Model.Price.ToString("C2", new System.Globalization.CultureInfo("uk-UA"))
+                            </span>
+                        </div>
                     </div>
-                </div>
 
-                <div class="col-12 text-end mt-2 d-flex flex-wrap justify-content-end gap-2 gap-sm-3">
-                    <button type="button"
-                            class="btn btn-sales-ghost flex-fill flex-sm-grow-0"
-                            @onclick="ResetForm">
-                        <i class="bi bi-arrow-counterclockwise"></i>
-                        Очистити
-                    </button>
+                    <div class="col-12 d-flex flex-column flex-sm-row justify-content-end gap-3 mt-2 pt-1">
+                        <button type="button"
+                                class="shine-checkout-btn-outline"
+                                @onclick="ResetForm">
+                            <i class="bi bi-arrow-counterclockwise" aria-hidden="true"></i>
+                            Очистити
+                        </button>
 
-                    <button type="submit"
-                            class="btn btn-sales flex-fill flex-sm-grow-0 px-4">
-                        <i class="bi bi-check2-circle"></i>
-                        Підтвердити замовлення
-                    </button>
-                </div>
-            </EditForm>
+                        <button type="submit"
+                                class="shine-hero-btn shine-checkout-submit border-0"
+                                disabled="@_isSubmitting">
+                            <i class="bi bi-check2-circle" aria-hidden="true"></i>
+                            @(_isSubmitting ? "Обробка…" : "Підтвердити замовлення")
+                        </button>
+                    </div>
+                </EditForm>
+            </div>
         </div>
     </div>
 </section>
-
 
 @code {
     [Parameter] public int? totalCount { get; set; }
@@ -126,9 +142,9 @@
     private Order? order = new();
     private ClientOrders Model = new ClientOrders();
     private bool _isSubmitting;
-  
+
     protected override async Task OnInitializedAsync()
-    {        
+    {
         Model.Price = totalCount.HasValue ? (decimal)totalCount.Value : 0m;
         Model.AppointmentDate = DateOnly.FromDateTime(DateTime.UtcNow.Date);
         var authState = await AuthenticationStateUser;
@@ -145,7 +161,7 @@
         {
             Model.UserId = UserId;
             order = await _orderService.SaveClientOrderAsync(Model);
-            await _notification.NotifyNewOrderAsync(order);          
+            await _notification.NotifyNewOrderAsync(order);
             await InvokeAsync(StateHasChanged);
             _nav.NavigateTo($"/order-confirm-page/{order.Id}");
         }
@@ -154,20 +170,20 @@
             _isSubmitting = false;
         }
     }
-  
+
     private void ResetForm()
     {
         Model = new ClientOrders
-        {           
+        {
             AppointmentDate = DateOnly.FromDateTime(DateTime.UtcNow.Date),
             Price = totalCount.HasValue ? (decimal)totalCount.Value : 0m
         };
-              
+
         StateHasChanged();
     }
 
     private void GoBackToCart()
     {
         _nav.NavigateTo("/cart");
-    }       
+    }
 }

@@ -7,7 +7,7 @@
 @using System.Globalization
 @inject NavigationManager _navigationManager
 @inject IJSRuntime JS
-@attribute [Authorize(Roles = "Admin,Manicure")]
+@attribute [Authorize(Roles = "Admin")]
 @rendermode InteractiveServer
 
 <div class="container shine-admin-3d-page pb-4">
@@ -87,7 +87,7 @@
                                 <span>@(deleting.Contains(row.Id) ? "Видаляю..." : "Видалити")</span>
                             </button>
                             <button class="btn btn-outline-info btn-sm rounded-pill d-inline-flex align-items-center gap-1" @onclick="() => OpenTreatmentHistory(row)">
-                               Редагувати
+                               Карта клієнта
                             </button>
                         </div>
                     </article>

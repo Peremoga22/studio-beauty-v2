@@ -1,0 +1,167 @@
+/* Адмінка — відгуки */
+.reviews-card {
+    /*max-width: 780px;*/
+    width: 100%;
+    margin: 0 auto;
+    padding: 28px;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.75);
+    box-shadow: 0 20px 60px rgba(255, 105, 160, 0.15);
+}
+
+.shine-admin-reviews-loading,
+.shine-admin-reviews-empty {
+    color: #6f5f70;
+    font-size: 1rem;
+}
+
+.shine-admin-reviews-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.1rem;
+    padding: 0.85rem 1.1rem;
+    border-radius: 16px;
+    background: rgba(255, 240, 248, 0.95);
+    border: 1px solid rgba(255, 182, 213, 0.45);
+    box-shadow: 0 6px 18px rgba(255, 79, 163, 0.08);
+}
+
+.shine-admin-reviews-banner-text {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #5c4f5c;
+}
+
+.shine-admin-reviews-banner-icon {
+    font-size: 1.25rem;
+    color: #ff4f9a;
+    flex-shrink: 0;
+}
+
+.reviews-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+}
+
+.review-item {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.88);
+    border: 1px solid rgba(255, 105, 160, 0.2);
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.review-item:hover {
+    border-color: rgba(255, 143, 190, 0.55);
+    box-shadow: 0 10px 28px rgba(255, 79, 163, 0.12);
+    transform: translateY(-2px);
+}
+
+.review-item__body {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.review-item__actions {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.shine-admin-review-name {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #2a1f2e;
+}
+
+.shine-admin-review-service {
+    font-size: 0.98rem;
+    font-weight: 700;
+    color: #ff4f9a;
+    line-height: 1.35;
+}
+
+.shine-admin-review-date {
+    font-size: 0.88rem;
+    color: #7b6c7a;
+    white-space: nowrap;
+}
+
+.shine-admin-review-stars {
+    display: flex;
+    gap: 0.15rem;
+    font-size: 1rem;
+}
+
+.shine-admin-review-stars .fa-star {
+    color: #ff4f9a;
+}
+
+.shine-admin-review-comment {
+    font-size: 0.98rem;
+    line-height: 1.6;
+    color: #3a2d3a;
+    margin: 0;
+}
+
+.shine-admin-review-master {
+    font-size: 0.92rem;
+    color: #7b6c7a;
+}
+
+.shine-admin-review-master strong {
+    color: #2a1f2e;
+}
+
+.shine-admin-review-delete-btn {
+    font-size: 0.85rem;
+}
+
+:global(.admin-app-root) .reviews-card .btn-outline-danger {
+    border-width: 1.5px;
+    border-color: rgba(220, 53, 69, 0.55);
+    color: #c82333 !important;
+    font-weight: 600;
+}
+
+:global(.admin-app-root) .reviews-card .btn-outline-danger:hover {
+    transform: translateY(-1px);
+    background: linear-gradient(135deg, rgba(255, 79, 163, 0.1), rgba(220, 53, 69, 0.1)) !important;
+    border-color: rgba(220, 53, 69, 0.85);
+    box-shadow: 0 6px 18px rgba(220, 53, 69, 0.15);
+}
+
+@media (max-width: 768px) {
+    .reviews-card {
+        max-width: 100%;
+        padding: 16px;
+    }
+
+    .review-item {
+        gap: 10px;
+        padding: 14px;
+    }
+
+    .shine-admin-reviews-banner {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .review-item__actions {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .review-item,
+    .review-item:hover {
+        transition: none;
+        transform: none;
+    }
+}

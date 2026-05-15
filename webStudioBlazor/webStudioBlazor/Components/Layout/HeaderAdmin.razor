@@ -1,27 +1,29 @@
 ﻿<header class="admin-header-root w-100 min-w-0">
     <div class="shine-admin-header-chrome border-bottom bg-white shadow-sm">
         <div class="container-fluid px-2 px-sm-3 py-2 d-flex align-items-center justify-content-between gap-2">
-            <div class="d-flex align-items-center gap-2 min-w-0">
+            <div class="d-flex align-items-center gap-2 min-w-0 flex-grow-1">
                 <button type="button"
-                        class="btn btn-light border rounded-3 d-lg-none shine-menu-btn"
+                        class="btn btn-light border rounded-3 d-lg-none shine-menu-btn flex-shrink-0"
                         data-bs-toggle="offcanvas"
                         data-bs-target="#adminNavDrawer"
                         aria-controls="adminNavDrawer"
                         aria-label="Відкрити меню">
                     <i class="bi bi-list fs-4" aria-hidden="true"></i>
                 </button>
-                <a href="/admin-clients" class="shine-admin-header-brand d-flex align-items-center gap-2 text-decoration-none min-w-0">
-                    <img src="img/logo-new.png" alt="SHINE" width="40" height="40" class="rounded-circle shadow-sm flex-shrink-0">
-                    <span class="d-flex flex-column lh-sm min-w-0">
-                        <span class="shine-admin-header-title text-truncate">Адмінка</span>
-                        <span class="shine-admin-header-sub text-truncate d-none d-sm-inline">SHINE cosmetology</span>
-                    </span>
+                <AdminBrand Variant="header" CssClass="flex-grow-1 min-w-0" />
+            </div>
+            <div class="d-flex align-items-center gap-2 flex-shrink-0">
+                <a href="/"
+                   class="btn btn-sm shine-admin-header-site-btn shine-admin-header-site-btn--icon rounded-circle d-md-none d-inline-flex align-items-center justify-content-center"
+                   aria-label="На сайт">
+                    <i class="bi bi-house-door" aria-hidden="true"></i>
+                </a>
+                <a href="/"
+                   class="btn btn-sm shine-admin-header-site-btn rounded-pill d-none d-md-inline-flex align-items-center gap-1">
+                    <i class="bi bi-house-door" aria-hidden="true"></i>
+                    <span>На сайт</span>
                 </a>
             </div>
-            <a href="/" class="btn btn-sm btn-outline-secondary rounded-pill d-none d-md-inline-flex align-items-center gap-1">
-                <i class="bi bi-house-door" aria-hidden="true"></i>
-                <span>На сайт</span>
-            </a>
         </div>
     </div>
 </header>

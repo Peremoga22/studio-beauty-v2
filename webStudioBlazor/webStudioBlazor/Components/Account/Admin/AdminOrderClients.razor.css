@@ -1,0 +1,150 @@
+/* Блок списку замовлень — обмежена ширина */
+.orders-card {
+   /* max-width: 780px;*/
+    width: 100%;
+    margin: 0 auto;
+    padding: 28px;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.75);
+    box-shadow: 0 20px 60px rgba(255, 105, 160, 0.15);
+}
+
+.shine-admin-orders-card-header {
+    margin-bottom: 0.5rem;
+}
+
+.shine-admin-orders-divider {
+    margin: 1rem 0 1.25rem;
+}
+
+.order-item {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 16px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(255, 105, 160, 0.2);
+    margin-bottom: 0.65rem;
+}
+
+.order-item:last-child {
+    margin-bottom: 0;
+}
+
+.order-item__info {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.order-item__aside {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-end;
+    min-width: 9.5rem;
+}
+
+.shine-admin-order-time {
+    font-size: 0.85rem;
+}
+
+.shine-admin-order-client {
+    font-size: 1.05rem;
+    line-height: 1.25;
+}
+
+.shine-admin-order-phone {
+    font-size: 0.98rem;
+    font-weight: 600;
+    color: #c2185b !important;
+    text-decoration: none;
+}
+
+.shine-admin-order-phone:hover {
+    color: #ff4f9a !important;
+}
+
+.shine-admin-order-product {
+    color: #2a1f2e;
+    font-size: 0.98rem;
+}
+
+.shine-admin-order-meta {
+    font-size: 0.92rem;
+    display: grid;
+    gap: 0.1rem;
+}
+
+.shine-admin-order-icon {
+    color: #ff4f9a;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.shine-admin-order-price-line {
+    color: #4a3d48;
+    font-size: 0.95rem;
+}
+
+.shine-admin-order-total {
+    color: #c2185b;
+    font-size: 1.2rem;
+    line-height: 1.15;
+}
+
+.shine-admin-order-order-total {
+    font-size: 0.88rem;
+}
+
+.shine-admin-order-entry .price {
+    gap: 0.1rem !important;
+}
+
+.shine-admin-order-delete-btn {
+    font-size: 0.85rem;
+}
+
+:global(.admin-app-root) .order-item.shine-admin-order-entry:hover {
+    border-color: rgba(255, 143, 190, 0.55);
+    box-shadow: 0 10px 28px rgba(255, 79, 163, 0.12);
+    transform: translateY(-2px);
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+@media (max-width: 768px) {
+    .orders-card {
+        max-width: 100%;
+        padding: 16px;
+    }
+
+    .order-item {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .order-item__aside {
+        align-items: stretch;
+        width: 100%;
+        min-width: 0;
+    }
+
+    .order-item__aside .price {
+        text-align: left !important;
+    }
+
+    .order-item__aside .card-actions {
+        text-align: center !important;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    :global(.admin-app-root) .order-item.shine-admin-order-entry:hover {
+        transform: none;
+        transition: none;
+    }
+}

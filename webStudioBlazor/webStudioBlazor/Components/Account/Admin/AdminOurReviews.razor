@@ -7,88 +7,87 @@
 @rendermode InteractiveServer
 @attribute [Authorize(Roles = "Admin")]
 
+<div class="container shine-admin-3d-page pb-4">
+    <header class="shine-admin-page-hero text-center text-lg-start mb-4">
+        <span class="shine-admin-page-kicker">Відгуки</span>
+        <h1 class="shine-admin-page-title mb-0">Відгуки про нас</h1>
+        <p class="shine-admin-page-lead mb-0 mt-2">Переглядайте та керуйте відгуками клієнтів студії SHINE.</p>
+    </header>
 
-<h3 style="padding-top: 6%;"></h3>
-<h3 class="mb-4 text-center">Відгуки про нас 💬</h3>
-
-@if (reviews == null)
-{
-    <p>Завантаження...</p>
-}
-else if (!reviews.Any())
-{
-    <div class="alert alert-light border rounded-3 d-flex justify-content-between align-items-center">
-        <span>
-            Ви ще не залишали відгуків 🌸
-        </span>
-    </div>
-
-}
-else
-{
-    <div class="alert border-0 rounded-4 d-flex align-items-center justify-content-between px-4 py-3"
-         style="background: #fff0f6; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
-        <span style="font-size: 0.95rem;">
-            💬 Щоб залишити відгук, будь ласка, увійдіть у свій акаунт 🌸
-        </span>
-        <i class="fa-solid fa-lock" style="color:#f8b7d8;"></i>
-    </div>
-
-    <div class="row g-3">
-        @foreach (var r in reviews)
+    <div class="reviews-card">
+        @if (reviews == null)
         {
-            <div class="col-12 col-md-6 col-lg-4">
-                <div class="card shadow-sm border-2 h-100 position-relative" style="border-radius: 16px;">
-                    <div class="card-body">                                                                   
+            <p class="shine-admin-reviews-loading mb-0">Завантаження…</p>
+        }
+        else if (!reviews.Any())
+        {
+            <div class="shine-admin-reviews-empty rounded-4 p-4 text-center">
+                Поки немає відгуків
+            </div>
+        }
+        else
+        {
+            <div class="shine-admin-reviews-banner" role="status">
+                <span class="shine-admin-reviews-banner-text">
+                    <i class="bi bi-chat-heart me-2" aria-hidden="true"></i>
+                    Відгуки клієнтів після візитів та покупок у магазині
+                </span>
+                <i class="bi bi-shield-check shine-admin-reviews-banner-icon" aria-hidden="true"></i>
+            </div>
 
-                        <p class="mb-3 text-center">
-                            @r.Appointment.ClientName
-                        </p>
+            <div class="reviews-list">
+                @foreach (var r in reviews)
+                {
+                    <article class="review-item shine-admin-review-entry">
+                        <div class="review-item__body">
+                            <p class="shine-admin-review-name mb-2 text-center mb-md-0 text-md-start">
+                                @(r.Appointment?.ClientName ?? "Клієнт")
+                            </p>
 
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <h6 class="fw-bold mb-0" style="color:#f8b7d8;text-decoration: underline;">
-                                @r.TherapyCard?.TitleCard
-                            </h6>
-                            <small class="text-muted">
-                                @r.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy")
-                            </small>
-                        </div>
-                      
-                        <div class="mb-2">
-                            @for (int i = 1; i <= 5; i++)
+                            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start gap-2 mb-2">
+                                <h2 class="shine-admin-review-service mb-0">
+                                    @(r.TherapyCard?.TitleCard ?? "Послуга")
+                                </h2>
+                                <time class="shine-admin-review-date" datetime="@r.CreatedAt.ToString("o")">
+                                    @r.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy")
+                                </time>
+                            </div>
+
+                            <div class="shine-admin-review-stars mb-2" aria-label="Оцінка @r.Rating з 5">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    <i class="@(i <= r.Rating ? "fa-solid" : "fa-regular") fa-star" aria-hidden="true"></i>
+                                }
+                            </div>
+
+                            @if (!string.IsNullOrWhiteSpace(r.Comment))
                             {
-                                <i class="@(i <= r.Rating ? "fa-solid" : "fa-regular") fa-star" style="color:#f8b7d8;"></i>
+                                <p class="shine-admin-review-comment mb-2">@r.Comment</p>
                             }
+
+                            <p class="shine-admin-review-master mb-0">
+                                <i class="bi bi-person-badge me-1" aria-hidden="true"></i>
+                                Майстер: <strong>@(r.Master?.FullName ?? "—")</strong>
+                            </p>
                         </div>
 
-                        <p class="small text-dark mb-3">
-                            @r.Comment
-                        </p>
-
-                        <div class="d-flex justify-content-between align-items-center">
-                            <small class="text-muted">
-                                👩‍⚕️ Ваш майстер: <strong>@r.Master?.FullName</strong>
-                            </small>
+                        <div class="review-item__actions">
+                            <button type="button"
+                                    class="btn btn-outline-danger btn-sm rounded-pill d-inline-flex align-items-center gap-1 px-3 py-1 shine-admin-review-delete-btn"
+                                    title="Видалити відгук"
+                                    @onclick="() => DeleteReview(r.Id)">
+                                <i class="fa-solid fa-trash" aria-hidden="true"></i>
+                                <span>Видалити</span>
+                            </button>
                         </div>
-
-                    </div>
-                    <!-- КНОПКА ВИДАЛЕННЯ -->
-                    <button class="btn-buy btn-sm"
-                            style="font-size: 0.8rem; padding: 6px 10px;"
-                            title="Видалити"
-                            @onclick="() => DeleteReview(r.Id)">
-                        <i class="fa-solid fa-trash me-1"></i> Видалити
-                    </button>
-
-                </div>
+                    </article>
+                }
             </div>
         }
     </div>
-
-}
+</div>
 
 @code {
-
     private List<Review> reviews = new();
 
     protected override async Task OnInitializedAsync()

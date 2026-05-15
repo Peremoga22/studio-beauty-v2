@@ -1,0 +1,30 @@
+<a href="@Href"
+   class="shine-admin-brand shine-admin-brand--@Variant @CssClass"
+   @attributes="AdditionalAttributes">
+    <img src="img/logo-new.png"
+         alt="SHINE Cosmetology"
+         class="shine-admin-brand__logo rounded-circle shadow-sm flex-shrink-0"
+         width="@LogoSize"
+         height="@LogoSize" />
+    <span class="shine-admin-brand__text d-flex flex-column lh-sm min-w-0">
+        <span class="shine-admin-brand__title text-truncate">Адмінка</span>
+        <span class="shine-admin-brand__sub text-truncate">SHINE cosmetology</span>
+    </span>
+</a>
+
+@code {
+    [Parameter]
+    public string Href { get; set; } = "/admin-clients";
+
+    [Parameter]
+    public string Variant { get; set; } = "header";
+
+    [Parameter]
+    public int LogoSize { get; set; } = 40;
+
+    [Parameter]
+    public string? CssClass { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+}

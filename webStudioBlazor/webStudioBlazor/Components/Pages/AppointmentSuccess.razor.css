@@ -1,0 +1,103 @@
+/* Сторінка підтвердження запису (/appointment-success) */
+.shine-appoint-success-page {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    padding-bottom: 2.5rem;
+    background:
+        radial-gradient(ellipse 88% 48% at 50% -8%, rgba(255, 79, 163, 0.11), transparent 55%),
+        linear-gradient(180deg, #fffafc 0%, #faf7fb 50%, #f6f2f7 100%);
+}
+
+.shine-appoint-success-inner {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 0.75rem;
+}
+
+@media (min-width: 768px) {
+    .shine-appoint-success-inner {
+        padding: 0 1.25rem;
+    }
+}
+
+.shine-appoint-success-card {
+    border-radius: 26px !important;
+    border: 1px solid rgba(255, 182, 213, 0.42) !important;
+    background: rgba(255, 255, 255, 0.94) !important;
+    box-shadow:
+        0 18px 48px rgba(255, 105, 180, 0.11),
+        inset 0 1px 0 rgba(255, 255, 255, 0.98) !important;
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+}
+
+.shine-appoint-success-badge {
+    display: inline-block;
+    margin-bottom: 1rem;
+    padding: 0.4rem 1rem;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #fff;
+    background: linear-gradient(145deg, #ff5fa2 0%, #ff8fc4 100%);
+    box-shadow: 0 6px 18px rgba(255, 79, 163, 0.35);
+}
+
+.shine-appoint-success-title {
+    margin: 0 0 0.85rem;
+    font-family: "Playfair Display", Georgia, serif;
+    font-weight: 700;
+    font-size: clamp(1.55rem, 4.2vw, 2.15rem);
+    line-height: 1.15;
+    color: #251425;
+    letter-spacing: -0.02em;
+}
+
+.shine-appoint-success-lead {
+    margin: 0 auto;
+    max-width: 30rem;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #6f5f70;
+}
+
+.shine-appoint-success-btn-outline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 3rem;
+    padding: 0.75rem 1.65rem;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #9b1b5a !important;
+    border: 2px solid rgba(255, 79, 163, 0.45);
+    background: rgba(255, 255, 255, 0.95);
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 2px 8px rgba(255, 79, 163, 0.08);
+}
+
+.shine-appoint-success-btn-outline:hover {
+    background: rgba(255, 79, 163, 0.1);
+    border-color: rgba(255, 79, 163, 0.65);
+    color: #8b0a4d !important;
+    box-shadow: 0 4px 14px rgba(255, 79, 163, 0.12);
+}
+
+.shine-appoint-success-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 3rem;
+    padding: 0.75rem 1.85rem;
+    font-size: 1rem !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .shine-appoint-success-btn-outline {
+        transition: none;
+    }
+}
