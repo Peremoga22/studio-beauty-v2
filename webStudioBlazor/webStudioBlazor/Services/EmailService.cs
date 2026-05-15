@@ -33,12 +33,45 @@ public class EmailService : IEmailService
         email.Subject = subject;
         email.Body = new BodyBuilder { HtmlBody = htmlMessage }.ToMessageBody();
 
-        using var smtp = new SmtpClient();
-        await smtp.ConnectAsync(_settings.SmtpServer, _settings.Port, SecureSocketOptions.StartTls).ConfigureAwait(false);
-        await smtp.AuthenticateAsync(_settings.Username, _settings.Password).ConfigureAwait(false);
-        await smtp.SendAsync(email).ConfigureAwait(false);
-        await smtp.DisconnectAsync(true).ConfigureAwait(false);
+        try
+        {
+            using var smtp = new SmtpClient();
 
-        _logger.LogInformation("Email «{Subject}» надіслано на {To}.", subject, toEmail);
+            smtp.Timeout = 15000;
+
+            var secure = ResolveSecureSocketOptions(_settings.Port);
+
+            _logger.LogDebug(
+                "SMTP: підключення до {Server}:{Port} ({Secure})",
+                _settings.SmtpServer,
+                _settings.Port,
+                secure);
+
+            await smtp.ConnectAsync(
+                    _settings.SmtpServer,
+                    _settings.Port,
+                    secure)
+                .ConfigureAwait(false);
+
+            await smtp.AuthenticateAsync(
+                    _settings.Username,
+                    _settings.Password)
+                .ConfigureAwait(false);
+
+            await smtp.SendAsync(email).ConfigureAwait(false);
+
+            await smtp.DisconnectAsync(true).ConfigureAwait(false);
+
+            _logger.LogInformation("Email надіслано на {Email}", toEmail);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Помилка відправки email на {Email}", toEmail);
+            throw;
+        }
     }
+
+    // Gmail: 587 + StartTls, або 465 + SslOnConnect (вибір за полем Port у конфігурації).
+    private static SecureSocketOptions ResolveSecureSocketOptions(int port) =>
+        port == 465 ? SecureSocketOptions.SslOnConnect : SecureSocketOptions.StartTls;
 }
