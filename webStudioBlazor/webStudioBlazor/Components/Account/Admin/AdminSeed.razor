@@ -5,204 +5,147 @@
 @using webStudioBlazor.Services
 @inject SeedService _seedService
 @layout AdminLayout
-@using System.Globalization
-@inject NavigationManager _navigationManager
 @rendermode InteractiveServer
 @attribute [Authorize(Roles = "Admin")]
 
-<div class="container my-4">
-    <h3 class="mb-3 fw-bold text-primary"> Наповнення послуг</h3>
+<div class="container shine-admin-3d-page pb-4">
+    <header class="shine-admin-page-hero text-center text-lg-start mb-4">
+        <span class="shine-admin-page-kicker">Контент сайту</span>
+        <h1 class="shine-admin-page-title mb-0">Наповнення послуг</h1>
+        <p class="shine-admin-page-lead mb-0 mt-2">
+            Переглядайте майстрів, категорії та титулки сторінок SHINE.
+        </p>
+    </header>
 
-    <nav aria-label="breadcrumb" class="bg-white shadow-sm rounded px-3 py-2 mb-4">
+    <nav class="shine-admin-cosmo-breadcrumb mb-4" aria-label="breadcrumb">
         <ol class="breadcrumb mb-0">
             <li class="breadcrumb-item active" aria-current="page">
+                <i class="bi bi-database me-1" aria-hidden="true"></i>
+                Категорії та дані
             </li>
         </ol>
     </nav>
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h4 class="fw-bold text-primary mb-0">
-            Категорії
-        </h4>
-        <NavLink class="btn btn-success shadow-sm d-flex align-items-center justify-content-center"
-                 style="min-height: 44px; min-width: 44px;"
-                 href="/edit-seed">
 
-            <i class="bi bi-plus-lg"></i>
-            <span class="d-none d-sm-inline ms-1">Додати наповнення даних</span>
-        </NavLink>
-    </div>
-    <!-- Таблиця в картці -->
-    <div class="card shadow-sm border-0 rounded-3">
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light text-uppercase small text-secondary">
-                        <tr>
-                            <th scope="col" class="px-4 py-3">Назва категорії</th>
-                            <th scope="col" class="px-4 py-3 text-end"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (masters == null || masters.Count == 0)
-                        {
-                            <tr>
-                                <td colspan="2" class="text-center text-muted py-4">
-                                    Немає жодної категорії. Натисніть
-                                    <span class="fw-semibold text-success">«Додати категорію»</span>.
-                                </td>
-                            </tr>
-                        }
-                        else
-                        {
-                            @foreach (var item in masters)
-                            {
-                                <tr>
-                                    <td class="px-4 py-3">
-                                        <div class="d-flex flex-column">
-                                            <span class="fw-bold">@item.FullName</span>
-                                            <small class="text-muted">@item.Phone</small>
-                                        </div>
-                                    </td>
-
-                                   @*  <td class="px-4 py-3 text-end">
-                                        <div class="d-flex flex-wrap justify-content-end gap-2">
-
-                                            <NavLink class="btn btn-sm btn-outline-primary"
-                                                     href="@($"/edit-category/{item.Id}")">
-                                                <i class="bi bi-pencil-square"></i>
-                                                <span class="d-none d-sm-inline ms-1">Редагувати</span>
-                                            </NavLink>
-
-                                            <button type="button"
-                                                    class="btn btn-sm btn-outline-danger"
-                                                    @onclick="() => Delete(item.Id)">
-                                                <i class="bi bi-trash"></i>
-                                                <span class="d-none d-sm-inline ms-1">Видалити</span>
-                                            </button>
-
-                                        </div>
-                                    </td> *@
-
-                                </tr>
-
-                            }
-                        }
-                    </tbody>
-                </table>
+    <div class="clients-card shine-admin-cosmo-card">
+        <div class="shine-admin-cosmo-toolbar">
+            <div class="shine-admin-cosmo-toolbar-title">
+                <i class="bi bi-folder-plus" aria-hidden="true"></i>
+                <span>Категорії</span>
             </div>
+            <NavLink class="shine-admin-cosmo-btn shine-admin-cosmo-btn--primary text-decoration-none"
+                     href="/edit-seed">
+                <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                <span>Додати наповнення даних</span>
+            </NavLink>
         </div>
-    </div>
-    <!-- Таблиця в картці -->
-    <div class="card shadow-sm border-0 rounded-3">
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light text-uppercase small text-secondary">
+
+        <h3 class="shine-admin-seed-section-title">Майстри</h3>
+        <div class="table-responsive shine-admin-cosmo-table-wrap shine-admin-seed-table-block">
+            <table class="table shine-admin-cosmo-table align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th scope="col">Назва категорії</th>
+                        <th scope="col" class="text-end"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (masters == null || masters.Count == 0)
+                    {
                         <tr>
-                            <th scope="col" class="px-4 py-3">Назва категорії</th>
-                            <th scope="col" class="px-4 py-3 text-end"></th>
+                            <td colspan="2" class="shine-admin-cosmo-empty text-center py-4">
+                                Немає записів.
+                                <span class="shine-admin-seed-empty-accent">Додайте дані через «Додати наповнення даних».</span>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @if (categories == null || categories.Count == 0)
+                    }
+                    else
+                    {
+                        @foreach (var item in masters)
                         {
                             <tr>
-                                <td colspan="2" class="text-center text-muted py-4">
-                                    Немає жодної категорії. Натисніть
-                                    <span class="fw-semibold text-success">«Додати категорію»</span>.
+                                <td>
+                                    <div class="d-flex flex-column">
+                                        <span class="shine-admin-cosmo-name">@item.FullName</span>
+                                        <small class="text-muted">@item.Phone</small>
+                                    </div>
                                 </td>
+                                <td></td>
                             </tr>
                         }
-                        else
-                        {
-                            @foreach (var item in categories)
-                            {
-                                <tr>
-                                    <td class="px-4 py-3 fw-medium">@item.NameCategory</td>
-                                    <td class="px-4 py-3 text-end">
-                                       @*  <div class="d-flex flex-wrap justify-content-end gap-2">
-
-                                            <NavLink class="btn btn-sm btn-outline-primary"
-                                                     href="@($"/edit-category/{item.Id}")">
-                                                <i class="bi bi-pencil-square"></i>
-                                                <span class="d-none d-sm-inline ms-1">Редагувати</span>
-                                            </NavLink>
-
-                                            <button type="button"
-                                                    class="btn btn-sm btn-outline-danger"
-                                                    @onclick="() => Delete(item.Id)">
-                                                <i class="bi bi-trash"></i>
-                                                <span class="d-none d-sm-inline ms-1">Видалити</span>
-                                            </button>
-
-                                        </div> *@
-                                    </td>
-                                </tr>
-
-                            }
-                        }
-                    </tbody>
-                </table>
-            </div>
+                    }
+                </tbody>
+            </table>
         </div>
-    </div>
-    <!-- Таблиця в картці -->
-    <div class="card shadow-sm border-0 rounded-3">
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light text-uppercase small text-secondary">
+
+        <h3 class="shine-admin-seed-section-title">Категорії послуг</h3>
+        <div class="table-responsive shine-admin-cosmo-table-wrap shine-admin-seed-table-block">
+            <table class="table shine-admin-cosmo-table align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th scope="col">Назва категорії</th>
+                        <th scope="col" class="text-end"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (categories == null || categories.Count == 0)
+                    {
                         <tr>
-                            <th scope="col" class="px-4 py-3">Назва категорії</th>
-                            <th scope="col" class="px-4 py-3 text-end"></th>
+                            <td colspan="2" class="shine-admin-cosmo-empty text-center py-4">
+                                Немає жодної категорії.
+                                <span class="shine-admin-seed-empty-accent">Додайте через «Додати наповнення даних».</span>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @if (pageTherapies == null || pageTherapies.Count == 0)
+                    }
+                    else
+                    {
+                        @foreach (var item in categories)
                         {
                             <tr>
-                                <td colspan="2" class="text-center text-muted py-4">
-                                    Немає жодної категорії. Натисніть
-                                    <span class="fw-semibold text-success">«Додати категорію»</span>.
-                                </td>
+                                <td class="shine-admin-cosmo-name">@item.NameCategory</td>
+                                <td></td>
                             </tr>
                         }
-                        else
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <h3 class="shine-admin-seed-section-title">Титулки сторінок</h3>
+        <div class="table-responsive shine-admin-cosmo-table-wrap">
+            <table class="table shine-admin-cosmo-table align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th scope="col">Назва категорії</th>
+                        <th scope="col" class="text-end"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (pageTherapies == null || pageTherapies.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="2" class="shine-admin-cosmo-empty text-center py-4">
+                                Немає записів.
+                                <span class="shine-admin-seed-empty-accent">Додайте через «Додати наповнення даних».</span>
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var item in pageTherapies)
                         {
-                            @foreach (var item in pageTherapies)
-                            {
-                                <tr>
-                                    <td class="px-4 py-3">
-                                        <div class="d-flex flex-column">
-                                            <span class="fw-bold">@item.TitlePage</span>
-                                            <small class="text-muted">@item.DescriptionPage</small>
-                                        </div>
-                                    </td>
-
-                                   @*  <td class="px-4 py-3 text-end">
-                                        <div class="d-flex justify-content-end gap-2">
-                                            <NavLink class="btn btn-sm btn-outline-primary"
-                                                     href="@($"/edit-category/{item.Id}")">
-                                                <i class="bi bi-pencil-square"></i>
-                                                <span class="d-none d-sm-inline ms-1">Редагувати</span>
-                                            </NavLink>
-
-                                            <button type="button"
-                                                    class="btn btn-sm btn-outline-danger"
-                                                    @onclick="() => Delete(item.Id)">
-                                                <i class="bi bi-trash"></i>
-                                                <span class="d-none d-sm-inline ms-1">Видалити</span>
-                                            </button>
-                                        </div>
-                                    </td> *@
-                                </tr>
-
-                               
-                            }
+                            <tr>
+                                <td>
+                                    <div class="d-flex flex-column">
+                                        <span class="shine-admin-cosmo-name">@item.TitlePage</span>
+                                        <small class="text-muted">@item.DescriptionPage</small>
+                                    </div>
+                                </td>
+                                <td></td>
+                            </tr>
                         }
-                    </tbody>
-                </table>
-            </div>
+                    }
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
@@ -214,9 +157,8 @@
 
     protected override async Task OnInitializedAsync()
     {
-        
         masters = await _seedService.GetAllMasterListAsync();
         categories = await _seedService.GetAllCategoryListAsync();
         pageTherapies = await _seedService.GetAllPageTherapyListAsync();
-    }        
+    }
 }

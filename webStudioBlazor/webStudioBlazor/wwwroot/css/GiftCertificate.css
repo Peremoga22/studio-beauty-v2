@@ -401,18 +401,57 @@
 }
 
 .cert-action-btn {
-    border: 1px solid #f8b7d8;
-    background-color: #f8b7d8;
+    border: none;
+    background: linear-gradient(145deg, #ff1f7a 0%, #ff4f9a 48%, #ff6eb8 100%);
     color: #fff;
     font-size: 0.8rem;
-    padding: 0.25rem 0.9rem;
+    font-weight: 600;
+    padding: 0.3rem 0.95rem;
+    box-shadow: 0 6px 16px rgba(255, 79, 163, 0.28);
+    transition: filter 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 
-    .cert-action-btn:disabled {
-        background-color: #e9ecef;
-        border-color: #dee2e6;
-        color: #6c757d;
-    }
+.cert-action-btn:hover:not(:disabled) {
+    filter: brightness(1.05);
+    box-shadow: 0 8px 20px rgba(255, 79, 163, 0.35);
+}
+
+.cert-action-btn:disabled {
+    background: linear-gradient(145deg, #e85a9a 0%, #f088b8 45%, #ffc0dd 100%);
+    border: 1px solid rgba(255, 182, 213, 0.75);
+    color: #fff;
+    opacity: 1;
+    cursor: default;
+    box-shadow: 0 4px 14px rgba(255, 105, 160, 0.2);
+}
+
+/* Адмін-картки: перебити Bootstrap .btn / .btn:disabled (opacity, --bs-btn-*) */
+.admin-cert-card .btn.btn-sm.cert-action-btn {
+    border: none !important;
+    background-color: transparent !important;
+    background-image: linear-gradient(145deg, #ff1f7a 0%, #ff4f9a 48%, #ff6eb8 100%) !important;
+    color: #fff !important;
+    opacity: 1 !important;
+    box-shadow: 0 6px 16px rgba(255, 79, 163, 0.28);
+}
+
+.admin-cert-card .btn.btn-sm.cert-action-btn:hover:not(:disabled) {
+    filter: brightness(1.05);
+    box-shadow: 0 8px 20px rgba(255, 79, 163, 0.35);
+    color: #fff !important;
+}
+
+.admin-cert-card .btn.btn-sm.cert-action-btn:disabled,
+.admin-cert-card .btn.btn-sm.cert-action-btn[disabled],
+fieldset:disabled .admin-cert-card .btn.btn-sm.cert-action-btn {
+    background-image: linear-gradient(145deg, #db4588 0%, #ec6ca8 40%, #f5a0ca 100%) !important;
+    background-color: transparent !important;
+    border: 1px solid rgba(255, 182, 213, 0.85) !important;
+    color: #fff !important;
+    opacity: 1 !important;
+    box-shadow: 0 4px 14px rgba(255, 105, 160, 0.22);
+    cursor: default;
+}
 
 .btn-icon-danger {
     border-radius: 999px;

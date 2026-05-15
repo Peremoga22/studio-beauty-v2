@@ -1,4 +1,4 @@
-@page "/edit-cosmetology"
+﻿@page "/edit-cosmetology"
 @page "/edit-cosmetology/{Id:int}"
 
 @inject SeedService _seedService
@@ -22,89 +22,92 @@
         </ol>
     </nav>
 
-    <section class="shine-edit-cosmo-form-card mb-5">
-        <div class="shine-edit-cosmo-form-header">
+    <section class="add-card-wrapper mb-5">
+        <div class="add-card-header">
             <i class="bi bi-journal-text" aria-hidden="true"></i>
-            <strong>@(Id == 0 ? "Додати картку" : "Редагувати картку")</strong>
+            <span>@(Id == 0 ? "Додати картку" : "Редагувати картку")</span>
         </div>
 
         <EditForm Model="@therapyCard"
-                  OnValidSubmit="SaveTherapyCardAsync"
-                  class="shine-edit-cosmo-form-body">
+                  OnValidSubmit="SaveTherapyCardAsync">
             <DataAnnotationsValidator />
             <ValidationSummary class="shine-edit-cosmo-validation" />
 
-            <h2 class="shine-edit-cosmo-form-title">
+            <h2 class="add-card-subtitle">
                 @(therapyCard.Id == 0 ? "Додати нову картку" : "Редагувати картку")
             </h2>
 
-            <div class="shine-edit-cosmo-field">
-                <label for="TitleCard" class="shine-edit-cosmo-label">
-                    Назва картки <span class="text-danger">*</span>
-                </label>
-                <InputText id="TitleCard"
-                           @bind-Value="therapyCard.TitleCard"
-                           class="form-control shine-edit-cosmo-input"
-                           placeholder="Введіть назву..." />
-                <ValidationMessage For="@(() => therapyCard.TitleCard)" class="shine-edit-cosmo-error" />
-            </div>
-
-            <div class="shine-edit-cosmo-field">
-                <label for="DescriptionCard" class="shine-edit-cosmo-label">
-                    Опис картки <span class="text-danger">*</span>
-                </label>
-                <InputText id="DescriptionCard"
-                           @bind-Value="therapyCard.DescriptionCard"
-                           class="form-control shine-edit-cosmo-input"
-                           placeholder="Короткий опис..." />
-                <ValidationMessage For="@(() => therapyCard.DescriptionCard)" class="shine-edit-cosmo-error" />
-            </div>
-
-            <div class="shine-edit-cosmo-field">
-                <label for="Price" class="shine-edit-cosmo-label">
-                    Ціна за послугу <span class="text-danger">*</span>
-                </label>
-                <div class="input-group shine-edit-cosmo-price-group">
-                    <span class="input-group-text">₴</span>
-                    <InputNumber id="Price"
-                                 @bind-Value="therapyCard.Price"
-                                 class="form-control shine-edit-cosmo-input"
-                                 placeholder="0" />
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="TitleCard" class="form-label">
+                        Назва картки <span class="text-danger">*</span>
+                    </label>
+                    <InputText id="TitleCard"
+                               @bind-Value="therapyCard.TitleCard"
+                               class="form-control"
+                               placeholder="Введіть назву..." />
+                    <ValidationMessage For="@(() => therapyCard.TitleCard)" class="shine-edit-cosmo-error" />
                 </div>
-                <small class="shine-edit-cosmo-hint">Вкажіть вартість у гривнях.</small>
-                <ValidationMessage For="@(() => therapyCard.Price)" class="shine-edit-cosmo-error" />
-            </div>
 
-            <div class="shine-edit-cosmo-field">
-                <label class="shine-edit-cosmo-label">
-                    Вибрати категорію для сторінки <span class="text-danger">*</span>
-                </label>
-                @if (!string.IsNullOrEmpty(ErrorMessageCategory))
-                {
-                    <p class="shine-edit-cosmo-error mb-2">@ErrorMessageCategory</p>
-                }
-                <InputSelect class="form-select shine-edit-cosmo-input" TValue="int" @bind-Value="therapyCard.CategoryId">
-                    <option value="0">Оберіть категорію</option>
-                    @foreach (var item in categories)
-                    {
-                        <option value="@item.Id">@item.NameCategory</option>
-                    }
-                </InputSelect>
-            </div>
+                <div class="form-group">
+                    <label for="DescriptionCard" class="form-label">
+                        Опис картки <span class="text-danger">*</span>
+                    </label>
+                    <InputText id="DescriptionCard"
+                               @bind-Value="therapyCard.DescriptionCard"
+                               class="form-control"
+                               placeholder="Короткий опис..." />
+                    <ValidationMessage For="@(() => therapyCard.DescriptionCard)" class="shine-edit-cosmo-error" />
+                </div>
 
-            <div class="shine-edit-cosmo-field mb-0">
-                <label class="shine-edit-cosmo-label">Фото (jpg/jpeg/png)</label>
-                <InputFile OnChange="OnFileSelected"
-                           class="form-control shine-edit-cosmo-input"
-                           accept=".jpg,.jpeg,.png" />
-                @if (!string.IsNullOrEmpty(therapyCard.ImagePath))
-                {
-                    <div class="shine-edit-cosmo-preview mt-3">
-                        <img src="@therapyCard.ImagePath"
-                             alt="Попередній перегляд"
-                             class="shine-edit-cosmo-preview-img" />
+                <div class="form-group">
+                    <label for="Price" class="form-label">
+                        Ціна за послугу <span class="text-danger">*</span>
+                    </label>
+                    <div class="price-input">
+                        <span class="price-symbol" aria-hidden="true">₴</span>
+                        <InputNumber id="Price"
+                                     @bind-Value="therapyCard.Price"
+                                     class="form-control"
+                                     placeholder="0" />
                     </div>
-                }
+                    <span class="add-card-hint">Вкажіть вартість у гривнях.</span>
+                    <ValidationMessage For="@(() => therapyCard.Price)" class="shine-edit-cosmo-error" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        Вибрати категорію для сторінки <span class="text-danger">*</span>
+                    </label>
+                    @if (!string.IsNullOrEmpty(ErrorMessageCategory))
+                    {
+                        <p class="shine-edit-cosmo-error mb-0">@ErrorMessageCategory</p>
+                    }
+                    <InputSelect class="form-select" TValue="int" @bind-Value="therapyCard.CategoryId">
+                        <option value="0">Оберіть категорію</option>
+                        @foreach (var item in categories)
+                        {
+                            <option value="@item.Id">@item.NameCategory</option>
+                        }
+                    </InputSelect>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Фото (jpg/jpeg/png)</label>
+                    <div class="file-upload">
+                        <InputFile OnChange="OnFileSelected"
+                                   class="form-control"
+                                   accept=".jpg,.jpeg,.png" />
+                    </div>
+                    @if (!string.IsNullOrEmpty(therapyCard.ImagePath))
+                    {
+                        <div class="shine-edit-cosmo-preview mt-3">
+                            <img src="@therapyCard.ImagePath"
+                                 alt="Попередній перегляд"
+                                 class="shine-edit-cosmo-preview-img" />
+                        </div>
+                    }
+                </div>
             </div>
 
             @if (!string.IsNullOrEmpty(ErrorMessage))
@@ -112,22 +115,22 @@
                 <p class="shine-edit-cosmo-error mt-3 mb-0">@ErrorMessage</p>
             }
 
-            <div class="shine-edit-cosmo-actions">
+            <div class="form-actions">
                 @if (therapyCard.Id > 0)
                 {
                     <button type="button"
-                            class="shine-edit-cosmo-btn shine-edit-cosmo-btn--danger"
+                            class="btn-delete-card"
                             @onclick="() => DeleteTherapyCardAsync(therapyCard.Id)">
                         <i class="bi bi-trash" aria-hidden="true"></i>
                         <span class="d-none d-sm-inline">Видалити</span>
                     </button>
                 }
-                <button type="submit" class="shine-edit-cosmo-btn shine-edit-cosmo-btn--primary">
+                <button type="submit" class="btn-save">
                     <i class="bi bi-save" aria-hidden="true"></i>
                     <span class="d-none d-sm-inline">Зберегти</span>
                 </button>
                 <button type="button"
-                        class="shine-edit-cosmo-btn shine-edit-cosmo-btn--ghost"
+                        class="btn-cancel"
                         @onclick="CancelTherapyCard">
                     <i class="bi bi-x-circle" aria-hidden="true"></i>
                     <span class="d-none d-sm-inline">Скасувати</span>

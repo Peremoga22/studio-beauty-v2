@@ -2133,3 +2133,217 @@ section {
         transition: none;
     }
 }
+
+/* --- Форма додавання/редагування картки (косметологія, магазин, масаж) --- */
+.add-card-wrapper {
+    padding: 32px;
+    border-radius: 28px;
+    background: rgba(255, 255, 255, 0.88);
+    border: 1px solid rgba(255, 182, 210, 0.25);
+    box-shadow: 0 20px 45px rgba(255, 105, 180, 0.08);
+}
+
+.add-card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: -32px -32px 30px;
+    padding: 22px 30px;
+    border-radius: 28px 28px 0 0;
+    background: linear-gradient(135deg, #ff2f92, #f062b0);
+    color: white;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.add-card-subtitle {
+    margin: 0 0 10px;
+    text-align: center;
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #2a1f2e;
+}
+
+.add-card-wrapper .form-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+}
+
+.add-card-wrapper .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.add-card-wrapper .form-label {
+    font-size: 15px;
+    font-weight: 600;
+    color: #4b5563;
+    margin-left: 4px;
+    margin-bottom: 0;
+}
+
+.add-card-wrapper .form-control,
+.add-card-wrapper .form-select {
+    height: 56px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 182, 210, 0.35);
+    padding: 0 18px;
+    font-size: 15px;
+    background: rgba(255, 255, 255, 0.95);
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.add-card-wrapper textarea.form-control {
+    min-height: 120px;
+    padding-top: 16px;
+    height: auto;
+    resize: vertical;
+}
+
+.add-card-wrapper .form-control:focus,
+.add-card-wrapper .form-select:focus {
+    outline: none;
+    border-color: #ff4f9b;
+    box-shadow: 0 0 0 4px rgba(255, 79, 155, 0.12);
+}
+
+.add-card-wrapper .price-input {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.add-card-wrapper .price-input .form-control {
+    flex: 1;
+    min-width: 0;
+}
+
+.add-card-wrapper .price-symbol {
+    width: 56px;
+    height: 56px;
+    flex-shrink: 0;
+    border-radius: 16px;
+    background: #fff0f7;
+    color: #ff2f92;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 700;
+    border: 1px solid rgba(255, 182, 210, 0.4);
+}
+
+.add-card-wrapper .file-upload {
+    padding: 14px;
+    border-radius: 16px;
+    border: 2px dashed rgba(255, 182, 210, 0.5);
+    background: rgba(255, 245, 249, 0.6);
+}
+
+.add-card-wrapper .file-upload .form-control {
+    height: auto;
+    min-height: 48px;
+    border: none;
+    box-shadow: none;
+    background: transparent;
+    padding: 8px 12px;
+}
+
+.add-card-wrapper .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 18px;
+}
+
+.add-card-wrapper .btn-save,
+.add-card-wrapper .btn-cancel {
+    height: 52px;
+    padding: 0 28px;
+    border-radius: 999px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+}
+
+.add-card-wrapper .btn-save {
+    border: none;
+    background: linear-gradient(135deg, #ff2f92, #f062b0);
+    color: white;
+    box-shadow: 0 12px 25px rgba(255, 47, 146, 0.25);
+}
+
+.add-card-wrapper .btn-save:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 35px rgba(255, 47, 146, 0.35);
+}
+
+.add-card-wrapper .btn-cancel {
+    background: white;
+    color: #ff4f9b;
+    border: 1px solid rgba(255, 182, 210, 0.5);
+}
+
+.add-card-wrapper .btn-cancel:hover {
+    background: #fff2f8;
+}
+
+.add-card-wrapper .btn-delete-card {
+    height: 52px;
+    padding: 0 24px;
+    border-radius: 999px;
+    font-weight: 700;
+    background: white;
+    color: #c2185b;
+    border: 2px solid rgba(220, 53, 69, 0.45);
+    margin-right: auto;
+}
+
+.add-card-wrapper .btn-delete-card:hover {
+    background: rgba(220, 53, 69, 0.06);
+}
+
+.add-card-wrapper .add-card-hint {
+    font-size: 0.85rem;
+    color: #9a8a96;
+    margin-top: -4px;
+}
+
+@media (max-width: 575.98px) {
+    .add-card-wrapper {
+        padding: 20px;
+    }
+
+    .add-card-header {
+        margin: -20px -20px 24px;
+        padding: 18px 20px;
+        font-size: 18px;
+    }
+
+    .add-card-wrapper .btn-save,
+    .add-card-wrapper .btn-cancel,
+    .add-card-wrapper .btn-delete-card {
+        width: 100%;
+        margin-right: 0;
+    }
+
+    .add-card-wrapper .form-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .add-card-wrapper .btn-save:hover {
+        transform: none;
+    }
+}

@@ -1,194 +1,144 @@
 ﻿@page "/admin-history-of-gift-sertificate-services"
+@using System.Globalization
 @using System.Threading.Tasks
 @inject GiftCertificateService _giftCertificateService
-@inject NavigationManager _navigationManager
 @layout AdminLayout
 @rendermode InteractiveServer
 @attribute [Authorize(Roles = "Admin")]
 
-<div class="container my-4">  
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-3">
+<div class="gift-page">
+    <div class="gift-header">
         <div>
-            <h3 class="mb-1 fw-bold" style="color:#f8b7d8;">
-                🎀 Історія створених подарункових сертифікатів
-            </h3>
-            <p class="text-muted mb-0 small">
+            <h1 class="gift-title">🎀 Історія створених подарункових сертифікатів</h1>
+            <div class="gift-subtitle">
                 Тут ви можете переглянути всі сертифікати та підтвердити їх.
-            </p>
+            </div>
         </div>
-
-        <div class="text-md-end">
-            <span class="badge rounded-pill bg-light text-muted border">
-                Всього: <strong>@(Certificates?.Count ?? 0)</strong>
-            </span>
-        </div>
+        <div class="gift-count">Всього: <strong>@(Certificates?.Count ?? 0)</strong></div>
     </div>
 
-    <nav aria-label="breadcrumb" class="bg-white shadow-sm rounded px-3 py-2 mb-4">
-        <ol class="breadcrumb mb-0 small">
-            <li class="breadcrumb-item text-muted">Адміністративна панель</li>
-            <li class="breadcrumb-item active" aria-current="page">
-                Історія створених подарункових сертифікатів
-            </li>
-        </ol>
+    <nav class="gift-breadcrumb" aria-label="breadcrumb">
+        Адміністративна панель / Історія створених подарункових сертифікатів
     </nav>
-       
+
     @if (Certificates == null)
     {
-        <div class="text-center text-muted py-5">
-            <div class="spinner-border spinner-border-sm me-2" role="status"></div>
-            Завантаження сертифікатів...
+        <div class="gift-state-loading" role="status">
+            <div class="spinner-border spinner-border-sm me-2 text-secondary" aria-hidden="true"></div>
+            Завантаження сертифікатів…
         </div>
     }
     else if (!Certificates.Any())
     {
-        <div class="text-center text-muted py-5">
+        <div class="gift-state-empty">
             <p class="mb-1">Поки що немає створених подарункових сертифікатів.</p>
             <p class="small mb-0">Коли клієнти оформлять сертифікати — вони з’являться тут.</p>
         </div>
     }
     else
     {
-        <div class="row g-4">
+        <div class="gift-grid">
             @foreach (var cert in Certificates)
             {
-                <div class="col-lg-4 col-md-6">
-                    <div class="card admin-cert-card border-0 shadow-sm h-100 position-relative">
-
-                        <!-- Верх: бренд + статус + delete -->
-                        <div class="card-header bg-white border-0 pb-0">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <div>
-                                    <div class="admin-cert-brand">Shine Cosmetology</div>
-                                    <div class="admin-cert-brand-sub">Подарунковий сертифікат</div>
-                                </div>
-
-                                <div class="d-flex align-items-start gap-2">
-                                    @if (cert.IsApproved)
-                                    {
-                                        <span class="admin-cert-status admin-cert-status-approved">
-                                            ✅ Активовано
-                                        </span>
-                                    }
-                                    else
-                                    {
-                                        <span class="admin-cert-status admin-cert-status-pending">
-                                            ⏳ Очікує оплату
-                                        </span>
-                                    }
-
-                                    <button class="btn btn-sm btn-icon-danger"
-                                            title="Видалити"
-                                            @onclick="() => DeleteGiftCertificate(cert.Id)">
-                                        🗑
-                                    </button>
-                                </div>
-                            </div>
+                <article class="gift-card">
+                    <div class="gift-card-top">
+                        <div>
+                            <div class="gift-brand">SHINE COSMETOLOGY</div>
+                            <div class="gift-small">Подарунковий сертифікат</div>
                         </div>
-
-                        <!-- Тіло -->
-                        <div class="card-body pt-2">
-
-                            <div class="admin-cert-title-main text-center mb-2">
-                                ПОДАРУНКОВИЙ СЕРТИФІКАТ
-                            </div>
-
-                            <div class="admin-cert-line mb-3"></div>
-
-                            <div class="mb-2">
-                                <div class="admin-cert-label">Отримувач</div>
-                                <div class="admin-cert-value fw-semibold">
-                                    @cert.RecipientName
-                                </div>
-                            </div>
-
-                            <div class="d-flex justify-content-between mb-2">
-                                <div>
-                                    <div class="admin-cert-label">Сертифікат №</div>
-                                    <div class="admin-cert-value">#@cert.Id</div>
-                                </div>
-                                <div class="text-end">
-                                    <div class="admin-cert-label">Номінал</div>
-                                    <div class="admin-cert-amount">
-                                        @cert.Amount.ToString("N0") грн
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="d-flex justify-content-between mb-2">
-                                <div>
-                                    <div class="admin-cert-label">Термін дії</div>
-                                    <div class="admin-cert-value">3 місяці</div>
-                                </div>
-                                <div class="text-end">
-                                    <div class="admin-cert-label">Створено</div>
-                                    <div class="admin-cert-value">
-                                        @cert.CreatedAt.ToString("dd.MM.yyyy")
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="cert-row mb-1">
-                                <div class="cert-label">Замовник:</div>
-                                <div class="cert-value">
-                                    @cert.ClientName
-                                </div>
-                            </div>
-
-                            <div class="cert-row">
-                                <div class="cert-label">Телефон замовника:</div>
-                                <div class="cert-value text-muted">
-                                    @cert.ClientPhone
-                                </div>
-                            </div>
+                        <div class="gift-card-top-meta">
+                            @if (cert.IsApproved)
+                            {
+                                <span class="gift-status done">✅ Активовано</span>
+                            }
+                            else
+                            {
+                                <span class="gift-status wait">⏳ Очікує оплату</span>
+                            }
+                            <button type="button"
+                                    class="gift-btn-delete"
+                                    title="Видалити"
+                                    aria-label="Видалити сертифікат"
+                                    @onclick="() => DeleteGiftCertificate(cert.Id)">
+                                🗑
+                            </button>
                         </div>
-
-                        <!-- Футер -->
-                        <div class="card-footer bg-white border-0 pt-0">
-                            <div class="d-flex justify-content-between align-items-center">
-
-                                <span class="small text-muted">
-                                    ID: @cert.Id
-                                </span>
-
-                                <div class="d-flex gap-2">
-                                    <a @onclick="() => DownloadPdf(cert.Id)"
-                                       class="btn btn-outline-secondary btn-sm rounded-pill">
-                                        ⬇ PDF
-                                    </a>
-
-                                    <button class="btn btn-sm rounded-pill cert-action-btn"
-                                            @onclick="@(() => OnCertificateClick(cert.Id))"
-                                            disabled="@cert.IsApproved">
-                                        @if (!cert.IsApproved)
-                                        {
-                                            <span>Підтвердити оплату</span>
-                                        }
-                                        else
-                                        {
-                                            <span>Оплачено</span>
-                                        }
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
                     </div>
-                </div>
+
+                    <div class="gift-card-title">ПОДАРУНКОВИЙ СЕРТИФІКАТ</div>
+
+                    <div class="gift-info">
+                        <div class="gift-field-full">
+                            <div class="gift-label">Отримувач</div>
+                            <div class="gift-value">@cert.RecipientName</div>
+                        </div>
+                        <div>
+                            <div class="gift-label">Сертифікат №</div>
+                            <div class="gift-value">#@cert.Id</div>
+                        </div>
+                        <div>
+                            <div class="gift-label">Номінал</div>
+                            <div class="gift-price">@cert.Amount.ToString("N0", culture) грн</div>
+                        </div>
+                        <div>
+                            <div class="gift-label">Термін дії</div>
+                            <div class="gift-value">3 місяці</div>
+                        </div>
+                        <div>
+                            <div class="gift-label">Створено</div>
+                            <div class="gift-value">@cert.CreatedAt.ToString("dd.MM.yyyy")</div>
+                        </div>
+                        <div class="gift-field-full">
+                            <div class="gift-label">Замовник</div>
+                            <div class="gift-value">@cert.ClientName</div>
+                        </div>
+                        <div class="gift-field-full">
+                            <div class="gift-label">Телефон замовника</div>
+                            <div class="gift-value">@cert.ClientPhone</div>
+                        </div>
+                    </div>
+
+                    <div class="gift-actions">
+                        <div class="gift-id">ID: @cert.Id</div>
+                        <div class="gift-btns">
+                            <button type="button"
+                                    class="gift-btn gift-btn-pdf"
+                                    @onclick="() => DownloadPdf(cert.Id)">
+                                ⬇ PDF
+                            </button>
+                            @if (!cert.IsApproved)
+                            {
+                                <button type="button"
+                                        class="gift-btn gift-btn-pay"
+                                        @onclick="() => OnCertificateClick(cert.Id)">
+                                    Підтвердити оплату
+                                </button>
+                            }
+                            else
+                            {
+                                <button type="button"
+                                        class="gift-btn gift-btn-paid"
+                                        disabled>
+                                    Оплачено
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </article>
             }
         </div>
-
     }
 </div>
 
 @code {
+    private static readonly CultureInfo culture = CultureInfo.GetCultureInfo("uk-UA");
+
     public List<GiftCertificateWithClientDto> Certificates { get; set; } = new();
     private Appointment appointment = new();
-    
+
     protected override async Task OnInitializedAsync()
-    {   
-        Certificates = await _giftCertificateService.GetGiftCertificatesAll();       
-        await InvokeAsync(StateHasChanged);
+    {
+        Certificates = await _giftCertificateService.GetGiftCertificatesAll();
     }
 
     private async Task OnCertificateClick(int id)
@@ -201,12 +151,10 @@
     {
         await _giftCertificateService.DeleteGiftCertificateAsync(id);
         Certificates = await _giftCertificateService.GetGiftCertificatesAll();
-        StateHasChanged();
     }
 
     private async Task DownloadPdf(int id)
     {
-        var result = await _giftCertificateService.DownloadGiftCertificatePdfAsync(id, appointment);
-        Console.WriteLine(result);
+        await _giftCertificateService.DownloadGiftCertificatePdfAsync(id, appointment);
     }
 }
