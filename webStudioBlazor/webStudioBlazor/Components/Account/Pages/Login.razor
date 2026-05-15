@@ -102,7 +102,7 @@
 
     private string? adminEmail;
     private IList<AuthenticationScheme>? ExternalLogins { get; set; }
-    private string SafeReturnUrl => GetSafeReturnUrl(ReturnUrl);
+    private string SafeReturnUrl => AccountReturnUrl.GetSafeLocalReturnUrl(ReturnUrl);
 
     private string RegisterHref =>
         NavigationManager.GetUriWithQueryParameters("Account/Register", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl });
@@ -168,21 +168,6 @@
         {
             errorMessage = "Невірна електронна пошта або пароль.";
         }
-    }
-
-    private string GetSafeReturnUrl(string? candidate)
-    {
-        const string fallback = "/";
-        return IsLocalUrl(NavigationManager, candidate) ? candidate! : fallback;
-    }
-
-    private static bool IsLocalUrl(NavigationManager nav, string? url)
-    {
-        if (string.IsNullOrWhiteSpace(url)) return false;
-
-        var isAbsolute = Uri.TryCreate(url, UriKind.Absolute, out var abs);
-        if (isAbsolute) return false;
-        return true;
     }
 
     private sealed class InputModel

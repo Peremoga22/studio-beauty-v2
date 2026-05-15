@@ -183,14 +183,7 @@
         RedirectManager.RedirectTo(target);
     }
 
-    private string GetSafeReturnUrl()
-    {
-        if (string.IsNullOrWhiteSpace(ReturnUrl)) return "/account/profile";
-        var t = ReturnUrl.Trim();
-        if (t.Contains("://", StringComparison.OrdinalIgnoreCase) || t.StartsWith("//", StringComparison.Ordinal)) return "/account/profile";
-        if (!t.StartsWith('/')) return "/account/profile";
-        return t;
-    }
+    private string GetSafeReturnUrl() => AccountReturnUrl.GetSafeLocalReturnUrl(ReturnUrl);
 
     private ApplicationUser CreateUser()
     {

@@ -114,7 +114,7 @@
                 "{Name} logged in with {LoginProvider} provider.",
                 externalLoginInfo.Principal.Identity?.Name,
                 externalLoginInfo.LoginProvider);
-            RedirectManager.RedirectTo(ReturnUrl);
+            RedirectManager.RedirectTo(AccountReturnUrl.GetSafeLocalReturnUrl(ReturnUrl));
         }
         else if (result.IsLockedOut)
         {
@@ -165,7 +165,7 @@
                 }
 
                 await SignInManager.SignInAsync(user, isPersistent: false, externalLoginInfo.LoginProvider);
-                RedirectManager.RedirectTo(ReturnUrl);
+                RedirectManager.RedirectTo(AccountReturnUrl.GetSafeLocalReturnUrl(ReturnUrl));
             }
         }
 
