@@ -63,8 +63,8 @@
                         @foreach (var cert in Certificates)
                         {
                             <div class="col-md-6">
-                                <div class="cert-card border-2 h-100">
-                                    <div class="cert-card-ribbon"></div>
+                                <div class="cert-card h-100">
+                                    <div class="cert-card-ribbon" aria-hidden="true"></div>
                                     <div class="cert-card-content">
                                         <div class="cert-header d-flex justify-content-between align-items-center mb-3">
                                             <div class="d-flex align-items-center gap-3">
@@ -91,35 +91,34 @@
                                                 }
                                             </div>
                                         </div>
-                                        <div class="text-center mb-2">
-                                            <div class="cert-title-main">ПОДАРУНКОВИЙ СЕРТИФІКАТ</div>
+                                        <div class="text-center mb-1">
+                                            <div class="cert-title-main">Подарунковий сертифікат</div>
                                         </div>
                                         <div class="cert-line"></div>
-                                        <div class="cert-row mb-2 d-flex justify-content-between gap-3">
-                                            <div class="cert-left">
-                                                <div class="cert-label">Отримувач</div>
-                                                <div class="cert-value fw-semibold">@cert.RecipientName</div>
-                                                @if (!string.IsNullOrWhiteSpace(cert.Message))
-                                                {
-                                                    <div class="cert-value fst-italic text-muted mt-1">
-                                                        @cert.Message
-                                                    </div>
-                                                }
+                                        <div class="cert-details d-flex flex-column gap-3">
+                                            <div class="cert-row d-flex justify-content-between gap-3 mb-0">
+                                                <div class="cert-left">
+                                                    <div class="cert-label">Отримувач</div>
+                                                    <div class="cert-value fw-semibold">@cert.RecipientName</div>
+                                                    @if (!string.IsNullOrWhiteSpace(cert.Message))
+                                                    {
+                                                        <div class="cert-message mt-2">@cert.Message</div>
+                                                    }
+                                                </div>
+                                                <div class="cert-right text-end">
+                                                    <div class="cert-label">Номінал</div>
+                                                    <div class="cert-amount">@cert.Amount.ToString("N0") грн</div>
+                                                </div>
                                             </div>
-                                            <div class="cert-right text-end">
-                                                <div class="cert-label">Номінал</div>
-                                                <div class="cert-amount">@cert.Amount.ToString("N0") грн</div>
-                                            </div>
-                                        </div>
-                                        <div class="cert-row mb-2 d-flex justify-content-between gap-3">
-                                            <div class="cert-left">
-                                                <div class="cert-label">Сертифікат №</div>
-                                                <div class="cert-value">#@cert.Id</div>
-                                            </div>
-
-                                            <div class="cert-right text-end">
-                                                <div class="cert-label">Термін дії</div>
-                                                <div class="cert-value">3 місяці</div>
+                                            <div class="cert-row d-flex justify-content-between gap-3 mb-0">
+                                                <div class="cert-left">
+                                                    <div class="cert-label">Сертифікат №</div>
+                                                    <div class="cert-value cert-value-mono">#@cert.Id</div>
+                                                </div>
+                                                <div class="cert-right text-end">
+                                                    <div class="cert-label">Термін дії</div>
+                                                    <div class="cert-value fw-semibold">3 місяці</div>
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="cert-footer cert-footer-admin">

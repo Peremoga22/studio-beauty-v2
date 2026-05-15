@@ -63,15 +63,15 @@
                                                  class="shine-history-order-thumb flex-shrink-0"
                                                  alt="" />
                                         }
-                                        <div class="min-w-0 flex-grow-1">
-                                            <div class="fw-semibold shine-history-order-name text-truncate">
+                                        <div class="min-w-0 flex-grow-1 shine-history-order-text">
+                                            <div class="fw-semibold shine-history-order-name">
                                                 @item.ServiceName
                                                 @if (item.Quantity >= 1)
                                                 {
                                                     <span class="shine-history-qty ms-2">×@item.Quantity</span>
                                                 }
                                             </div>
-                                            <small class="shine-history-order-desc d-block text-truncate">@item.ServiceDescription</small>
+                                            <small class="shine-history-order-desc d-block">@item.ServiceDescription</small>
                                         </div>
                                     </div>
                                 }
