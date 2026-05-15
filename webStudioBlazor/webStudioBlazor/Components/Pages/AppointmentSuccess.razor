@@ -1,7 +1,6 @@
 ﻿@page "/appointment-success"
-@page "/appointment-success/"
 @page "/appointment-success/{Id:int}"
-@page "/appointment-success/{Id:int}/"
+
 @using webStudioBlazor.BL
 
 @inject AppointmentNotifier _notification
@@ -10,38 +9,42 @@
 @inject NavigationManager _navigationManager
 @rendermode InteractiveServer
 
-<h3 style="padding-top: 5%;"></h3>
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-6 col-md-8">
-            <div class="card shadow rounded text-center p-4">
-                <div class="mb-3">
-                    <span class="badge rounded-pill px-3 py-2"
-                          style="background-color:#f8b7d8; color:white;">
-                        Успішно
-                    </span>
-                </div>
-                <h1 class="display-5 mb-3">Дякуємо! Запис створено</h1>
-                @if (!string.IsNullOrWhiteSpace(clientUser.ClientName))
-                {
-                    <p class="lead">@clientUser.ClientName — ми зв’яжемося з вами для підтвердження деталей найближчим часом.</p>
-                }
-                else
-                {
-                    <p class="lead">Ми зв’яжемося з вами для підтвердження деталей найближчим часом.</p>
-                }
-                <div class="d-grid gap-2 d-md-flex justify-content-md-center mt-4">
-                    <a href="/" class="btn btn-outline-primary rounded-pill w-100 w-md-auto">
-                        На головну
-                    </a>
-                    <a href="/appointment-user" class="btn btn-primary rounded-pill text-white w-100 w-md-auto">
-                        Новий запис
-                    </a>
+<section class="shine-appoint-success-page py-3">
+    <div class="shine-appoint-success-inner">
+        <div class="row justify-content-center g-0">
+            <div class="col-12 col-lg-8 col-xl-6">
+                <div class="card shine-appoint-success-card border-0 shadow-none text-center">
+                    <div class="card-body p-4 p-md-5">
+                        <span class="shine-appoint-success-badge">Успішно</span>
+                        <h1 class="shine-appoint-success-title">Дякуємо! Запис створено</h1>
+                        @if (!string.IsNullOrWhiteSpace(clientUser.ClientName))
+                        {
+                            <p class="shine-appoint-success-lead mb-0">
+                                @clientUser.ClientName — ми зв’яжемося з вами для підтвердження деталей найближчим часом.
+                            </p>
+                        }
+                        else
+                        {
+                            <p class="shine-appoint-success-lead mb-0">
+                                Ми зв’яжемося з вами для підтвердження деталей найближчим часом.
+                            </p>
+                        }
+                        <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center align-items-stretch align-items-sm-center mt-4 pt-1">
+                            <a href="/"
+                               class="shine-appoint-success-btn-outline text-decoration-none w-100 w-sm-auto">
+                                На головну
+                            </a>
+                            <a href="/appointment-user"
+                               class="shine-hero-btn shine-appoint-success-btn-primary text-decoration-none w-100 w-sm-auto">
+                                Новий запис
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</section>
 
 @code {
     [Parameter]
