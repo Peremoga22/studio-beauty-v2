@@ -1,4 +1,4 @@
-﻿@page "/edit-cosmetology"
+@page "/edit-cosmetology"
 @page "/edit-cosmetology/{Id:int}"
 
 @inject SeedService _seedService
@@ -9,187 +9,178 @@
 @attribute [Authorize(Roles = "Admin")]
 @rendermode InteractiveServer
 
-<div class="container py-4">
-    <!-- Breadcrumb -->
-    <nav aria-label="breadcrumb" class="breadcrumb-card mb-4">
+<div class="container shine-admin-3d-page pb-4">
+    <nav class="shine-edit-cosmo-breadcrumb mb-4" aria-label="breadcrumb">
         <ol class="breadcrumb mb-0">
             <li class="breadcrumb-item">
-                <a class="link-accent" href="/admin-cosmetology">
-                    <i class="bi bi-arrow-left-short"></i> Повернутися до адмін косметології
+                <a class="shine-edit-cosmo-back" href="/admin-cosmetology">
+                    <i class="bi bi-arrow-left-short" aria-hidden="true"></i>
+                    Повернутися до адмін косметології
                 </a>
             </li>
-            <li class="breadcrumb-item active" aria-current="page">
-                @AddMessageTherapy
-            </li>
+            <li class="breadcrumb-item active" aria-current="page">@AddMessageTherapy</li>
         </ol>
     </nav>
-    <section class="mb-5">
-        <div class="card shadow-sm border-0 rounded-3">
-            <div class="card-header bg-brand text-white d-flex align-items-center">
-                <i class="bi bi-journal-text me-2"></i>
-                <strong>@(Id == 0 ? "Додати картку " : "Редагувати картку")</strong>
-            </div>
-            <EditForm Model="@therapyCard"
-                      OnValidSubmit="SaveTherapyCardAsync"
-                      class="card form-card">
 
-                <DataAnnotationsValidator />
-                <ValidationSummary class="alert alert-danger small" />
-                <div class="row g-3">
-                    <div class="card-body">
-                        <h5 class="card-title text-center mb-3">
-                            @(therapyCard.Id == 0 ? "Додати нову картку" : "Редагувати картку")
-                        </h5>
-
-                        <div class="mb-3">
-                            <label for="TitleCard" class="form-label form-label-compact">
-                                Назва картки <span class="text-danger">*</span>
-                            </label>
-                            <InputText id="TitleCard"
-                                       @bind-Value="therapyCard.TitleCard"
-                                       class="form-control form-control-sm"
-                                       placeholder="Введіть назву..." />
-                            <ValidationMessage For="@(() => therapyCard.TitleCard)" class="text-danger small" />
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="DescriptionCard" class="form-label form-label-compact">
-                                Опис картки <span class="text-danger">*</span>
-                            </label>
-                            <InputText id="DescriptionCard"
-                                       @bind-Value="therapyCard.DescriptionCard"
-                                       class="form-control form-control-sm"
-                                       placeholder="Короткий опис..." />
-                            <ValidationMessage For="@(() => therapyCard.DescriptionCard)" class="text-danger small" />
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="Price" class="form-label form-label-compact">
-                                Ціна за послугу <span class="text-danger">*</span>
-                            </label>
-                            <div class="input-group input-group-sm">
-                                <span class="input-group-text">₴</span>
-                                <InputNumber id="Price"
-                                             @bind-Value="therapyCard.Price"
-                                             class="form-control"
-                                             placeholder="0" />
-                            </div>
-                            <small class="text-muted">Вкажіть вартість у гривнях.</small>
-                            <ValidationMessage For="@(() => therapyCard.Price)" class="text-danger small" />
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Вибрати категорію для сторінки</label><span class="text-danger">*</span><strong style="color:red">@ErrorMessageCategory</strong>
-                            <InputSelect class="form-select" TValue="int" @bind-Value="therapyCard.CategoryId">
-                                <option value="0">Оберіть категорію</option>
-                                @foreach (var item in categories)
-                                {
-                                    <option value="@item.Id">@item.NameCategory</option>
-                                }
-                            </InputSelect>
-                        </div>
-
-                        <div class="mb-0">
-                            <label class="form-label form-label-compact">Фото (jpg/jpeg/png)</label>
-                            <InputFile OnChange="OnFileSelected"
-                                       class="form-control form-control-sm"
-                                       accept=".jpg,.jpeg,.png" />
-
-                            @if (!string.IsNullOrEmpty(therapyCard.ImagePath))
-                            {
-                                <div class="mt-3 text-left">
-                                    <img src="@therapyCard.ImagePath"
-                                         alt="preview"
-                                         class="img-thumb-soft img-fluid"
-                                         style="max-width: 200px; max-height: 200px; object-fit: cover; border-radius: 0.5rem;" />
-                                </div>
-                            }
-                        </div>
-                     </div>
-                </div>
-
-                <div class="d-flex justify-content-end gap-2 mt-3">
-                    <p style="color:red">@ErrorMessage</p>
-                    @if (therapyCard.Id > 0)
-                    {
-                        <button type="button"
-                                class="btn btn-outline-danger btn-action"
-                                @onclick="(() => DeleteTherapyCardAsync(therapyCard.Id))">
-                            <i class="bi bi-trash me-1"></i>
-                            <span class="d-none d-sm-inline ms-1">Видалити</span>
-                        </button>
-                    }
-                    <button type="submit" class="btn btn-primary btn-action">
-                        <i class="bi bi-save me-1"></i>
-                        <span class="d-none d-sm-inline ms-1">Зберегти</span>
-                    </button>
-
-                    <NavLink class="btn btn-outline-secondary btn-action"
-                             @onclick="() => CancelTherapyCard()">
-                        <i class="bi bi-x-circle me-1"></i>
-                        <span class="d-none d-sm-inline ms-1">Скасувати</span>
-                    </NavLink>
-                </div>
-
-            </EditForm>
+    <section class="shine-edit-cosmo-form-card mb-5">
+        <div class="shine-edit-cosmo-form-header">
+            <i class="bi bi-journal-text" aria-hidden="true"></i>
+            <strong>@(Id == 0 ? "Додати картку" : "Редагувати картку")</strong>
         </div>
+
+        <EditForm Model="@therapyCard"
+                  OnValidSubmit="SaveTherapyCardAsync"
+                  class="shine-edit-cosmo-form-body">
+            <DataAnnotationsValidator />
+            <ValidationSummary class="shine-edit-cosmo-validation" />
+
+            <h2 class="shine-edit-cosmo-form-title">
+                @(therapyCard.Id == 0 ? "Додати нову картку" : "Редагувати картку")
+            </h2>
+
+            <div class="shine-edit-cosmo-field">
+                <label for="TitleCard" class="shine-edit-cosmo-label">
+                    Назва картки <span class="text-danger">*</span>
+                </label>
+                <InputText id="TitleCard"
+                           @bind-Value="therapyCard.TitleCard"
+                           class="form-control shine-edit-cosmo-input"
+                           placeholder="Введіть назву..." />
+                <ValidationMessage For="@(() => therapyCard.TitleCard)" class="shine-edit-cosmo-error" />
+            </div>
+
+            <div class="shine-edit-cosmo-field">
+                <label for="DescriptionCard" class="shine-edit-cosmo-label">
+                    Опис картки <span class="text-danger">*</span>
+                </label>
+                <InputText id="DescriptionCard"
+                           @bind-Value="therapyCard.DescriptionCard"
+                           class="form-control shine-edit-cosmo-input"
+                           placeholder="Короткий опис..." />
+                <ValidationMessage For="@(() => therapyCard.DescriptionCard)" class="shine-edit-cosmo-error" />
+            </div>
+
+            <div class="shine-edit-cosmo-field">
+                <label for="Price" class="shine-edit-cosmo-label">
+                    Ціна за послугу <span class="text-danger">*</span>
+                </label>
+                <div class="input-group shine-edit-cosmo-price-group">
+                    <span class="input-group-text">₴</span>
+                    <InputNumber id="Price"
+                                 @bind-Value="therapyCard.Price"
+                                 class="form-control shine-edit-cosmo-input"
+                                 placeholder="0" />
+                </div>
+                <small class="shine-edit-cosmo-hint">Вкажіть вартість у гривнях.</small>
+                <ValidationMessage For="@(() => therapyCard.Price)" class="shine-edit-cosmo-error" />
+            </div>
+
+            <div class="shine-edit-cosmo-field">
+                <label class="shine-edit-cosmo-label">
+                    Вибрати категорію для сторінки <span class="text-danger">*</span>
+                </label>
+                @if (!string.IsNullOrEmpty(ErrorMessageCategory))
+                {
+                    <p class="shine-edit-cosmo-error mb-2">@ErrorMessageCategory</p>
+                }
+                <InputSelect class="form-select shine-edit-cosmo-input" TValue="int" @bind-Value="therapyCard.CategoryId">
+                    <option value="0">Оберіть категорію</option>
+                    @foreach (var item in categories)
+                    {
+                        <option value="@item.Id">@item.NameCategory</option>
+                    }
+                </InputSelect>
+            </div>
+
+            <div class="shine-edit-cosmo-field mb-0">
+                <label class="shine-edit-cosmo-label">Фото (jpg/jpeg/png)</label>
+                <InputFile OnChange="OnFileSelected"
+                           class="form-control shine-edit-cosmo-input"
+                           accept=".jpg,.jpeg,.png" />
+                @if (!string.IsNullOrEmpty(therapyCard.ImagePath))
+                {
+                    <div class="shine-edit-cosmo-preview mt-3">
+                        <img src="@therapyCard.ImagePath"
+                             alt="Попередній перегляд"
+                             class="shine-edit-cosmo-preview-img" />
+                    </div>
+                }
+            </div>
+
+            @if (!string.IsNullOrEmpty(ErrorMessage))
+            {
+                <p class="shine-edit-cosmo-error mt-3 mb-0">@ErrorMessage</p>
+            }
+
+            <div class="shine-edit-cosmo-actions">
+                @if (therapyCard.Id > 0)
+                {
+                    <button type="button"
+                            class="shine-edit-cosmo-btn shine-edit-cosmo-btn--danger"
+                            @onclick="() => DeleteTherapyCardAsync(therapyCard.Id)">
+                        <i class="bi bi-trash" aria-hidden="true"></i>
+                        <span class="d-none d-sm-inline">Видалити</span>
+                    </button>
+                }
+                <button type="submit" class="shine-edit-cosmo-btn shine-edit-cosmo-btn--primary">
+                    <i class="bi bi-save" aria-hidden="true"></i>
+                    <span class="d-none d-sm-inline">Зберегти</span>
+                </button>
+                <button type="button"
+                        class="shine-edit-cosmo-btn shine-edit-cosmo-btn--ghost"
+                        @onclick="CancelTherapyCard">
+                    <i class="bi bi-x-circle" aria-hidden="true"></i>
+                    <span class="d-none d-sm-inline">Скасувати</span>
+                </button>
+            </div>
+        </EditForm>
     </section>
 
-    <!-- Таблиця в картці -->
-    <section class="pt-3">
-        <div class="container">
-            <figure class="figure m-0">
-                <div class="row g-2">
-                    @{
-                        var page = pageTherapies.FirstOrDefault(p => p.TitlePage == @selectedCosmetology);
-                    }
-                    @foreach (var item in therapyCards.Where(x => x.CategoryId == page.CategoryId))
-                    {
-                        <div class="col-6 col-lg-3">
-                            <div class="card shadow-sm border-0 rounded-3 product-card h-100">                                                               
-                                <div class="ratio ratio-1x1">
-                                   <img src="@item.ImagePath"
-                                        alt="@item.TitleCard"
-                                        class="card-img-top object-fit-cover"
-                                        loading="lazy">
-                                </div>                               
-                                <div class="card-body d-flex flex-column p-2">
-                                    <h6 class="card-title mb-1 text-dark fw-semibold text-truncate"
-                                        title="@item.TitleCard">
-                                        @item.TitleCard
-                                    </h6>
-                                    <p class="card-text text-muted mb-2 small line-clamp-2"
-                                       title="@item.DescriptionCard">
-                                        @item.DescriptionCard
-                                    </p>
-                                    <div class="mt-auto d-flex flex-column flex-sm-row justify-content-end gap-2">
-                                        <button @onclick="(() => EdittherapyCard(item.Id))"
-                                                class="btn btn-outline-primary w-100 w-sm-auto">
-                                            <i class="bi bi-pencil-square me-1"></i> Редагувати
-                                        </button>
-
-                                        <button class="btn btn-dark w-100 w-sm-auto">
-                                            @item.Price.ToString("C0", new System.Globalization.CultureInfo("uk-UA"))
-                                        </button>
-                                    </div>
-
-
-                                </div>
+    <section class="shine-edit-cosmo-grid-section">
+        <h3 class="shine-edit-cosmo-grid-title">
+            <i class="bi bi-grid-3x3-gap" aria-hidden="true"></i>
+            Картки послуг
+        </h3>
+        <div class="row g-3">
+            @{
+                var page = pageTherapies.FirstOrDefault(p => p.TitlePage == selectedCosmetology);
+            }
+            @foreach (var item in therapyCards.Where(x => x.CategoryId == page?.CategoryId))
+            {
+                <div class="col-6 col-lg-3">
+                    <article class="shine-edit-cosmo-product h-100">
+                        <div class="shine-edit-cosmo-product-image ratio ratio-1x1">
+                            <img src="@item.ImagePath"
+                                 alt="@item.TitleCard"
+                                 class="object-fit-cover"
+                                 loading="lazy" />
+                        </div>
+                        <div class="shine-edit-cosmo-product-body">
+                            <h4 class="shine-edit-cosmo-product-title" title="@item.TitleCard">@item.TitleCard</h4>
+                            <p class="shine-edit-cosmo-product-desc" title="@item.DescriptionCard">@item.DescriptionCard</p>
+                            <div class="shine-edit-cosmo-product-footer">
+                                <button type="button"
+                                        class="shine-edit-cosmo-edit-btn"
+                                        @onclick="() => EdittherapyCard(item.Id)">
+                                    <i class="bi bi-pencil-square" aria-hidden="true"></i>
+                                    Редагувати
+                                </button>
+                                <span class="shine-edit-cosmo-price">
+                                    @item.Price.ToString("N0", new System.Globalization.CultureInfo("uk-UA")) ₴
+                                </span>
                             </div>
                         </div>
-                    }
+                    </article>
                 </div>
-            </figure>
+            }
         </div>
     </section>
 </div>
 
-
-
 @code {
     [Parameter]
     public int Id { get; set; }
-    private string AddMessageTherapy = "Додати категорію"; 
+    private string AddMessageTherapy = "Додати категорію";
     private TherapyCard therapyCard = new();
 
     private List<Category> categories = new();
@@ -201,16 +192,19 @@
     private IBrowserFile? uploadedFile;
     private const long maxSize = 5 * 1024 * 1024;
     private const string UploadsSubfolder = "uploads/cosmetology";
-    public enum MediaMode { Image, Video }
     private string selectedCosmetology = "Косметологія";
-
 
     protected override async Task OnInitializedAsync()
     {
         therapyCards = await _seedService.GetAllTherapyCardListAsync();
         pageTherapies = await _seedService.GetAllPageTherapyListAsync();
-        categories =  await _seedService.GetAllCategoryListAsync();
-        StateHasChanged();
+        categories = await _seedService.GetAllCategoryListAsync();
+
+        if (Id > 0)
+        {
+            therapyCard = await _seedService.EditTherapyCard(Id);
+            AddMessageTherapy = "Редагувати картку";
+        }
     }
 
     private void OnFileSelected(InputFileChangeEventArgs e)
@@ -219,7 +213,7 @@
     }
 
     private async Task SaveTherapyCardAsync()
-    {       
+    {
         if (uploadedFile is not null)
         {
             var ext = Path.GetExtension(uploadedFile.Name)?.ToLowerInvariant();
@@ -283,6 +277,7 @@
     private async Task EdittherapyCard(int id)
     {
         therapyCard = await _seedService.EditTherapyCard(id);
+        AddMessageTherapy = "Редагувати картку";
     }
 
     private async Task DeleteTherapyCardAsync(int cardId)
@@ -310,7 +305,7 @@
 
         therapyCards = await _seedService.GetAllTherapyCardListAsync();
         therapyCard = new();
-        this.StateHasChanged();
+        StateHasChanged();
     }
 
     private void CancelTherapyCard()

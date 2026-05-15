@@ -1,4 +1,4 @@
-﻿@page "/analytics"
+@page "/analytics"
 
 @using System.Globalization
 @inject AnalyticsService analytics
@@ -7,118 +7,98 @@
 @attribute [Authorize(Roles = "Admin")]
 @rendermode InteractiveServer
 
-<div class="card filter-card shadow-sm border-0">
-    <div class="card-header bg-body d-flex align-items-center justify-content-between">
-        <div class="d-flex align-items-center gap-2">
-            <i class="bi bi-graph-up"></i>
-            <span class="fw-semibold">Аналітика послуг</span>
-        </div>
-        <small class="text-body-secondary">Оберіть період і натисніть «Показати»</small>
-    </div>
+<div class="container shine-admin-3d-page pb-4">
+    <div class="analytics-wrapper">
 
-    <div class="card-body">      
-        <div class="row g-3 align-items-end">
-            <div class="col-12 col-sm-6 col-md-3">
-                <label class="form-label" for="fromDate">Від</label>
-                <div class="input-group input-group-sm input-group-calendar">
-                    <span class="input-group-text"><i class="bi bi-calendar3"></i></span>
-                    <InputDate id="fromDate" @bind-Value="from" TValue="DateOnly" class="form-control form-control-sm" />
-                </div>
-                <div class="form-text">Початок періоду (включно)</div>
+        <h2 class="analytics-title">
+            <i class="bi bi-graph-up-arrow" aria-hidden="true"></i>
+            Аналітика послуг
+        </h2>
+        <p class="analytics-subtitle">
+            Переглядайте статистику та дохід по категоріях
+        </p>
+
+        <div class="analytics-filters">
+            <div class="filter-group">
+                <label class="filter-label" for="fromDate">Від</label>
+                <InputDate id="fromDate"
+                           @bind-Value="from"
+                           TValue="DateOnly"
+                           class="analytics-input" />
+                <p class="filter-hint mb-0">Початок періоду (включно)</p>
             </div>
 
-            <div class="col-12 col-sm-6 col-md-3">
-                <label class="form-label" for="toDate">До</label>
-                <div class="input-group input-group-sm input-group-calendar">
-                    <span class="input-group-text"><i class="bi bi-calendar3"></i></span>
-                    <InputDate id="toDate" @bind-Value="to" TValue="DateOnly" class="form-control form-control-sm" />
-                </div>
-                <div class="form-text">Кінець періоду (включно)</div>
+            <div class="filter-group">
+                <label class="filter-label" for="toDate">До</label>
+                <InputDate id="toDate"
+                           @bind-Value="to"
+                           TValue="DateOnly"
+                           class="analytics-input" />
+                <p class="filter-hint mb-0">Кінець періоду (включно)</p>
             </div>
 
-            <div class="col-12 col-md-6">
-                <div class="d-grid d-md-flex justify-content-md-end gap-2">
-                    <button class="btn btn-primary btn-sm" @onclick="RefreshAsync">
-                        <i class="bi bi-play-circle me-1"></i> Показати
-                    </button>
-                    <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="ResetFilter">
-                        <i class="bi bi-arrow-counterclockwise me-1"></i> Скинути
-                    </button>
-                </div>
+            <div class="analytics-filter-actions">
+                <button type="button" class="analytics-btn analytics-btn-primary" @onclick="RefreshAsync">
+                    <i class="bi bi-play-circle" aria-hidden="true"></i>
+                    Показати
+                </button>
+                <button type="button" class="analytics-btn analytics-btn-secondary" @onclick="ResetFilter">
+                    <i class="bi bi-arrow-counterclockwise" aria-hidden="true"></i>
+                    Скинути
+                </button>
             </div>
-        </div>
-        <div class="row row-cols-1 row-cols-md-4 g-3 mt-3 kpis justify-content-center text-center">
-
-            <!-- Загальний дохід -->
-            <div class="col">
-                <div class="card border-0 shadow-sm kpi kpi-total h-100">
-                    <div class="card-body py-3">
-                        <div class="d-flex justify-content-center align-items-center gap-2 mb-1">
-                            <i class="bi bi-cash-stack text-success fs-5"></i>
-                            <span class="text-body-secondary small text-uppercase">Загальний дохід</span>
-                        </div>
-                        <div class="fs-4 fw-semibold">@Money(totalRevenue)</div>
-                        <div class="small text-body-secondary">Замовлень: @totalCount</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Косметологія -->
-            <div class="col">
-                <div class="card border-0 shadow-sm kpi kpi-cosmo h-100">
-                    <div class="card-body py-3">
-                        <div class="d-flex justify-content-center align-items-center gap-2 mb-1">
-                            <i class="bi bi-heart text-pink fs-5"></i>
-                            <span class="text-body-secondary small text-uppercase">Косметологія</span>
-                        </div>
-                        <div class="fs-5 fw-semibold">@Money(cosmoRevenue)</div>
-                        <div class="small text-body-secondary">Візитів: @cosmoCount</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Масаж -->
-            <div class="col">
-                <div class="card border-0 shadow-sm kpi kpi-massage h-100">
-                    <div class="card-body py-3">
-                        <div class="d-flex justify-content-center align-items-center gap-2 mb-1">
-                            <i class="bi bi-hand-index-thumb text-primary fs-5"></i>
-                            <span class="text-body-secondary small text-uppercase">Масаж</span>
-                        </div>
-                        <div class="fs-5 fw-semibold">@Money(massageRevenue)</div>
-                        <div class="small text-body-secondary">Візитів: @massageCount</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Продажі -->
-            <div class="col">
-                <div class="card border-0 shadow-sm kpi kpi-sales h-100">
-                    <div class="card-body py-3">
-                        <div class="d-flex justify-content-center align-items-center gap-2 mb-1">
-                            <i class="bi bi-bag-check text-warning fs-5"></i>
-                            <span class="text-body-secondary small text-uppercase">Продажі</span>
-                        </div>
-                        <div class="fs-5 fw-semibold">@Money(salesRevenue)</div>
-                        <div class="small text-body-secondary">Замовлень: @ordersCount</div>
-                    </div>
-                </div>
-            </div>
-
         </div>
 
-        <div class="chart-wrap position-relative mt-3">
-            <div id="chartdiv" class="rounded-3 border" style="width:100%; min-height: 480px;"></div>
-        </div>               
+        <div class="analytics-cards">
+            <div class="analytics-card card-green">
+                <span class="analytics-card-icon" aria-hidden="true">
+                    <i class="bi bi-cash-stack"></i>
+                </span>
+                <div class="card-label">Загальний дохід</div>
+                <div class="card-value">@Money(totalRevenue)</div>
+                <div class="card-meta">Замовлень: @totalCount</div>
+            </div>
+
+            <div class="analytics-card card-pink">
+                <span class="analytics-card-icon" aria-hidden="true">
+                    <i class="bi bi-heart"></i>
+                </span>
+                <div class="card-label">Косметологія</div>
+                <div class="card-value">@Money(cosmoRevenue)</div>
+                <div class="card-meta">Візитів: @cosmoCount</div>
+            </div>
+
+            <div class="analytics-card card-blue">
+                <span class="analytics-card-icon" aria-hidden="true">
+                    <i class="bi bi-hand-index-thumb"></i>
+                </span>
+                <div class="card-label">Масаж</div>
+                <div class="card-value">@Money(massageRevenue)</div>
+                <div class="card-meta">Візитів: @massageCount</div>
+            </div>
+
+            <div class="analytics-card card-gold">
+                <span class="analytics-card-icon" aria-hidden="true">
+                    <i class="bi bi-bag-check"></i>
+                </span>
+                <div class="card-label">Продажі</div>
+                <div class="card-value">@Money(salesRevenue)</div>
+                <div class="card-meta">Замовлень: @ordersCount</div>
+            </div>
+        </div>
+
+        <div class="chart-wrapper">
+            <div id="chartdiv" style="width:100%; min-height:480px;"></div>
+        </div>
     </div>
 </div>
 
 @code {
     private DateOnly from = DateOnly.FromDateTime(DateTime.Today.AddMonths(-1));
-    private DateOnly to = DateOnly.FromDateTime(DateTime.Today);    
+    private DateOnly to = DateOnly.FromDateTime(DateTime.Today);
     private decimal totalRevenue, cosmoRevenue, massageRevenue, salesRevenue;
     private int totalCount, cosmoCount, massageCount, ordersCount;
-    
+
     private static readonly CultureInfo ua = CultureInfo.GetCultureInfo("uk-UA");
     private string Money(decimal v) => $"{v.ToString("N0", ua)} грн";
     private List<object>? _mapped;
@@ -126,7 +106,7 @@
     private bool _canInvokeJs;
 
     protected override async Task OnInitializedAsync()
-    {       
+    {
         await RefreshAsync();
     }
 
@@ -134,49 +114,44 @@
     {
         if (firstRender)
         {
-            _canInvokeJs = true;                        
+            _canInvokeJs = true;
             _mod = await _js.InvokeAsync<IJSObjectReference>("import", "/js/analytics.js");
-            await LoadChartAsync(); 
+            await LoadChartAsync();
         }
     }
 
     private async Task RefreshAsync()
     {
-        await RefreshDataAsync();     
-        await LoadChartAsync();       
+        await RefreshDataAsync();
+        await LoadChartAsync();
     }
 
     private async Task RefreshDataAsync()
     {
         DateTime? fromArg = (from == default) ? null : from.ToDateTime(TimeOnly.MinValue);
-        DateTime? toArg = (to == default) ? null : to.ToDateTime(TimeOnly.MaxValue); 
+        DateTime? toArg = (to == default) ? null : to.ToDateTime(TimeOnly.MaxValue);
 
         var data = await analytics.GetAsync(fromArg, toArg);
 
-        // --- Підрахунок доходів ---
         cosmoRevenue = data.Sum(p => p.CosmetologyRevenue);
         massageRevenue = data.Sum(p => p.MassageRevenue);
-        salesRevenue = data.Sum(p => p.SalesRevenue);   
+        salesRevenue = data.Sum(p => p.SalesRevenue);
         totalRevenue = cosmoRevenue + massageRevenue + salesRevenue;
 
-        // --- Підрахунок кількості ---
         cosmoCount = data.Sum(p => p.CosmetologyCount);
         massageCount = data.Sum(p => p.MassageCount);
-        ordersCount = data.Sum(p => p.OrdersCount);      
+        ordersCount = data.Sum(p => p.OrdersCount);
         totalCount = cosmoCount + massageCount + ordersCount;
 
-        // --- Підготовка даних для графіка ---
         _mapped = data.Select(p => new
         {
             date = p.Date.ToString("yyyy-MM-dd"),
             cosmetologyRevenue = p.CosmetologyRevenue,
             massageRevenue = p.MassageRevenue,
-            salesRevenue = p.SalesRevenue,             
+            salesRevenue = p.SalesRevenue,
             totalRevenue = p.TotalRevenue
         }).ToList<object>();
     }
-
-
 
     private async Task LoadChartAsync()
     {
@@ -186,7 +161,7 @@
 
         await _js.InvokeVoidAsync("GeneralPieChartExpenditure", _mapped);
     }
-       
+
     private async Task ResetFilter()
     {
         from = DateOnly.FromDateTime(DateTime.Today.AddMonths(-1));

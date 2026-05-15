@@ -6,101 +6,153 @@
 @attribute [Authorize(Roles = "Admin")]
 @rendermode InteractiveServer
 
-@* --------- Header --------- *@
-<div class="container mt-4">
-    <h3 class="text-primary mb-3">
-        <i class="bi bi-receipt"></i> Замовлення клієнтів
-    </h3>
+<div class="container shine-admin-3d-page pb-4">
+    <header class="shine-admin-page-hero text-center text-lg-start mb-4">
+        <span class="shine-admin-page-kicker">Магазин</span>
+        <h1 class="shine-admin-page-title mb-0">Замовлення клієнтів</h1>
+        <p class="shine-admin-page-lead mb-0 mt-2">
+            Фільтруйте, переглядайте та редагуйте замовлення з онлайн-магазину SHINE.
+        </p>
+    </header>
 
-    <div class="card shadow-sm border-0 mb-3">
-        <div class="card-body">
-            <div class="row g-2 align-items-end">
-                <div class="col-12 col-md-6">
-                    <label class="form-label small">Пошук (ім’я / прізвище / телефон)</label>
-                    <input class="form-control" @bind="search" @bind:event="oninput" placeholder="Петренко або +380..." />
-                </div>
-                <div class="col-6 col-md-3">
-                    <label class="form-label small">Від</label>
-                    <input type="date" class="form-control" @bind="from" />
-                </div>
-                <div class="col-6 col-md-3">
-                    <label class="form-label small">До</label>
-                    <input type="date" class="form-control" @bind="to" />
-                </div>
+    <div class="clients-card shine-admin-orders-card">
+        <div class="shine-admin-clients-toolbar">
+            <div class="shine-admin-clients-toolbar-title">
+                <i class="bi bi-receipt" aria-hidden="true"></i>
+                <span>Реєстр замовлень</span>
             </div>
 
-            <div class="mt-3 d-flex flex-column flex-sm-row gap-2">
-                <button class="btn btn-primary w-100 w-sm-auto" @onclick="Reload">
-                    <i class="bi bi-search"></i> Застосувати
-                </button>
-                <button class="btn btn-outline-secondary w-100 w-sm-auto" @onclick="ResetFilters">
-                    <i class="bi bi-x-circle"></i> Скинути
-                </button>
+            <div class="shine-admin-orders-filters">
+                <div class="shine-admin-clients-search-wrap shine-admin-orders-search">
+                    <label class="shine-admin-clients-label" for="orders-search">Пошук (ім’я / прізвище / телефон)</label>
+                    <input id="orders-search"
+                           type="search"
+                           class="form-control shine-admin-clients-input"
+                           placeholder="Петренко або +380…"
+                           @bind="search"
+                           @bind:event="oninput"
+                           @onkeydown="OnSearchKeyDown" />
+                </div>
+                <div class="shine-admin-orders-date">
+                    <label class="shine-admin-clients-label" for="orders-from">Від</label>
+                    <input id="orders-from"
+                           type="date"
+                           class="form-control shine-admin-clients-input"
+                           @bind="from" />
+                </div>
+                <div class="shine-admin-orders-date">
+                    <label class="shine-admin-clients-label" for="orders-to">До</label>
+                    <input id="orders-to"
+                           type="date"
+                           class="form-control shine-admin-clients-input"
+                           @bind="to" />
+                </div>
+                <div class="shine-admin-clients-actions">
+                    <button type="button"
+                            class="shine-admin-clients-btn shine-admin-clients-btn--primary"
+                            @onclick="Reload">
+                        <i class="bi bi-search" aria-hidden="true"></i>
+                        Застосувати
+                    </button>
+                    <button type="button"
+                            class="shine-admin-clients-btn shine-admin-clients-btn--ghost"
+                            @onclick="ResetFilters">
+                        <i class="bi bi-x-circle" aria-hidden="true"></i>
+                        Скинути
+                    </button>
+                </div>
             </div>
         </div>
-    </div>
 
-    @if (loading)
-    {
-        <div class="text-body-secondary small">Завантаження…</div>
-    }
-    else if (rows.Count == 0)
-    {
-        <div class="text-body-secondary">Нічого не знайдено.</div>
-    }
-    else
-    {
-        <div class="table-responsive">
-            <table class="table table-hover align-middle">
-                <thead class="table-light">
-                    <tr>
-                        <th>ID</th>
-                        <th>Дата</th>
-                        <th>Клієнт</th>
-                        <th>Телефон</th>
-                        <th>Місто</th>
-                        <th>Відділення НП</th>
-                        <th>Товар</th>
-                        <th class="text-end">Кількість</th>
-                        <th class="text-end">Ціна</th>
-                        <th class="text-end">Сума позиції</th>
-                        <th class="text-end">Всього</th>
-                        <th class="text-center">Дії</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var r in rows)
-                    {
+        @if (loading)
+        {
+            <p class="shine-admin-clients-empty py-4 mb-0">Завантаження…</p>
+        }
+        else if (rows.Count == 0)
+        {
+            <p class="shine-admin-clients-empty py-4 mb-0">Нічого не знайдено.</p>
+        }
+        else
+        {
+            <div class="table-responsive shine-admin-clients-table-wrap shine-admin-orders-table-wrap">
+                <table class="table shine-admin-clients-table shine-admin-orders-table align-middle mb-0">
+                    <thead>
                         <tr>
-                            <td>#@r.OrderId</td>
-                            <td>@r.OrderDate.ToString("dd.MM.yyyy")</td>
-                            <td>@r.ClientFullName</td>
-                            <td><a href="tel:@r.ClientPhone">@r.ClientPhone</a></td>
-                            <td>@r.City</td>
-                            <td><div>@r.NewPostOffice</div></td>
-                            <td>@r.ItemName</td>
-                            <td class="text-end">@r.Quantity</td>
-                            <td class="text-end">@Money(r.UnitPrice)</td>
-                            <td class="text-end">@Money(r.LineTotal)</td>
-                            <td class="text-end">@Money(r.OrderTotal)</td>
-                            <td class="text-center">
-                                <button class="btn btn-sm btn-outline-primary me-1" @onclick="() => EditRow(r.OrderId)">
-                                    <i class="bi bi-pencil-square"></i>
-                                </button>
-                            </td>
+                            <th scope="col">ID</th>
+                            <th scope="col">Дата</th>
+                            <th scope="col">Клієнт</th>
+                            <th scope="col">Телефон</th>
+                            <th scope="col" class="d-none d-lg-table-cell">Місто</th>
+                            <th scope="col" class="d-none d-xl-table-cell">Відділення НП</th>
+                            <th scope="col">Товар</th>
+                            <th scope="col" class="text-end">К-сть</th>
+                            <th scope="col" class="text-end">Ціна</th>
+                            <th scope="col" class="text-end">Сума</th>
+                            <th scope="col" class="text-end">Всього</th>
+                            <th scope="col" class="text-center">Дії</th>
                         </tr>
-                    }
-                </tbody>
-                <tfoot class="table-light">
-                    <tr>
-                        <th colspan="10" class="text-end">Загальна сума:</th>
-                        <th class="text-end">@Money(totalOrdersAmount)</th>
-                    </tr>
-                </tfoot>
-            </table>
-        </div>
-    }
-</div>
+                    </thead>
+                    <tbody>
+                        @{
+                            var prevOrderId = -1;
+                        }
+                        @foreach (var r in rows)
+                        {
+                            var isNewOrder = r.OrderId != prevOrderId;
+                            prevOrderId = r.OrderId;
+                            <tr class="@(isNewOrder ? "shine-admin-orders-row--new" : null)">
+                                <td class="text-nowrap">
+                                    @if (isNewOrder)
+                                    {
+                                        <span class="shine-admin-orders-id">#@r.OrderId</span>
+                                    }
+                                </td>
+                                <td class="text-nowrap">@(isNewOrder ? r.OrderDate.ToString("dd.MM.yyyy") : "")</td>
+                                <td class="shine-admin-clients-name">@(isNewOrder ? r.ClientFullName : "")</td>
+                                <td>
+                                    @if (isNewOrder)
+                                    {
+                                        <a href="tel:@r.ClientPhone" class="shine-admin-clients-phone">@r.ClientPhone</a>
+                                    }
+                                </td>
+                                <td class="d-none d-lg-table-cell">@(isNewOrder ? r.City : "")</td>
+                                <td class="d-none d-xl-table-cell shine-admin-orders-np">@(isNewOrder ? r.NewPostOffice : "")</td>
+                                <td class="shine-admin-orders-product">@r.ItemName</td>
+                                <td class="text-end text-nowrap">@r.Quantity</td>
+                                <td class="text-end text-nowrap shine-admin-clients-price">@Money(r.UnitPrice)</td>
+                                <td class="text-end text-nowrap shine-admin-clients-price">@Money(r.LineTotal)</td>
+                                <td class="text-end text-nowrap fw-bold shine-admin-orders-total">@Money(r.OrderTotal)</td>
+                                <td class="text-center">
+                                    @if (isNewOrder)
+                                    {
+                                        <button type="button"
+                                                class="btn btn-outline-danger btn-sm rounded-pill shine-admin-clients-edit-btn"
+                                                title="Редагувати замовлення"
+                                                @onclick="() => EditRow(r.OrderId)">
+                                            <i class="bi bi-pencil-square" aria-hidden="true"></i>
+                                        </button>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr class="shine-admin-orders-tfoot">
+                            <th colspan="10" class="text-end">Загальна сума:</th>
+                            <th class="text-end shine-admin-orders-grand-total">@Money(totalOrdersAmount)</th>
+                            <th></th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <p class="shine-admin-clients-meta mt-3 mb-0">
+                Знайдено <strong>@rows.Count</strong> позицій
+                · унікальних замовлень: <strong>@rows.Select(r => r.OrderId).Distinct().Count()</strong>
+            </p>
+        }
+    </div>
+    </div>
 
 @code {
     private string? search;
@@ -133,6 +185,14 @@
         from = null;
         to = null;
         await Reload();
+    }
+
+    private void OnSearchKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            _ = Reload();
+        }
     }
 
     private void EditRow(int id)

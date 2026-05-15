@@ -7,83 +7,130 @@
 @attribute [Authorize(Roles = "Admin,Manicure")]
 @rendermode InteractiveServer
 
+<div class="container shine-admin-3d-page pb-4">
+    <header class="shine-admin-page-hero text-center text-lg-start mb-4">
+        <span class="shine-admin-page-kicker">База клієнтів</span>
+        <h1 class="shine-admin-page-title mb-0">Клієнти</h1>
+        <p class="shine-admin-page-lead mb-0 mt-2">
+            Пошук, перегляд і редагування записів клієнтів студії SHINE.
+        </p>
+    </header>
 
-<div class="card shadow-sm">
-    <div class="card-body">
-        <div class="d-flex flex-wrap gap-2 align-items-end mb-3">
-            <div class="me-auto">
-                <h5 class="m-0">Клієнти</h5>                
+    <div class="clients-card shine-admin-clients-card">
+        <div class="shine-admin-clients-toolbar">
+            <div class="shine-admin-clients-toolbar-title">
+                <i class="bi bi-people-fill" aria-hidden="true"></i>
+                <span>Записи клієнтів</span>
             </div>
-            <div class="d-flex flex-wrap gap-3 align-items-end mb-4 p-3 bg-light rounded shadow-sm">
-                <div class="me-auto">
-                    <h4 class="m-0 text-primary fw-bold">
-                        <i class="bi bi-people me-2"></i>Клієнти
-                    </h4>
+            <div class="shine-admin-clients-filters">
+                <div class="shine-admin-clients-search-wrap">
+                    <label class="shine-admin-clients-label" for="clients-search">Пошук (ім’я / телефон)</label>
+                    <input id="clients-search"
+                           type="search"
+                           class="form-control shine-admin-clients-input"
+                           placeholder="Введіть ім’я або телефон…"
+                           @bind="search"
+                           @bind:event="oninput"
+                           @onkeydown="OnSearchKeyDown" />
                 </div>
-                <div class="form-floating">
-                    <input type="text" class="form-control" placeholder="Пошук"
-                           @bind="search" @bind:event="oninput">
-                    <label>Пошук (ім’я / телефон)</label>
+                <div class="shine-admin-clients-actions">
+                    <button type="button"
+                            class="shine-admin-clients-btn shine-admin-clients-btn--primary"
+                            @onclick="Search">
+                        <i class="bi bi-search" aria-hidden="true"></i>
+                        Пошук
+                    </button>
+                    <button type="button"
+                            class="shine-admin-clients-btn shine-admin-clients-btn--ghost"
+                            @onclick="Reset">
+                        <i class="bi bi-arrow-counterclockwise" aria-hidden="true"></i>
+                        Скинути
+                    </button>
                 </div>
-
-                <button class="btn btn-primary d-flex align-items-center px-3" @onclick="() => Search()">
-                    <i class="bi bi-search me-1"></i> Пошук
-                </button>
-                <button class="btn btn-danger d-flex align-items-center px-3" @onclick="() => Reset()">
-                    <i class="bi bi-search me-1"></i> Скинути
-                </button>
             </div>
         </div>
-        <div class="table-responsive">
-            <table class="table table-hover align-middle">
-                <thead class="table-light" style="position: sticky; top: 0; z-index: 1;">
+
+        <div class="table-responsive shine-admin-clients-table-wrap">
+            <table class="table shine-admin-clients-table align-middle mb-0">
+                <thead>
                     <tr>
-                        <th class="text-nowrap"><button class="btn btn-link p-0">Дата</button></th>
-                        <th class="text-nowrap"><button class="btn btn-link p-0">Час</button></th>
-                        <th><button class="btn btn-link p-0">Ім’я</button></th>
-                        <th><button class="btn btn-link p-0">Телефон</button></th>
-                        <th class="d-none d-md-table-cell"><button class="btn btn-link p-0">Категорія</button></th>
-                        <th><button class="btn btn-link p-0">Послуга</button></th>
-                        <th><button class="btn btn-link p-0">Ціна</button></th>
-                        <th class="text-center">Дії</th>
+                        <th scope="col">Дата</th>
+                        <th scope="col">Час</th>
+                        <th scope="col">Ім’я</th>
+                        <th scope="col">Телефон</th>
+                        <th scope="col" class="d-none d-md-table-cell">Категорія</th>
+                        <th scope="col">Послуга</th>
+                        <th scope="col">Ціна</th>
+                        <th scope="col" class="text-center">Дії</th>
                     </tr>
                 </thead>
                 <tbody>
-                @if (pagedRows.Count == 0)
-                {
-                    <tr><td colspan="8" class="text-center text-muted py-4">Нічого не знайдено</td></tr>
-                }
-                else
-                {
-                    @foreach (var r in pagedRows)
+                    @if (pagedRows.Count == 0)
                     {
+                        <tr>
+                            <td colspan="8" class="shine-admin-clients-empty text-center py-5">
+                                Нічого не знайдено
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var r in pagedRows)
+                        {
                             <tr>
-                                <td>@r.Date.ToString("dd.MM.yyyy")</td>
-                                <td>@r.Time.ToString("HH\\:mm")</td>
-                                <td>@r.Name</td>
-                                <td><a href="tel:@r.Phone">@r.Phone</a></td>
+                                <td class="text-nowrap">@r.Date.ToString("dd.MM.yyyy")</td>
+                                <td class="text-nowrap">@r.Time.ToString("HH\\:mm")</td>
+                                <td class="shine-admin-clients-name">@r.Name</td>
+                                <td>
+                                    <a href="tel:@r.Phone" class="shine-admin-clients-phone">@r.Phone</a>
+                                </td>
                                 <td class="d-none d-md-table-cell">@r.Category</td>
                                 <td>@r.Service</td>
-                                <td>@r.Price</td>
+                                <td class="shine-admin-clients-price text-nowrap">
+                                    @r.Price.ToString("C0", ua)
+                                </td>
                                 <td class="text-center">
-                                    <button class="btn btn-sm btn-outline-primary me-1" @onclick="() => EditRow(r.Id)">
-                                        <i class="bi bi-pencil-square"></i>
-                                    </button>                                   
+                                    <button type="button"
+                                            class="btn btn-outline-danger btn-sm rounded-pill shine-admin-clients-edit-btn"
+                                            title="Редагувати"
+                                            @onclick="() => EditRow(r.Id)">
+                                        <i class="bi bi-pencil-square" aria-hidden="true"></i>
+                                    </button>
                                 </td>
                             </tr>
+                        }
                     }
-                }
                 </tbody>
             </table>
         </div>
-        <div class="d-flex align-items-center justify-content-between mt-2">
-            <small class="text-muted">Показано @pagedRows.Count з @filteredRows.Count записів</small>
-            <div class="btn-group">
-                <button class="btn btn-outline-secondary btn-sm" @onclick="PrevPage" disabled="@IsFirstPage">«</button>
-                <span class="btn btn-outline-secondary btn-sm disabled">Стор.@pagedRows.Count назад @totalPages</span>
-                <button class="btn btn-outline-secondary btn-sm" @onclick="NextPage" disabled="@IsLastPage">»</button>
+
+        <footer class="shine-admin-clients-footer">
+            <p class="shine-admin-clients-meta mb-0">
+                Показано <strong>@pagedRows.Count</strong> з <strong>@filteredRows.Count</strong> записів
+                @if (totalPages > 1)
+                {
+                    <span class="shine-admin-clients-meta-sep">·</span>
+                    <span>Сторінка @currentPage з @totalPages</span>
+                }
+            </p>
+            <div class="shine-admin-clients-pager" role="navigation" aria-label="Пагінація">
+                <button type="button"
+                        class="shine-admin-clients-pager-btn"
+                        @onclick="PrevPage"
+                        disabled="@IsFirstPage"
+                        aria-label="Попередня сторінка">
+                    «
+                </button>
+                <span class="shine-admin-clients-pager-current" aria-current="page">@currentPage / @totalPages</span>
+                <button type="button"
+                        class="shine-admin-clients-pager-btn"
+                        @onclick="NextPage"
+                        disabled="@IsLastPage"
+                        aria-label="Наступна сторінка">
+                    »
+                </button>
             </div>
-        </div>
+        </footer>
     </div>
 </div>
 
@@ -95,17 +142,14 @@
     private readonly CultureInfo ua = new("uk-UA");
     private string? search;
 
-    private string sortBy = nameof(RowVM.Date);
-    private bool sortAsc = true;
-    private int page = 1;
-    private int pageSize = 10;
+    private int currentPage = 1;
+    private const int pageSize = 10;
 
     private List<RowVM> filteredRows = new();
     private List<RowVM> pagedRows = new();
-    private HashSet<int> deleting = new();
     private int totalPages;
-    private bool IsFirstPage => page <= 1;
-    private bool IsLastPage => page >= totalPages;
+    private bool IsFirstPage => currentPage <= 1;
+    private bool IsLastPage => currentPage >= totalPages;
     private bool _isAdmin;
     private bool _isManicure;
 
@@ -124,33 +168,54 @@
         Rebuild();
     }
 
-
     private void Rebuild()
-    {      
-        var rows = GetAllRows();
-
-        filteredRows = rows.ToList();               
+    {
+        filteredRows = GetAllRows();
         totalPages = Math.Max(1, (int)Math.Ceiling(filteredRows.Count / (double)pageSize));
-        page = Math.Clamp(page, 1, totalPages);
-        pagedRows = filteredRows.Skip((page - 1) * pageSize).Take(pageSize).ToList();
-        StateHasChanged();
+        currentPage = Math.Clamp(currentPage, 1, totalPages);
+        pagedRows = filteredRows.Skip((currentPage - 1) * pageSize).Take(pageSize).ToList();
     }
 
-    private void PrevPage() { if (!IsFirstPage) { page--; Rebuild(); } }
-    private void NextPage() { if (!IsLastPage)  { page++; Rebuild(); } }
-
-    private RenderFragment SortIcon(string col) => builder =>
+    private void PrevPage()
     {
-        if (sortBy != col) return;
-        var icon = sortAsc ? "fa-sort-up" : "fa-sort-down";
-        builder.OpenElement(0, "i");
-        builder.AddAttribute(1, "class", $"fa-solid {icon} ms-1");
-        builder.CloseElement();
-    };
+        if (!IsFirstPage)
+        {
+            currentPage--;
+            Rebuild();
+        }
+    }
+
+    private void NextPage()
+    {
+        if (!IsLastPage)
+        {
+            currentPage++;
+            Rebuild();
+        }
+    }
 
     private void Search()
     {
-        pagedRows = GetAllRows();
+        currentPage = 1;
+        Rebuild();
+    }
+
+    private async Task Reset()
+    {
+        search = string.Empty;
+        currentPage = 1;
+        allClientList = await _seedService.GetAllClientListAsync();
+        categories = await _seedService.GetAllCategoryListAsync();
+        therapyCards = await _seedService.GetAllTherapyCardListAsync();
+        Rebuild();
+    }
+
+    private void OnSearchKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            Search();
+        }
     }
 
     private List<RowVM> GetAllRows()
@@ -167,13 +232,11 @@
                        cat?.NameCategory ?? "—",
                        th?.TitleCard ?? "—",
                        a.IsCompleted,
-                       a.Price
-                   );
+                       a.Price);
 
-       
         if (_isManicure && !_isAdmin)
         {
-            rows = rows.Where(r => r.Category == "Манікюр");           
+            rows = rows.Where(r => r.Category == "Манікюр");
         }
 
         if (!string.IsNullOrWhiteSpace(search))
@@ -185,29 +248,17 @@
                 r.Service.ToLowerInvariant().Contains(s));
         }
 
-        rows = rows
+        return rows
             .OrderByDescending(r => r.Date)
-            .ThenByDescending(r => r.Time);
-
-        return rows.ToList();
+            .ThenByDescending(r => r.Time)
+            .ToList();
     }
-
-
-    private async Task Reset()
-    {
-        search = string.Empty;
-        allClientList = await _seedService.GetAllClientListAsync();
-        categories = await _seedService.GetAllCategoryListAsync();
-        therapyCards = await _seedService.GetAllTherapyCardListAsync();
-
-        Rebuild();
-    }   
 
     private void EditRow(int id)
     {
         _navigationManager.NavigateTo($"/edit-client/{id}");
     }
-   
+
     private sealed record RowVM(
         int Id,
         string Name,
@@ -215,9 +266,7 @@
         DateOnly Date,
         TimeOnly Time,
         string Category,
-        string Service,      
+        string Service,
         bool Completed,
-        decimal Price
-    );
+        decimal Price);
 }
-

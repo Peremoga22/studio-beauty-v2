@@ -1,95 +1,95 @@
-﻿@page "/admin-massage-therapy"
+@page "/admin-massage-therapy"
 
 @inject SeedService _seedService
-@inject NavigationManager _navigationManager
 @inject NavigationManager _navigationManager
 @layout AdminLayout
 @attribute [Authorize(Roles = "Admin")]
 @rendermode InteractiveServer
 
+<div class="container shine-admin-3d-page pb-4">
+    <header class="shine-admin-page-hero text-center text-lg-start mb-4">
+        <span class="shine-admin-page-kicker">Контент сайту</span>
+        <h1 class="shine-admin-page-title mb-0">Наповнення: масажна терапія</h1>
+        <p class="shine-admin-page-lead mb-0 mt-2">
+            Керуйте титулкою та описом сторінки масажу SHINE.
+        </p>
+    </header>
 
-<div class="container my-4">
-    <h3 class="mb-3 fw-bold text-primary">Наповнення: сторінки массажна терапія</h3>
-
-    <nav aria-label="breadcrumb" class="bg-white shadow-sm rounded px-3 py-2 mb-4">
-        <ol class="breadcrumb mb-0">          
-            <li class="breadcrumb-item active" aria-current="page">Масаж</li>
+    <nav class="shine-admin-cosmo-breadcrumb mb-4" aria-label="breadcrumb">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item active" aria-current="page">
+                <i class="bi bi-hand-index-thumb me-1" aria-hidden="true"></i>
+                Масаж
+            </li>
         </ol>
     </nav>
-    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-        <h4 class="fw-semibold mb-0">Титулка сторінки масаж</h4>
 
-        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">          
-            <div class="d-flex align-items-center gap-2">
-                <NavLink class="btn btn-success shadow-sm d-flex align-items-center justify-content-center"
-                         style="min-height: 44px; min-width: 44px;"
-                         href="/edit-massage-therapy">
-                    <i class="bi bi-plus-lg"></i>
-                    <span class="d-none d-sm-inline ms-1">Додати титулку</span>
-                </NavLink>
+    <div class="clients-card shine-admin-cosmo-card">
+        <div class="shine-admin-cosmo-toolbar">
+            <div class="shine-admin-cosmo-toolbar-title">
+                <i class="bi bi-card-image" aria-hidden="true"></i>
+                <span>Титулка сторінки масаж</span>
             </div>
+            <NavLink class="shine-admin-cosmo-btn shine-admin-cosmo-btn--primary text-decoration-none"
+                     href="/edit-massage-therapy">
+                <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                <span>Додати титулку</span>
+            </NavLink>
         </div>
-    </div>
-    <div class="card shadow-sm border-0 rounded-3">
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light text-uppercase small text-secondary">
+
+        <div class="table-responsive shine-admin-cosmo-table-wrap">
+            <table class="table shine-admin-cosmo-table align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th scope="col">Назва</th>
+                        <th scope="col">Опис</th>
+                        <th scope="col" class="text-end">Дії</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (pageTherapyList is null || pageTherapyList.Count == 0)
+                    {
                         <tr>
-                            <th scope="col" class="px-4 py-3">Назва</th>
-                            <th scope="col" class="px-4 py-3">Опис</th>
-                            <th scope="col" class="px-4 py-3 text-end">Дії</th>
+                            <td colspan="3" class="shine-admin-cosmo-empty text-center py-5">
+                                Нічого не знайдено.
+                                <NavLink class="shine-admin-cosmo-link ms-1" href="/edit-massage-therapy">
+                                    Додайте першу титулку
+                                </NavLink>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @if (pageTherapyList is null || pageTherapyList.Count == 0)
+                    }
+                    else
+                    {
+                        var page = pageTherapyList.FirstOrDefault(p => p.TitlePage == selectedMassage);
+                        @foreach (var item in pageTherapyList.Where(x => x.CategoryId == page?.CategoryId))
                         {
                             <tr>
-                                <td colspan="2" class="text-center text-muted py-4">
-                                    Нічого не знайдено. Спробуйте інший запит або
-                                    <NavLink class="btn btn-sm btn-link text-success" href="/edit-cosmetology">
-                                        додайте першу титулку
-                                    </NavLink>.
+                                <td class="shine-admin-cosmo-name">
+                                    <span class="cell-truncate" title="@item.TitlePage">@item.TitlePage</span>
+                                </td>
+                                <td class="shine-admin-cosmo-desc">@item.DescriptionPage</td>
+                                <td class="text-end">
+                                    <NavLink class="shine-admin-cosmo-edit-btn text-decoration-none"
+                                             href="@($"/edit-massage-therapy/{item.Id}")">
+                                        <i class="bi bi-pencil-square" aria-hidden="true"></i>
+                                        <span class="d-none d-sm-inline">Редагувати</span>
+                                    </NavLink>
                                 </td>
                             </tr>
                         }
-                        else
-                        {
-                            var page = pageTherapyList.FirstOrDefault(p => p.TitlePage == @selectedCosmetology);
-                            @foreach (var item in pageTherapyList.Where(x => x.CategoryId == page.CategoryId))                           
-                            {
-                                <tr>
-                                    <td class="px-4 py-3 fw-medium">
-                                        <span class="cell-truncate" title="@item.TitlePage"><strong>@item.TitlePage</strong></span>                                                                              
-                                    </td>
-                                    <td >@item.DescriptionPage</td>
-                                    <td class="px-4 py-3 text-end">
-                                        <div class="d-flex flex-wrap justify-content-end gap-2">
-                                            <NavLink class="btn btn-sm btn-outline-primary"
-                                                     href="@($"/edit-massage-therapy/{item.Id}")">
-                                                <i class="bi bi-pencil-square"></i>
-                                                <span class="d-none d-sm-inline ms-1">Редагувати</span>
-                                            </NavLink>                                           
-                                        </div>
-                                    </td>
-                                </tr>
-                            }
-                        }
-                    </tbody>
-                </table>
-            </div>
+                    }
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
 
-
 @code {
     private List<PageTherapy> pageTherapyList = new();
-    private string selectedCosmetology = "Масаж";
+    private string selectedMassage = "Масаж";
 
     protected override async Task OnInitializedAsync()
     {
         pageTherapyList = await _seedService.GetAllPageTherapyListAsync();
-        this.StateHasChanged();
     }
 }

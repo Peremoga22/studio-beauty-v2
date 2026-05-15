@@ -1,0 +1,303 @@
+/* Сторінка клієнтів (/admin-us-clients) */
+.clients-card.shine-admin-clients-card {
+ /*   max-width: 1100px;*/
+    width: 100%;
+    margin: 0 auto;
+    padding: clamp(1rem, 2.5vw, 1.75rem);
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.78);
+    box-shadow: 0 20px 60px rgba(255, 105, 160, 0.14);
+    border: 1px solid rgba(255, 182, 213, 0.38);
+}
+
+.shine-admin-clients-toolbar {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 1.1rem;
+    border-bottom: 2px solid transparent;
+    border-image: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 79, 163, 0.35),
+        transparent
+    ) 1;
+}
+
+.shine-admin-clients-toolbar-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: "Playfair Display", Georgia, serif;
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: #2a1f2e;
+}
+
+.shine-admin-clients-toolbar-title i {
+    color: #ff4f9a;
+    font-size: 1.15rem;
+}
+
+.shine-admin-clients-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 0.75rem 1rem;
+}
+
+.shine-admin-clients-search-wrap {
+    flex: 1 1 220px;
+    min-width: min(100%, 220px);
+}
+
+.shine-admin-clients-label {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #5c4f5c;
+}
+
+.shine-admin-clients-input {
+    border-radius: 14px !important;
+    border: 1px solid rgba(255, 182, 213, 0.5) !important;
+    background: rgba(255, 252, 254, 0.98) !important;
+    padding: 0.55rem 0.85rem !important;
+    font-size: 0.95rem;
+}
+
+.shine-admin-clients-input:focus {
+    border-color: rgba(255, 79, 163, 0.55) !important;
+    box-shadow: 0 0 0 0.2rem rgba(255, 79, 163, 0.16) !important;
+}
+
+.shine-admin-clients-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.shine-admin-clients-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    min-height: 2.65rem;
+    padding: 0.55rem 1.15rem;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+.shine-admin-clients-btn--primary {
+    color: #fff !important;
+    background: linear-gradient(145deg, #ff1f7a 0%, #ff4f9a 48%, #ff6eb8 100%);
+    box-shadow: 0 8px 22px rgba(255, 79, 163, 0.32);
+}
+
+.shine-admin-clients-btn--primary:hover {
+    filter: brightness(1.06);
+    transform: translateY(-1px);
+}
+
+.shine-admin-clients-btn--ghost {
+    color: #9b1b5a !important;
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid rgba(255, 79, 163, 0.45) !important;
+    box-shadow: 0 2px 8px rgba(255, 79, 163, 0.08);
+}
+
+.shine-admin-clients-btn--ghost:hover {
+    background: rgba(255, 79, 163, 0.1) !important;
+    border-color: rgba(255, 79, 163, 0.65) !important;
+}
+
+.shine-admin-clients-table-wrap {
+    border-radius: 16px;
+    border: 1px solid rgba(255, 182, 213, 0.35);
+    overflow: auto;
+    background: rgba(255, 255, 255, 0.92);
+}
+
+.shine-admin-clients-table {
+    --bs-table-bg: transparent;
+    margin: 0;
+    font-size: 0.92rem;
+}
+
+.shine-admin-clients-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    padding: 0.75rem 0.85rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #9b1b5a;
+    background: linear-gradient(180deg, rgba(255, 248, 252, 0.98), rgba(255, 236, 246, 0.95));
+    border-bottom: 1px solid rgba(255, 182, 213, 0.45);
+    white-space: nowrap;
+}
+
+.shine-admin-clients-table tbody td {
+    padding: 0.7rem 0.85rem;
+    border-bottom: 1px solid rgba(255, 230, 240, 0.8);
+    color: #3a2d3a;
+    vertical-align: middle;
+}
+
+.shine-admin-clients-table tbody tr:hover td {
+    background: rgba(255, 79, 163, 0.05);
+}
+
+.shine-admin-clients-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.shine-admin-clients-name {
+    font-weight: 600;
+    color: #2a1f2e;
+}
+
+.shine-admin-clients-phone {
+    color: #c2185b !important;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.shine-admin-clients-phone:hover {
+    color: #ff4f9a !important;
+}
+
+.shine-admin-clients-price {
+    font-weight: 700;
+    color: #c2185b;
+}
+
+.shine-admin-clients-empty {
+    color: #7b6c7a;
+    font-size: 1rem;
+}
+
+.shine-admin-clients-edit-btn {
+    border-color: rgba(255, 79, 163, 0.45) !important;
+    color: #c2185b !important;
+}
+
+.shine-admin-clients-edit-btn:hover {
+    background: rgba(255, 79, 163, 0.12) !important;
+    border-color: rgba(255, 79, 163, 0.7) !important;
+    color: #8b0a4d !important;
+}
+
+.shine-admin-clients-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-top: 1.1rem;
+    padding-top: 1rem;
+}
+
+.shine-admin-clients-meta {
+    font-size: 0.88rem;
+    color: #7b6c7a;
+}
+
+.shine-admin-clients-meta strong {
+    color: #c2185b;
+}
+
+.shine-admin-clients-meta-sep {
+    margin: 0 0.35rem;
+    opacity: 0.5;
+}
+
+.shine-admin-clients-pager {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.2rem;
+    border-radius: 999px;
+    background: rgba(255, 248, 252, 0.95);
+    border: 1px solid rgba(255, 182, 213, 0.4);
+}
+
+.shine-admin-clients-pager-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.25rem;
+    min-height: 2.25rem;
+    padding: 0 0.5rem;
+    border: none;
+    border-radius: 999px;
+    background: transparent;
+    color: #c2185b;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.shine-admin-clients-pager-btn:hover:not(:disabled) {
+    background: rgba(255, 79, 163, 0.12);
+    color: #8b0a4d;
+}
+
+.shine-admin-clients-pager-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+.shine-admin-clients-pager-current {
+    min-width: 4.5rem;
+    text-align: center;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #5c4f5c;
+}
+
+@media (max-width: 768px) {
+    .clients-card.shine-admin-clients-card {
+        max-width: 100%;
+        padding: 1rem;
+    }
+
+    .shine-admin-clients-filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .shine-admin-clients-actions {
+        width: 100%;
+    }
+
+    .shine-admin-clients-btn {
+        flex: 1 1 auto;
+    }
+
+    .shine-admin-clients-footer {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+    }
+
+    .shine-admin-clients-pager {
+        justify-content: center;
+        width: 100%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .shine-admin-clients-btn,
+    .shine-admin-clients-pager-btn {
+        transition: none;
+    }
+}

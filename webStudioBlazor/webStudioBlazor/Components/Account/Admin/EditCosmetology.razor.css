@@ -1,0 +1,330 @@
+/* Редагування косметології (/edit-cosmetology) */
+
+.shine-edit-cosmo-breadcrumb {
+    padding: 0.65rem 1.1rem;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(255, 182, 213, 0.35);
+    box-shadow: 0 8px 24px rgba(255, 105, 160, 0.08);
+}
+
+.shine-edit-cosmo-back {
+    color: #c2185b !important;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.shine-edit-cosmo-back:hover {
+    color: #ff4f9a !important;
+}
+
+.shine-edit-cosmo-breadcrumb .breadcrumb-item.active {
+    color: #5c4f5c;
+    font-weight: 600;
+}
+
+.shine-edit-cosmo-form-card {
+    border-radius: 24px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.88);
+    border: 1px solid rgba(255, 182, 213, 0.38);
+    box-shadow: 0 20px 60px rgba(255, 105, 160, 0.14);
+}
+
+.shine-edit-cosmo-form-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 1.35rem;
+    color: #fff;
+    font-size: 1rem;
+    background: linear-gradient(145deg, #ff1f7a 0%, #ff4f9a 48%, #ff6eb8 100%);
+}
+
+.shine-edit-cosmo-form-header i {
+    font-size: 1.15rem;
+}
+
+.shine-edit-cosmo-form-body {
+    padding: clamp(1.1rem, 2.5vw, 1.75rem);
+}
+
+.shine-edit-cosmo-form-title {
+    margin: 0 0 1.25rem;
+    text-align: center;
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #2a1f2e;
+}
+
+.shine-edit-cosmo-field {
+    margin-bottom: 1.1rem;
+}
+
+.shine-edit-cosmo-label {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #5c4f5c;
+}
+
+.shine-edit-cosmo-input,
+.shine-edit-cosmo-price-group .input-group-text {
+    border-radius: 14px !important;
+    border: 1px solid rgba(255, 182, 213, 0.5) !important;
+    background: rgba(255, 252, 254, 0.98) !important;
+}
+
+.shine-edit-cosmo-input {
+    padding: 0.55rem 0.85rem !important;
+    font-size: 0.95rem;
+}
+
+.shine-edit-cosmo-input:focus {
+    border-color: rgba(255, 79, 163, 0.55) !important;
+    box-shadow: 0 0 0 0.2rem rgba(255, 79, 163, 0.16) !important;
+}
+
+.shine-edit-cosmo-price-group .input-group-text {
+    color: #c2185b;
+    font-weight: 700;
+}
+
+.shine-edit-cosmo-hint {
+    display: block;
+    margin-top: 0.35rem;
+    font-size: 0.8rem;
+    color: #9a8a96;
+}
+
+.shine-edit-cosmo-preview-img {
+    max-width: 200px;
+    max-height: 200px;
+    object-fit: cover;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 182, 213, 0.4);
+    box-shadow: 0 8px 22px rgba(255, 105, 160, 0.12);
+}
+
+.shine-edit-cosmo-validation {
+    margin-bottom: 1rem;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    background: rgba(255, 79, 163, 0.08);
+    border: 1px solid rgba(255, 79, 163, 0.25);
+    color: #9b1b5a;
+}
+
+.shine-edit-cosmo-error {
+    font-size: 0.8rem;
+    color: #c2185b;
+}
+
+.shine-edit-cosmo-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+    padding-top: 1.1rem;
+    border-top: 2px solid transparent;
+    border-image: linear-gradient(90deg, transparent, rgba(255, 79, 163, 0.3), transparent) 1;
+}
+
+.shine-edit-cosmo-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    min-height: 2.65rem;
+    padding: 0.55rem 1.15rem;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+.shine-edit-cosmo-btn--primary {
+    color: #fff !important;
+    background: linear-gradient(145deg, #ff1f7a 0%, #ff4f9a 48%, #ff6eb8 100%);
+    box-shadow: 0 8px 22px rgba(255, 79, 163, 0.32);
+}
+
+.shine-edit-cosmo-btn--primary:hover {
+    filter: brightness(1.06);
+    transform: translateY(-1px);
+}
+
+.shine-edit-cosmo-btn--ghost {
+    color: #9b1b5a !important;
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid rgba(255, 79, 163, 0.45) !important;
+}
+
+.shine-edit-cosmo-btn--ghost:hover {
+    background: rgba(255, 79, 163, 0.1) !important;
+}
+
+.shine-edit-cosmo-btn--danger {
+    color: #c2185b !important;
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid rgba(220, 53, 69, 0.45) !important;
+}
+
+.shine-edit-cosmo-btn--danger:hover {
+    background: rgba(220, 53, 69, 0.08) !important;
+}
+
+/* Сітка карток */
+.shine-edit-cosmo-grid-section {
+    margin-top: 0.5rem;
+}
+
+.shine-edit-cosmo-grid-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #2a1f2e;
+}
+
+.shine-edit-cosmo-grid-title i {
+    color: #ff4f9a;
+}
+
+.shine-edit-cosmo-product {
+    display: flex;
+    flex-direction: column;
+    border-radius: 22px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(255, 182, 213, 0.4);
+    box-shadow: 0 14px 36px rgba(255, 105, 160, 0.12);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.shine-edit-cosmo-product:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 48px rgba(255, 105, 160, 0.18);
+}
+
+.shine-edit-cosmo-product-image {
+    background: #fff3f8;
+}
+
+.shine-edit-cosmo-product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.shine-edit-cosmo-product-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 0.85rem;
+}
+
+.shine-edit-cosmo-product-title {
+    margin: 0 0 0.35rem;
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #d63384;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.shine-edit-cosmo-product-desc {
+    margin: 0 0 0.75rem;
+    flex: 1;
+    font-size: 0.82rem;
+    line-height: 1.45;
+    color: #6f6170;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.shine-edit-cosmo-product-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: auto;
+}
+
+.shine-edit-cosmo-edit-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    width: 100%;
+    padding: 0.4rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #c2185b !important;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(255, 79, 163, 0.45);
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.shine-edit-cosmo-edit-btn:hover {
+    background: rgba(255, 79, 163, 0.1);
+}
+
+.shine-edit-cosmo-price {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 0.45rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(145deg, #2a1f2e 0%, #3d2d3d 100%);
+    box-shadow: 0 4px 14px rgba(42, 31, 46, 0.25);
+}
+
+@media (min-width: 576px) {
+    .shine-edit-cosmo-product-footer {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .shine-edit-cosmo-edit-btn,
+    .shine-edit-cosmo-price {
+        width: auto;
+        flex: 1 1 auto;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .shine-edit-cosmo-actions {
+        flex-direction: column;
+    }
+
+    .shine-edit-cosmo-btn {
+        width: 100%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .shine-edit-cosmo-product:hover,
+    .shine-edit-cosmo-btn--primary:hover {
+        transform: none;
+    }
+}
