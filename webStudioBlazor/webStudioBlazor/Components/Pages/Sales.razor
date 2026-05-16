@@ -50,8 +50,10 @@
                     @foreach (var item in cards)
                     {
                         <div class="col-12 col-sm-6 col-lg-4 d-flex">
-                            <article class="shine-service-card shine-sales-product w-100 h-100 d-flex flex-column">
-                                <img src="@item.ImagePath" class="shine-service-img flex-shrink-0" alt="@item.TitleCard" loading="lazy" decoding="async">
+                            <article class="shine-service-card shine-sales-product product-card w-100 h-100 d-flex flex-column">
+                                <div class="shine-sales-product-media product-image-wrapper">
+                                    <img src="@item.ImagePath" class="shine-sales-product-img" alt="@item.TitleCard" loading="lazy" decoding="async">
+                                </div>
                                 <div class="shine-sales-card-body p-4 d-flex flex-column flex-grow-1">
                                     <h2 class="shine-sales-card-title h5 mb-0">@item.TitleCard</h2>
                                     <p class="shine-sales-card-desc small text-muted mb-0">@item.DescriptionCard</p>
